@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joe's Juke — 5 Level Concept</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="game.js"></script>
+</head>
+<body>
+  <div id="game-wrapper">
+    <header>
+      <h1>Joe's Juke</h1>
+      <p class="tagline">Dodge • Collect • Escape — 5 Level Concept</p>
+    </header>
+    <div id="hud">
+      <span>Level <strong id="levelNum">1</strong>/5</span>
+      <span>Keys <strong id="keyCount">0</strong></span>
+      <span id="status">Use Arrow Keys or WASD</span>
+    </div>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <div id="overlay">
+      <div id="startScreen">
+        <h2>Joe's Juke</h2>
+        <p>Help Joe juke past enemies, collect keys, and reach the exit.</p>
+        <p class="controls">←↑↓→ or WASD to move</p>
+        <button id="startBtn">Start Game</button>
+      </div>
+      <div id="levelComplete" class="hidden">
+        <h2>Level Cleared!</h2>
+        <button id="nextBtn">Next Level</button>
+      </div>
+      <div id="gameOver" class="hidden">
+        <h2>Game Over</h2>
+        <p>Joe got caught!</p>
+        <button id="retryBtn">Retry Level</button>
+      </div>
+      <div id="winScreen" class="hidden">
+        <h2>You Win!</h2>
+        <p>Joe juked his way through all 5 levels.</p>
+        <button id="restartBtn">Play Again</button>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>Concept game • Sprites derived from wd17d.jpg pixel art sheet</p>
+  </footer>
+</body>
+</html>
