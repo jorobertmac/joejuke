@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Joe's Juke</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Joe's Juke</h1>
+      <div id="hud">
+        <span>Chips: <strong id="keyCount">0/0</strong></span>
+        <span id="statusEl">Ready</span>
+      </div>
+    </header>
+    <div id="canvas-wrap">
+      <canvas id="canvas" width="640" height="480"></canvas>
+      <div id="dpad" class="dpad">
+        <button data-dir="up">▲</button>
+        <button data-dir="left">◀</button>
+        <button data-dir="down">▼</button>
+        <button data-dir="right">▶</button>
+      </div>
+    </div>
+    <div id="editorBar" class="hidden">
+      <div class="editor-tools">
+        <label>W <input type="number" id="editW" min="5" max="40" value="20"></label>
+        <label>H <input type="number" id="editH" min="5" max="30" value="15"></label>
+        <button id="applySize">Apply</button>
+        <button id="testLevel">Test</button>
+        <button id="exportLevel">Export</button>
+        <button id="importLevel">Import</button>
+        <button id="closeEditor">Close</button>
+      </div>
+      <div id="palette"></div>
+    </div>
+    <div id="overlay">
+      <div id="startScreen" class="screen">
+        <h2>Joe's Juke</h2>
+        <p>Collect chips. Open the socket. Reach the exit.</p>
+        <button id="startBtn">Play</button>
+        <button id="editorBtn">Level Editor</button>
+      </div>
+      <div id="levelComplete" class="screen hidden">
+        <h2>Level Clear!</h2>
+        <button id="nextLevel">Next</button>
+        <button id="backToEditorBtn" class="hidden">Back to Editor</button>
+      </div>
+      <div id="gameOver" class="screen hidden">
+        <h2>Ouch!</h2>
+        <button id="retryBtn">Retry</button>
+        <button id="backToEditorWinBtn" class="hidden">Back to Editor</button>
+      </div>
+      <div id="winScreen" class="screen hidden">
+        <h2>You did it!</h2>
+        <p>Joe juked through all levels!</p>
+        <button id="restartBtn">Play Again</button>
+      </div>
+      <div id="exportModal" class="screen hidden">
+        <h2>Export Level</h2>
+        <textarea id="exportText" readonly></textarea>
+        <button id="copyExport">Copy</button>
+        <button id="closeExport">Close</button>
+      </div>
+      <div id="importModal" class="screen hidden">
+        <h2>Import Level</h2>
+        <textarea id="importText" placeholder="Paste JSON here"></textarea>
+        <button id="doImport">Load</button>
+        <button id="closeImport">Close</button>
+      </div>
+    </div>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>
