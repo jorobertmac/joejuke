@@ -49,23 +49,6 @@
           <button id="restartBtn" type="button">Play Again</button>
           <button id="backToEditorWinBtn" type="button" class="secondary hidden">Back to Editor</button>
         </div>
-        <div id="editorScreen" class="hidden">
-          <h2>Level Editor</h2>
-          <p class="controls">Paint tiles • Set size • Test • Export</p>
-          <div class="editor-size">
-            <label>W <input type="number" id="editCols" min="5" max="40" value="20"></label>
-            <label>H <input type="number" id="editRows" min="5" max="30" value="15"></label>
-            <button id="resizeBtn" type="button" class="small">Apply Size</button>
-          </div>
-          <div id="palette" class="palette"></div>
-          <div class="editor-actions">
-            <button id="testLevelBtn" type="button">Test Level</button>
-            <button id="exportBtn" type="button" class="secondary">Export</button>
-            <button id="importBtn" type="button" class="secondary">Import</button>
-            <button id="clearMapBtn" type="button" class="secondary">Clear</button>
-            <button id="exitEditorBtn" type="button" class="secondary">Exit Editor</button>
-          </div>
-        </div>
         <div id="exportModal" class="hidden">
           <h2>Export Level</h2>
           <p>Copy or download the JSON to save / share.</p>
@@ -87,6 +70,24 @@
         </div>
       </div>
     </div>
+
+    <!-- Editor toolbar sits below the canvas so the map stays fully tappable -->
+    <div id="editorBar" class="hidden">
+      <div class="editor-size">
+        <label>W <input type="number" id="editCols" min="5" max="40" value="20" inputmode="numeric"></label>
+        <label>H <input type="number" id="editRows" min="5" max="30" value="15" inputmode="numeric"></label>
+        <button id="resizeBtn" type="button" class="small">Apply</button>
+      </div>
+      <div id="palette" class="palette"></div>
+      <div class="editor-actions">
+        <button id="testLevelBtn" type="button">Test</button>
+        <button id="exportBtn" type="button" class="secondary">Export</button>
+        <button id="importBtn" type="button" class="secondary">Import</button>
+        <button id="clearMapBtn" type="button" class="secondary">Clear</button>
+        <button id="exitEditorBtn" type="button" class="secondary">Exit</button>
+      </div>
+    </div>
+
     <div id="dpad" aria-label="Movement controls">
       <button type="button" class="dpad-btn" data-dx="0" data-dy="-1" id="btnUp" aria-label="Up">▲</button>
       <div class="dpad-mid">
