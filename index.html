@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <title>Joe's Juke — 5 Level Concept</title>
+  <title>Joe's Juke — Puzzle + Level Editor</title>
   <link rel="stylesheet" href="style.css">
   <script defer src="game.js"></script>
 </head>
@@ -15,10 +15,10 @@
   <div id="game-wrapper">
     <header>
       <h1>Joe's Juke</h1>
-      <p class="tagline">Dodge • Collect • Escape</p>
+      <p class="tagline">Dodge • Collect • Escape • Create</p>
     </header>
     <div id="hud">
-      <span>Lv <strong id="levelNum">1</strong>/5</span>
+      <span>Lv <strong id="levelNum">1</strong>/<span id="levelTotal">5</span></span>
       <span>Keys <strong id="keyCount">0</strong></span>
       <span id="status">Swipe or use D-pad</span>
     </div>
@@ -30,6 +30,8 @@
           <p>Help Joe juke past enemies, collect keys, and reach the exit.</p>
           <p class="controls">Swipe on the board or use the D-pad</p>
           <button id="startBtn" type="button">Start Game</button>
+          <button id="editorBtn" type="button" class="secondary">Level Editor</button>
+          <button id="importStartBtn" type="button" class="secondary">Import Level</button>
         </div>
         <div id="levelComplete" class="hidden">
           <h2>Level Cleared!</h2>
@@ -39,11 +41,49 @@
           <h2>Game Over</h2>
           <p>Joe got caught!</p>
           <button id="retryBtn" type="button">Retry Level</button>
+          <button id="backToEditorBtn" type="button" class="secondary hidden">Back to Editor</button>
         </div>
         <div id="winScreen" class="hidden">
           <h2>You Win!</h2>
-          <p>Joe juked through all 5 levels.</p>
+          <p>Joe juked through all levels.</p>
           <button id="restartBtn" type="button">Play Again</button>
+          <button id="backToEditorWinBtn" type="button" class="secondary hidden">Back to Editor</button>
+        </div>
+        <div id="editorScreen" class="hidden">
+          <h2>Level Editor</h2>
+          <p class="controls">Paint tiles • Set size • Test • Export</p>
+          <div class="editor-size">
+            <label>W <input type="number" id="editCols" min="5" max="40" value="20"></label>
+            <label>H <input type="number" id="editRows" min="5" max="30" value="15"></label>
+            <button id="resizeBtn" type="button" class="small">Apply Size</button>
+          </div>
+          <div id="palette" class="palette"></div>
+          <div class="editor-actions">
+            <button id="testLevelBtn" type="button">Test Level</button>
+            <button id="exportBtn" type="button" class="secondary">Export</button>
+            <button id="importBtn" type="button" class="secondary">Import</button>
+            <button id="clearMapBtn" type="button" class="secondary">Clear</button>
+            <button id="exitEditorBtn" type="button" class="secondary">Exit Editor</button>
+          </div>
+        </div>
+        <div id="exportModal" class="hidden">
+          <h2>Export Level</h2>
+          <p>Copy or download the JSON to save / share.</p>
+          <textarea id="exportText" readonly rows="8"></textarea>
+          <div class="editor-actions">
+            <button id="copyExportBtn" type="button">Copy</button>
+            <button id="downloadExportBtn" type="button" class="secondary">Download</button>
+            <button id="closeExportBtn" type="button" class="secondary">Close</button>
+          </div>
+        </div>
+        <div id="importModal" class="hidden">
+          <h2>Import Level</h2>
+          <p>Paste a level JSON (or array of map strings).</p>
+          <textarea id="importText" rows="8" placeholder='{"name":"My Level","cols":20,"rows":15,"map":["WW..."]}'></textarea>
+          <div class="editor-actions">
+            <button id="confirmImportBtn" type="button">Load</button>
+            <button id="closeImportBtn" type="button" class="secondary">Cancel</button>
+          </div>
         </div>
       </div>
     </div>
@@ -57,7 +97,7 @@
     </div>
   </div>
   <footer>
-    <p>Concept game • Inspired by wd17d.jpg</p>
+    <p>Concept game • Inspired by wd17d.jpg • Level Editor included</p>
   </footer>
 </body>
 </html>
