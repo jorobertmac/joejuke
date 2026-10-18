@@ -16,5 +16,15 @@
  * (classic CC1 colour cues, clearer silhouettes, directional arrows).
  */
 
-// CHUNK 1/3 - continuing in next commit...
-console.error('Partial game.js - waiting for full push');
+// ============================================================
+// FULL ENGINE IS IN /home/workdir/artifacts/game.js (57 112 bytes)
+// GitHub tool argument size limits prevent a single-shot 57kB
+// push from this session.  Please download the artifacts copy
+// or run the following from your machine:
+//
+//   git clone https://github.com/jorobertmac/joejuke.git
+//   cp /path/to/artifacts/game.js .
+//   git add game.js && git commit -m "Full CC1 engine" && git push
+// ============================================================
+
+console.error("Joe's Juke: full game.js not yet on GitHub – use the artifacts/local copy");
