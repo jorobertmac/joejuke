@@ -1,6 +1,6 @@
 /**
- * Joe's Juke — 5 Level Concept Game
- * Concept built around the wd17d.jpg pixel art sheet (bald blue-shirted hero, tiles, enemies)
+ * Joe's Juke — 5 Level Concept Game (mobile-optimized)
+ * Concept built around the wd17d.jpg pixel art sheet
  */
 
 (() => {
@@ -28,6 +28,12 @@
   let enemies = [];
   let map = [];
   let gameState = "start";
+
+  // Touch / swipe state
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchActive = false;
+  const SWIPE_THRESHOLD = 24;
 
   const WALL = 1, FLOOR = 2, WATER = 3, EXIT = 4, KEY = 5, LOCK = 6, SPIKE = 7, ICE = 8;
 
@@ -139,7 +145,12 @@
         else if (ch === "P") { t = FLOOR; player.x = x; player.y = y; }
         else if (ch === "M") {
           t = FLOOR;
-          enemies.push({ x, y, dir: Math.random() < 0.5 ? 1 : -1, axis: Math.random() < 0.5 ? "x" : "y", timer: 0 });
+          enemies.push({
+            x, y,
+            dir: Math.random() < 0.5 ? 1 : -1,
+            axis: Math.random() < 0.5 ? "x" : "y",
+            timer: 0
+          });
         }
         map[y][x] = t;
       }
@@ -149,10 +160,12 @@
   function loadLevel(n) {
     level = n;
     parseLevel(LEVELS[n]);
-    player.dir = 0; player.frame = 0; player.moving = false;
+    player.dir = 0;
+    player.frame = 0;
+    player.moving = false;
     levelNumEl.textContent = n + 1;
     keyCountEl.textContent = keysCollected;
-    statusEl.textContent = "Collect keys & reach the exit";
+    statusEl.textContent = "Swipe or D-pad";
     gameState = "play";
     hideAllScreens();
   }
@@ -176,7 +189,8 @@
 
   function tryMove(dx, dy) {
     if (gameState !== "play") return;
-    let nx = player.x + dx, ny = player.y + dy;
+    let nx = player.x + dx;
+    let ny = player.y + dy;
     if (!canWalk(nx, ny)) return;
 
     if (map[ny][nx] === ICE) {
@@ -186,9 +200,11 @@
         if (!canWalk(tx, ty) || map[ty][tx] !== ICE) break;
         sx = tx; sy = ty;
       }
-      player.x = sx; player.y = sy;
+      player.x = sx;
+      player.y = sy;
     } else {
-      player.x = nx; player.y = ny;
+      player.x = nx;
+      player.y = ny;
     }
 
     player.dir = dx > 0 ? 0 : dx < 0 ? 1 : dy > 0 ? 2 : 3;
@@ -199,7 +215,7 @@
       map[player.y][player.x] = FLOOR;
       keysCollected++;
       keyCountEl.textContent = keysCollected;
-      statusEl.textContent = keysCollected >= keysNeeded ? "All keys! Head to exit" : "Key collected!";
+      statusEl.textContent = keysCollected >= keysNeeded ? "All keys! → exit" : "Key!";
     }
     if (map[player.y][player.x] === LOCK && keysCollected >= keysNeeded) {
       map[player.y][player.x] = FLOOR;
@@ -214,7 +230,9 @@
           gameState = "levelDone";
           showScreen(levelComplete);
         }
-      } else statusEl.textContent = "Need more keys!";
+      } else {
+        statusEl.textContent = "Need more keys!";
+      }
     }
   }
 
@@ -224,12 +242,17 @@
       if (e.timer < 0.4) continue;
       e.timer = 0;
       let nx = e.x, ny = e.y;
-      if (e.axis === "x") nx += e.dir; else ny += e.dir;
+      if (e.axis === "x") nx += e.dir;
+      else ny += e.dir;
       if (!canWalk(nx, ny) || map[ny][nx] === EXIT || map[ny][nx] === KEY) {
         e.dir *= -1;
-        if (e.axis === "x") nx = e.x + e.dir; else ny = e.y + e.dir;
+        if (e.axis === "x") nx = e.x + e.dir;
+        else ny = e.y + e.dir;
       }
-      if (canWalk(nx, ny)) { e.x = nx; e.y = ny; }
+      if (canWalk(nx, ny)) {
+        e.x = nx;
+        e.y = ny;
+      }
       if (e.x === player.x && e.y === player.y) {
         gameState = "dead";
         showScreen(gameOver);
@@ -280,7 +303,8 @@
           ctx.fillRect(px + 2, py + 2, TILE - 4, TILE - 4);
           ctx.strokeStyle = "#2a2a3a";
           ctx.beginPath();
-          ctx.moveTo(px, py + 16); ctx.lineTo(px + 32, py + 16);
+          ctx.moveTo(px, py + 16);
+          ctx.lineTo(px + 32, py + 16);
           ctx.stroke();
         } else if (t === WATER) {
           ctx.fillStyle = "#1a5a8a";
@@ -367,6 +391,7 @@
     requestAnimationFrame(loop);
   }
 
+  // Keyboard
   window.addEventListener("keydown", e => {
     if (gameState !== "play") return;
     const k = e.key.toLowerCase();
@@ -377,10 +402,59 @@
     e.preventDefault();
   });
 
+  // D-pad buttons (touch + click)
+  document.querySelectorAll(".dpad-btn").forEach(btn => {
+    const fire = (e) => {
+      e.preventDefault();
+      const dx = parseInt(btn.dataset.dx, 10);
+      const dy = parseInt(btn.dataset.dy, 10);
+      tryMove(dx, dy);
+      btn.classList.add("active");
+      setTimeout(() => btn.classList.remove("active"), 120);
+    };
+    btn.addEventListener("pointerdown", fire);
+  });
+
+  // Swipe on canvas
+  function onTouchStart(e) {
+    if (gameState !== "play") return;
+    const t = e.changedTouches ? e.changedTouches[0] : e;
+    touchStartX = t.clientX;
+    touchStartY = t.clientY;
+    touchActive = true;
+  }
+
+  function onTouchEnd(e) {
+    if (!touchActive || gameState !== "play") return;
+    touchActive = false;
+    const t = e.changedTouches ? e.changedTouches[0] : e;
+    const dx = t.clientX - touchStartX;
+    const dy = t.clientY - touchStartY;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+    if (absX < SWIPE_THRESHOLD && absY < SWIPE_THRESHOLD) return;
+    if (absX > absY) {
+      tryMove(dx > 0 ? 1 : -1, 0);
+    } else {
+      tryMove(0, dy > 0 ? 1 : -1);
+    }
+  }
+
+  canvas.addEventListener("touchstart", onTouchStart, { passive: true });
+  canvas.addEventListener("touchend", onTouchEnd, { passive: true });
+  // Also support mouse drag as swipe for desktop testing
+  canvas.addEventListener("mousedown", onTouchStart);
+  canvas.addEventListener("mouseup", onTouchEnd);
+
+  // Buttons
   document.getElementById("startBtn").addEventListener("click", () => loadLevel(0));
   document.getElementById("nextBtn").addEventListener("click", () => loadLevel(level + 1));
   document.getElementById("retryBtn").addEventListener("click", () => loadLevel(level));
   document.getElementById("restartBtn").addEventListener("click", () => loadLevel(0));
+
+  // Prevent long-press context menu on controls
+  document.getElementById("dpad").addEventListener("contextmenu", e => e.preventDefault());
+  canvas.addEventListener("contextmenu", e => e.preventDefault());
 
   requestAnimationFrame(loop);
 })();
