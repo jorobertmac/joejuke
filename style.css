@@ -174,49 +174,49 @@ button:active {
   background: #3db892;
 }
 
-/* On-screen D-pad */
+/* On-screen D-pad — larger buttons + more spacing for comfortable touch */
 #dpad {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
-  margin-top: 0.75rem;
-  padding-bottom: 0.25rem;
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+  padding-bottom: 0.35rem;
   width: 100%;
-  max-width: 200px;
+  max-width: 260px;
 }
 
 .dpad-mid {
   display: flex;
-  gap: 2.2rem;
+  gap: 3rem;
   justify-content: center;
   width: 100%;
 }
 
 .dpad-btn {
-  width: 56px;
-  height: 56px;
-  min-width: 56px;
-  min-height: 56px;
+  width: 68px;
+  height: 68px;
+  min-width: 68px;
+  min-height: 68px;
   padding: 0;
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.35rem;
   line-height: 1;
   background: #16213e;
   color: #4ecca3;
   border: 3px solid #0f3460;
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 3px 0 #0a1a30;
+  box-shadow: 0 4px 0 #0a1a30;
 }
 
 .dpad-btn:active,
 .dpad-btn.active {
   background: #4ecca3;
   color: #0f0f1a;
-  transform: translateY(2px);
+  transform: translateY(3px);
   box-shadow: 0 1px 0 #0a1a30;
 }
 
@@ -230,33 +230,42 @@ footer p {
   letter-spacing: 0.5px;
 }
 
-/* Desktop: keep D-pad but slightly smaller; keyboard still works */
+/* Desktop: still usable size, keyboard remains primary */
 @media (min-width: 701px) {
   body {
     justify-content: center;
     padding: 1rem;
   }
   #dpad {
-    max-width: 180px;
+    max-width: 220px;
   }
   .dpad-btn {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    min-height: 48px;
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    font-size: 1.15rem;
+  }
+  .dpad-mid {
+    gap: 2.4rem;
   }
 }
 
 /* Very small phones */
 @media (max-width: 360px) {
   .dpad-btn {
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
-    min-height: 50px;
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    min-height: 60px;
+    font-size: 1.2rem;
   }
   .dpad-mid {
-    gap: 1.6rem;
+    gap: 2.2rem;
+  }
+  #dpad {
+    max-width: 220px;
+    gap: 0.45rem;
   }
   #hud {
     font-size: 0.36rem;
@@ -264,7 +273,7 @@ footer p {
   }
 }
 
-/* Landscape phones: compact layout */
+/* Landscape phones: compact but still tappable */
 @media (max-height: 500px) and (orientation: landscape) {
   header h1 {
     font-size: 0.9rem;
@@ -281,18 +290,19 @@ footer p {
     flex-direction: row;
     max-width: none;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.65rem;
     margin-top: 0.4rem;
   }
   .dpad-mid {
     flex-direction: row;
-    gap: 0.5rem;
+    gap: 0.65rem;
   }
   .dpad-btn {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    min-height: 52px;
+    font-size: 1.1rem;
   }
   footer {
     display: none;
