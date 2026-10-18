@@ -195,52 +195,65 @@ button:active {
   background: #3db892;
 }
 
-/* Editor UI */
+/* ---------- Editor toolbar (below canvas — does not cover the map) ---------- */
+#editorBar {
+  width: 100%;
+  max-width: 640px;
+  margin-top: 0.5rem;
+  padding: 0.55rem 0.4rem 0.65rem;
+  background: #16213e;
+  border: 3px solid #0f3460;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+
 .editor-size {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
   align-items: center;
   justify-content: center;
-  margin: 0.6rem 0;
   font-size: clamp(0.35rem, 2vw, 0.45rem);
 }
 
 .editor-size label {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.25rem;
   color: #c0c0e0;
 }
 
 .editor-size input[type="number"] {
-  width: 3.2rem;
+  width: 3rem;
   font-family: inherit;
   font-size: inherit;
   background: #0f0f1a;
   color: #4ecca3;
   border: 2px solid #0f3460;
   border-radius: 4px;
-  padding: 0.35rem 0.3rem;
+  padding: 0.3rem 0.25rem;
   text-align: center;
 }
 
 .palette {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: 0.3rem;
   justify-content: center;
-  margin: 0.5rem 0;
+  max-width: 100%;
 }
 
 .palette-btn {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  min-height: 36px;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
   padding: 0;
   margin: 0;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   border: 2px solid #0f3460;
   border-radius: 6px;
   background: #16213e;
@@ -272,16 +285,15 @@ button:active {
 .editor-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.35rem;
   justify-content: center;
-  margin-top: 0.4rem;
 }
 
 .editor-actions button {
-  margin-top: 0.3rem;
-  padding: 0.65rem 0.9rem;
-  min-height: 40px;
-  font-size: clamp(0.38rem, 2.1vw, 0.48rem);
+  margin-top: 0;
+  padding: 0.55rem 0.7rem;
+  min-height: 38px;
+  font-size: clamp(0.35rem, 2vw, 0.45rem);
 }
 
 #exportText,
@@ -299,7 +311,7 @@ button:active {
   min-height: 100px;
 }
 
-/* On-screen D-pad — larger buttons + more spacing for comfortable touch */
+/* On-screen D-pad */
 #dpad {
   display: flex;
   flex-direction: column;
@@ -355,7 +367,7 @@ footer p {
   letter-spacing: 0.5px;
 }
 
-/* Desktop: still usable size, keyboard remains primary */
+/* Desktop */
 @media (min-width: 701px) {
   body {
     justify-content: center;
@@ -396,9 +408,16 @@ footer p {
     font-size: 0.36rem;
     padding: 0.35rem 0.5rem;
   }
+  .palette-btn {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    font-size: 0.55rem;
+  }
 }
 
-/* Landscape phones: compact but still tappable */
+/* Landscape phones */
 @media (max-height: 500px) and (orientation: landscape) {
   header h1 {
     font-size: 0.9rem;
@@ -432,13 +451,35 @@ footer p {
   footer {
     display: none;
   }
+  #editorBar {
+    padding: 0.35rem 0.3rem;
+    gap: 0.3rem;
+  }
+  .palette-btn {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  .editor-actions button {
+    min-height: 34px;
+    padding: 0.4rem 0.55rem;
+  }
 }
 
-/* When editor is open, hide dpad to free space */
+/* Editor mode: hide dpad, show toolbar; canvas stays fully interactive */
 body.editor-mode #dpad {
   display: none;
 }
 
+body.editor-mode header .tagline {
+  display: none;
+}
+
 body.editor-mode #hud {
-  opacity: 0.85;
+  opacity: 0.9;
+}
+
+body.editor-mode footer {
+  display: none;
 }
