@@ -195,7 +195,6 @@ button:active {
   background: #3db892;
 }
 
-/* ---------- Editor toolbar (below canvas — does not cover the map) ---------- */
 #editorBar {
   width: 100%;
   max-width: 640px;
@@ -241,9 +240,11 @@ button:active {
 .palette {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem;
+  gap: 0.28rem;
   justify-content: center;
   max-width: 100%;
+  max-height: 120px;
+  overflow-y: auto;
 }
 
 .palette-btn {
@@ -281,6 +282,23 @@ button:active {
 .palette-btn[data-ch="S"] { background: #8e44ad; }
 .palette-btn[data-ch="M"] { background: #27ae60; }
 .palette-btn[data-ch="P"] { background: #3498db; }
+.palette-btn[data-ch="1"] { background: #a0d8ef; color: #0f0f1a; }
+.palette-btn[data-ch="3"] { background: #a0d8ef; color: #0f0f1a; }
+.palette-btn[data-ch="7"] { background: #a0d8ef; color: #0f0f1a; }
+.palette-btn[data-ch="9"] { background: #a0d8ef; color: #0f0f1a; }
+.palette-btn[data-ch="^"] { background: #2d5a27; color: #7dffc4; }
+.palette-btn[data-ch=">"] { background: #2d5a27; color: #7dffc4; }
+.palette-btn[data-ch="v"] { background: #2d5a27; color: #7dffc4; }
+.palette-btn[data-ch="<"] { background: #2d5a27; color: #7dffc4; }
+.palette-btn[data-ch="F"] { background: #c0392b; }
+.palette-btn[data-ch="o"] { background: #ff69b4; color: #0f0f1a; }
+.palette-btn[data-ch="O"] { background: #ff69b4; color: #0f0f1a; }
+.palette-btn[data-ch="g"] { background: #5dade2; color: #0f0f1a; }
+.palette-btn[data-ch="f"] { background: #e67e22; }
+.palette-btn[data-ch="u"] { background: #f4d03f; color: #0f0f1a; }
+.palette-btn[data-ch="a"] { background: #1abc9c; color: #0f0f1a; }
+.palette-btn[data-ch="w"] { background: #9b59b6; }
+.palette-btn[data-ch="T"] { background: #27ae60; }
 
 .editor-actions {
   display: flex;
@@ -311,7 +329,6 @@ button:active {
   min-height: 100px;
 }
 
-/* On-screen D-pad */
 #dpad {
   display: flex;
   flex-direction: column;
@@ -367,119 +384,35 @@ footer p {
   letter-spacing: 0.5px;
 }
 
-/* Desktop */
 @media (min-width: 701px) {
-  body {
-    justify-content: center;
-    padding: 1rem;
-  }
-  #dpad {
-    max-width: 220px;
-  }
-  .dpad-btn {
-    width: 56px;
-    height: 56px;
-    min-width: 56px;
-    min-height: 56px;
-    font-size: 1.15rem;
-  }
-  .dpad-mid {
-    gap: 2.4rem;
-  }
+  body { justify-content: center; padding: 1rem; }
+  #dpad { max-width: 220px; }
+  .dpad-btn { width: 56px; height: 56px; min-width: 56px; min-height: 56px; font-size: 1.15rem; }
+  .dpad-mid { gap: 2.4rem; }
 }
 
-/* Very small phones */
 @media (max-width: 360px) {
-  .dpad-btn {
-    width: 60px;
-    height: 60px;
-    min-width: 60px;
-    min-height: 60px;
-    font-size: 1.2rem;
-  }
-  .dpad-mid {
-    gap: 2.2rem;
-  }
-  #dpad {
-    max-width: 220px;
-    gap: 0.45rem;
-  }
-  #hud {
-    font-size: 0.36rem;
-    padding: 0.35rem 0.5rem;
-  }
-  .palette-btn {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
-    min-height: 30px;
-    font-size: 0.55rem;
-  }
+  .dpad-btn { width: 60px; height: 60px; min-width: 60px; min-height: 60px; font-size: 1.2rem; }
+  .dpad-mid { gap: 2.2rem; }
+  #dpad { max-width: 220px; gap: 0.45rem; }
+  #hud { font-size: 0.36rem; padding: 0.35rem 0.5rem; }
+  .palette-btn { width: 30px; height: 30px; min-width: 30px; min-height: 30px; font-size: 0.55rem; }
 }
 
-/* Landscape phones */
 @media (max-height: 500px) and (orientation: landscape) {
-  header h1 {
-    font-size: 0.9rem;
-  }
-  .tagline {
-    display: none;
-  }
-  #hud {
-    font-size: 0.4rem;
-    padding: 0.3rem 0.5rem;
-    margin-bottom: 0.25rem;
-  }
-  #dpad {
-    flex-direction: row;
-    max-width: none;
-    justify-content: center;
-    gap: 0.65rem;
-    margin-top: 0.4rem;
-  }
-  .dpad-mid {
-    flex-direction: row;
-    gap: 0.65rem;
-  }
-  .dpad-btn {
-    width: 52px;
-    height: 52px;
-    min-width: 52px;
-    min-height: 52px;
-    font-size: 1.1rem;
-  }
-  footer {
-    display: none;
-  }
-  #editorBar {
-    padding: 0.35rem 0.3rem;
-    gap: 0.3rem;
-  }
-  .palette-btn {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    min-height: 28px;
-  }
-  .editor-actions button {
-    min-height: 34px;
-    padding: 0.4rem 0.55rem;
-  }
+  header h1 { font-size: 0.9rem; }
+  .tagline { display: none; }
+  #hud { font-size: 0.4rem; padding: 0.3rem 0.5rem; margin-bottom: 0.25rem; }
+  #dpad { flex-direction: row; max-width: none; justify-content: center; gap: 0.65rem; margin-top: 0.4rem; }
+  .dpad-mid { flex-direction: row; gap: 0.65rem; }
+  .dpad-btn { width: 52px; height: 52px; min-width: 52px; min-height: 52px; font-size: 1.1rem; }
+  footer { display: none; }
+  #editorBar { padding: 0.35rem 0.3rem; gap: 0.3rem; }
+  .palette-btn { width: 28px; height: 28px; min-width: 28px; min-height: 28px; }
+  .editor-actions button { min-height: 34px; padding: 0.4rem 0.55rem; }
 }
 
-/* Editor mode: hide dpad, show toolbar; canvas stays fully interactive */
-body.editor-mode #dpad {
-  display: none;
-}
-
-body.editor-mode header .tagline {
-  display: none;
-}
-
-body.editor-mode #hud {
-  opacity: 0.9;
-}
-
-body.editor-mode footer {
-  display: none;
-}
+body.editor-mode #dpad { display: none; }
+body.editor-mode header .tagline { display: none; }
+body.editor-mode #hud { opacity: 0.9; }
+body.editor-mode footer { display: none; }
