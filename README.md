@@ -6,24 +6,26 @@ A 5-level concept puzzle game built in pure HTML / CSS / JavaScript.
 
 ## How to Play
 
-- **Arrow keys** or **WASD** to move
-- Collect all **keys** (yellow) before the **exit** will let you through
-- **Locks** (red) require the matching number of keys
+- **Desktop:** Arrow keys or WASD
+- **Mobile:** Swipe on the board or use the on-screen D-pad
+- Collect all **keys** before the **exit** will let you through
+- **Locks** require the matching number of keys
 - **Ice** makes you slide until you hit something solid
-- Touching **enemies** (green blobs) or **spikes** ends the level
+- Touching **enemies** or **spikes** ends the level
 - **Water** is impassable
+
+## Mobile
+
+- Responsive layout with safe-area insets
+- Touch swipe controls + large D-pad buttons
+- Optimized viewport (no accidental zoom)
+- Landscape-friendly compact mode
 
 ## Tech
 
 - Single-page HTML5 Canvas game
 - Linked CSS (`style.css`)
 - Deferred JS in the `<head>` (`game.js`)
-- Player sprites extracted & processed from the provided `wd17d.jpg` pixel-art sheet
+- Player / tiles inspired by the `wd17d.jpg` pixel-art sheet
 
-## Files
-
-- `index.html` — structure, deferred script
-- `style.css` — pixel-font UI, HUD, overlays
-- `game.js` — full game logic + 5 handcrafted levels + embedded player atlas
-
-Open `index.html` in any modern browser. No build step required.
+Open `index.html` in any modern browser (or phone). No build step required.
