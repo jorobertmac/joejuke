@@ -4,71 +4,110 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  overscroll-behavior: none;
+  touch-action: manipulation;
 }
 
 body {
   background: #1a1a2e;
   color: #eaeaea;
   font-family: 'Press Start 2P', system-ui, sans-serif;
+  min-height: 100dvh;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 1rem;
+  justify-content: flex-start;
+  padding: 0.5rem;
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  padding-left: max(0.5rem, env(safe-area-inset-left));
+  padding-right: max(0.5rem, env(safe-area-inset-right));
   image-rendering: pixelated;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 #game-wrapper {
   max-width: 680px;
   width: 100%;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+header {
+  margin-bottom: 0.35rem;
 }
 
 header h1 {
-  font-size: 1.6rem;
+  font-size: clamp(1rem, 5vw, 1.6rem);
   color: #4ecca3;
   text-shadow: 3px 3px 0 #0f3460;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.25rem;
 }
 
 .tagline {
-  font-size: 0.55rem;
+  font-size: clamp(0.4rem, 2vw, 0.55rem);
   color: #a0a0c0;
-  margin-bottom: 1rem;
   letter-spacing: 1px;
 }
 
 #hud {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
   background: #16213e;
   border: 3px solid #0f3460;
-  padding: 0.6rem 1rem;
-  font-size: 0.55rem;
-  margin-bottom: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  font-size: clamp(0.38rem, 2.2vw, 0.55rem);
+  margin-bottom: 0.4rem;
   border-radius: 4px;
+  width: 100%;
 }
 
 #hud strong {
   color: #4ecca3;
 }
 
+#status {
+  flex: 1;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#canvas-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  line-height: 0;
+}
+
 #canvas {
   display: block;
-  margin: 0 auto;
+  width: 100%;
+  height: auto;
   background: #0f0f1a;
-  border: 4px solid #4ecca3;
+  border: 3px solid #4ecca3;
   border-radius: 4px;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  max-width: 100%;
-  height: auto;
-  box-shadow: 0 0 20px rgba(78, 204, 163, 0.25);
+  box-shadow: 0 0 16px rgba(78, 204, 163, 0.25);
+  touch-action: none;
 }
 
 #overlay {
-  position: relative;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 #overlay > div {
@@ -76,24 +115,26 @@ header h1 {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(15, 20, 40, 0.95);
+  background: rgba(15, 20, 40, 0.96);
   border: 3px solid #4ecca3;
-  padding: 1.5rem 2rem;
+  padding: 1.2rem 1.4rem;
   border-radius: 8px;
-  min-width: 280px;
+  min-width: min(280px, 85%);
+  max-width: 92%;
   z-index: 10;
+  pointer-events: auto;
 }
 
 #overlay h2 {
   color: #4ecca3;
-  font-size: 1rem;
-  margin-bottom: 0.8rem;
+  font-size: clamp(0.75rem, 4vw, 1rem);
+  margin-bottom: 0.7rem;
 }
 
 #overlay p {
-  font-size: 0.5rem;
+  font-size: clamp(0.4rem, 2.2vw, 0.5rem);
   line-height: 1.6;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.5rem;
   color: #c0c0e0;
 }
 
@@ -107,29 +148,81 @@ header h1 {
 
 button {
   font-family: 'Press Start 2P', system-ui, sans-serif;
-  font-size: 0.55rem;
+  font-size: clamp(0.45rem, 2.5vw, 0.55rem);
   background: #4ecca3;
   color: #0f0f1a;
   border: none;
-  padding: 0.7rem 1.2rem;
+  padding: 0.85rem 1.3rem;
+  min-height: 44px;
+  min-width: 44px;
   cursor: pointer;
-  border-radius: 4px;
-  margin-top: 0.8rem;
+  border-radius: 6px;
+  margin-top: 0.7rem;
   transition: transform 0.1s, background 0.15s;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-button:hover {
+button:hover,
+button:focus-visible {
   background: #7dffc4;
-  transform: scale(1.05);
+  outline: none;
 }
 
 button:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
+  background: #3db892;
+}
+
+/* On-screen D-pad */
+#dpad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+  padding-bottom: 0.25rem;
+  width: 100%;
+  max-width: 200px;
+}
+
+.dpad-mid {
+  display: flex;
+  gap: 2.2rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.dpad-btn {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+  padding: 0;
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+  background: #16213e;
+  color: #4ecca3;
+  border: 3px solid #0f3460;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 0 #0a1a30;
+}
+
+.dpad-btn:active,
+.dpad-btn.active {
+  background: #4ecca3;
+  color: #0f0f1a;
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #0a1a30;
 }
 
 footer {
-  margin-top: 1.2rem;
-  font-size: 0.4rem;
+  margin-top: 0.6rem;
+  font-size: clamp(0.32rem, 1.8vw, 0.4rem);
   color: #666688;
 }
 
@@ -137,12 +230,71 @@ footer p {
   letter-spacing: 0.5px;
 }
 
-@media (max-width: 700px) {
-  header h1 {
-    font-size: 1.2rem;
+/* Desktop: keep D-pad but slightly smaller; keyboard still works */
+@media (min-width: 701px) {
+  body {
+    justify-content: center;
+    padding: 1rem;
+  }
+  #dpad {
+    max-width: 180px;
+  }
+  .dpad-btn {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+  .dpad-btn {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+  }
+  .dpad-mid {
+    gap: 1.6rem;
   }
   #hud {
-    font-size: 0.45rem;
-    padding: 0.5rem;
+    font-size: 0.36rem;
+    padding: 0.35rem 0.5rem;
+  }
+}
+
+/* Landscape phones: compact layout */
+@media (max-height: 500px) and (orientation: landscape) {
+  header h1 {
+    font-size: 0.9rem;
+  }
+  .tagline {
+    display: none;
+  }
+  #hud {
+    font-size: 0.4rem;
+    padding: 0.3rem 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+  #dpad {
+    flex-direction: row;
+    max-width: none;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+  }
+  .dpad-mid {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+  .dpad-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  footer {
+    display: none;
   }
 }
