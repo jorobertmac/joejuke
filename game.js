@@ -1,5 +1,5 @@
 /**
- * Joe's Juke — 5 Level Concept Game (mobile-optimized)
+ * Joe's Juke — Puzzle game + Level Editor
  * Concept built around the wd17d.jpg pixel art sheet
  *
  * Tile interactions:
@@ -8,6 +8,8 @@
  *  - Water (~): impassable unless filled by a block
  *  - Spikes (S): lethal / blocked
  *  - Key (K) / Lock (L) / Exit (E)
+ *  - Enemy (M): patrols
+ *  - Player start (P)
  */
 
 (() => {
@@ -16,10 +18,13 @@
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
   const TILE = 32;
-  const COLS = 20;
-  const ROWS = 15;
+
+  // Dynamic size (default matches original 20×15)
+  let COLS = 20;
+  let ROWS = 15;
 
   const levelNumEl = document.getElementById("levelNum");
+  const levelTotalEl = document.getElementById("levelTotal");
   const keyCountEl = document.getElementById("keyCount");
   const statusEl = document.getElementById("status");
 
@@ -27,6 +32,11 @@
   const levelComplete = document.getElementById("levelComplete");
   const gameOver = document.getElementById("gameOver");
   const winScreen = document.getElementById("winScreen");
+  const editorScreen = document.getElementById("editorScreen");
+  const exportModal = document.getElementById("exportModal");
+  const importModal = document.getElementById("importModal");
+  const backToEditorBtn = document.getElementById("backToEditorBtn");
+  const backToEditorWinBtn = document.getElementById("backToEditorWinBtn");
 
   let level = 0;
   let keysCollected = 0;
@@ -34,7 +44,16 @@
   let player = { x: 1, y: 1, dir: 0, frame: 0, moving: false, animTimer: 0 };
   let enemies = [];
   let map = [];
-  let gameState = "start";
+  let gameState = "start"; // start | play | levelDone | dead | win | editor | testing
+  let customLevel = null;  // { name, cols, rows, map: string[] } when playing a custom/test level
+  let fromEditor = false;  // true when testing a level from the editor
+
+  // Editor state
+  let editMap = [];        // string[] of chars
+  let editCols = 20;
+  let editRows = 15;
+  let selectedTile = "W";
+  let painting = false;
 
   // Touch / swipe state
   let touchStartX = 0;
@@ -43,6 +62,21 @@
   const SWIPE_THRESHOLD = 24;
 
   const WALL = 1, FLOOR = 2, WATER = 3, EXIT = 4, KEY = 5, LOCK = 6, SPIKE = 7, ICE = 8, BLOCK = 9;
+
+  const TILE_CHARS = [".", "W", "~", "I", "B", "K", "L", "E", "S", "M", "P"];
+  const TILE_LABELS = {
+    ".": "Floor",
+    "W": "Wall",
+    "~": "Water",
+    "I": "Ice",
+    "B": "Block",
+    "K": "Key",
+    "L": "Lock",
+    "E": "Exit",
+    "S": "Spike",
+    "M": "Enemy",
+    "P": "Player"
+  };
 
   const LEVELS = [
     // Level 1 — intro + one pushable block
@@ -137,15 +171,29 @@
     ]
   ];
 
+  function resizeCanvas() {
+    canvas.width = COLS * TILE;
+    canvas.height = ROWS * TILE;
+  }
+
   function parseLevel(raw) {
+    const rows = raw.length;
+    const cols = raw[0] ? raw[0].length : 0;
+    COLS = cols;
+    ROWS = rows;
+    resizeCanvas();
+
     map = [];
     enemies = [];
     keysNeeded = 0;
     keysCollected = 0;
+    let foundPlayer = false;
+
     for (let y = 0; y < ROWS; y++) {
       map[y] = [];
+      const row = raw[y] || "";
       for (let x = 0; x < COLS; x++) {
-        const ch = raw[y][x];
+        const ch = row[x] || ".";
         let t = FLOOR;
         if (ch === "W") t = WALL;
         else if (ch === "~") t = WATER;
@@ -155,8 +203,12 @@
         else if (ch === "S") t = SPIKE;
         else if (ch === "I") t = ICE;
         else if (ch === "B") t = BLOCK;
-        else if (ch === "P") { t = FLOOR; player.x = x; player.y = y; }
-        else if (ch === "M") {
+        else if (ch === "P") {
+          t = FLOOR;
+          player.x = x;
+          player.y = y;
+          foundPlayer = true;
+        } else if (ch === "M") {
           t = FLOOR;
           enemies.push({
             x, y,
@@ -168,23 +220,68 @@
         map[y][x] = t;
       }
     }
+
+    if (!foundPlayer) {
+      // Place player on first walkable tile
+      for (let y = 0; y < ROWS && !foundPlayer; y++) {
+        for (let x = 0; x < COLS; x++) {
+          if (map[y][x] === FLOOR) {
+            player.x = x;
+            player.y = y;
+            foundPlayer = true;
+            break;
+          }
+        }
+      }
+    }
   }
 
   function loadLevel(n) {
+    customLevel = null;
+    fromEditor = false;
     level = n;
     parseLevel(LEVELS[n]);
     player.dir = 0;
     player.frame = 0;
     player.moving = false;
     levelNumEl.textContent = n + 1;
+    levelTotalEl.textContent = LEVELS.length;
     keyCountEl.textContent = keysCollected;
     statusEl.textContent = "Swipe or D-pad";
     gameState = "play";
     hideAllScreens();
+    backToEditorBtn.classList.add("hidden");
+    backToEditorWinBtn.classList.add("hidden");
+    document.body.classList.remove("editor-mode");
+  }
+
+  function loadCustomLevel(data, testing) {
+    customLevel = data;
+    fromEditor = !!testing;
+    const raw = data.map;
+    parseLevel(raw);
+    player.dir = 0;
+    player.frame = 0;
+    player.moving = false;
+    levelNumEl.textContent = testing ? "Test" : "Custom";
+    levelTotalEl.textContent = "1";
+    keyCountEl.textContent = keysCollected;
+    statusEl.textContent = testing ? "Testing level" : "Custom level";
+    gameState = "play";
+    hideAllScreens();
+    if (testing) {
+      backToEditorBtn.classList.remove("hidden");
+      backToEditorWinBtn.classList.remove("hidden");
+    } else {
+      backToEditorBtn.classList.add("hidden");
+      backToEditorWinBtn.classList.add("hidden");
+    }
+    document.body.classList.remove("editor-mode");
   }
 
   function hideAllScreens() {
-    [startScreen, levelComplete, gameOver, winScreen].forEach(el => el.classList.add("hidden"));
+    [startScreen, levelComplete, gameOver, winScreen, editorScreen, exportModal, importModal]
+      .forEach(el => el.classList.add("hidden"));
   }
 
   function showScreen(el) {
@@ -209,15 +306,13 @@
   function canPushBlockTo(x, y) {
     if (!inBounds(x, y)) return false;
     const t = map[y][x];
-    // Allowed destinations: floor, ice, or water (block sinks and fills)
     if (t === FLOOR || t === ICE || t === WATER) return true;
     return false;
   }
 
   /**
    * Slide an entity that is already on ice in direction (dx,dy).
-   * Returns final {x,y}. Stops before a non-standable / non-ice tile
-   * (or before a blocked push for blocks — handled by caller).
+   * Returns final {x,y}.
    */
   function slideOnIce(startX, startY, dx, dy, isBlock) {
     let x = startX, y = startY;
@@ -225,11 +320,8 @@
       const nx = x + dx, ny = y + dy;
       if (isBlock) {
         if (!canPushBlockTo(nx, ny)) break;
-        // Blocks only keep sliding while the next tile is ICE
         if (map[ny][nx] !== ICE && map[ny][nx] !== FLOOR && map[ny][nx] !== WATER) break;
-        // For continuous slide, require next to be ICE (or water which ends the slide)
         if (map[ny][nx] !== ICE) {
-          // one more step onto floor/water then stop
           x = nx; y = ny;
           break;
         }
@@ -259,16 +351,12 @@
         return;
       }
 
-      // Remove block from current cell
       map[ny][nx] = FLOOR;
 
-      // Destination handling
       if (map[by][bx] === WATER) {
-        // Dry block sinks and fills water → becomes walkable floor
         map[by][bx] = FLOOR;
         statusEl.textContent = "Block filled water!";
       } else if (map[by][bx] === ICE) {
-        // Block lands on ice and may slide further
         const final = slideOnIce(bx, by, dx, dy, true);
         if (map[final.y][final.x] === WATER) {
           map[final.y][final.x] = FLOOR;
@@ -282,7 +370,6 @@
         statusEl.textContent = "Pushed!";
       }
 
-      // Player steps into the block's old cell
       player.x = nx;
       player.y = ny;
     }
@@ -298,14 +385,13 @@
         player.y = ny;
       }
     } else {
-      return; // blocked
+      return;
     }
 
     player.dir = dx > 0 ? 0 : dx < 0 ? 1 : dy > 0 ? 2 : 3;
     player.moving = true;
     player.animTimer = 0;
 
-    // Collectibles / triggers after landing
     const land = map[player.y][player.x];
     if (land === KEY) {
       map[player.y][player.x] = FLOOR;
@@ -319,9 +405,16 @@
     }
     if (land === EXIT) {
       if (keysCollected >= keysNeeded) {
-        if (level >= LEVELS.length - 1) {
+        if (customLevel || fromEditor) {
           gameState = "win";
           showScreen(winScreen);
+          winScreen.querySelector("p").textContent = fromEditor
+            ? "Custom level cleared! Export it when ready."
+            : "Custom level cleared!";
+        } else if (level >= LEVELS.length - 1) {
+          gameState = "win";
+          showScreen(winScreen);
+          winScreen.querySelector("p").textContent = "Joe juked through all 5 levels.";
         } else {
           gameState = "levelDone";
           showScreen(levelComplete);
@@ -331,7 +424,6 @@
       }
     }
 
-    // Instant death if somehow on spike (safety)
     if (map[player.y][player.x] === SPIKE) {
       gameState = "dead";
       showScreen(gameOver);
@@ -346,7 +438,6 @@
       let nx = e.x, ny = e.y;
       if (e.axis === "x") nx += e.dir;
       else ny += e.dir;
-      // Enemies treat blocks and water as solid
       if (!canStand(nx, ny) || map[ny][nx] === EXIT || map[ny][nx] === KEY || map[ny][nx] === BLOCK) {
         e.dir *= -1;
         if (e.axis === "x") nx = e.x + e.dir;
@@ -390,7 +481,6 @@
   }
 
   function drawBlock(px, py) {
-    // Wooden crate look
     ctx.fillStyle = "#8B5A2B";
     ctx.fillRect(px + 3, py + 3, 26, 26);
     ctx.fillStyle = "#A0522D";
@@ -398,7 +488,6 @@
     ctx.strokeStyle = "#5D3A1A";
     ctx.lineWidth = 2;
     ctx.strokeRect(px + 5, py + 5, 22, 22);
-    // Cross boards
     ctx.beginPath();
     ctx.moveTo(px + 5, py + 16);
     ctx.lineTo(px + 27, py + 16);
@@ -408,18 +497,31 @@
     ctx.lineWidth = 1;
   }
 
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  function drawMapTiles(useEditMap) {
+    const src = useEditMap ? editMap : null;
+    const rows = useEditMap ? editRows : ROWS;
+    const cols = useEditMap ? editCols : COLS;
 
-    if (!map.length) {
-      ctx.fillStyle = "#0f0f1a";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      return;
-    }
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        let t;
+        if (useEditMap) {
+          const ch = (src[y] && src[y][x]) || ".";
+          if (ch === "W") t = WALL;
+          else if (ch === "~") t = WATER;
+          else if (ch === "E") t = EXIT;
+          else if (ch === "K") t = KEY;
+          else if (ch === "L") t = LOCK;
+          else if (ch === "S") t = SPIKE;
+          else if (ch === "I") t = ICE;
+          else if (ch === "B") t = BLOCK;
+          else if (ch === "P") t = FLOOR; // draw player later
+          else if (ch === "M") t = FLOOR;
+          else t = FLOOR;
+        } else {
+          t = map[y][x];
+        }
 
-    for (let y = 0; y < ROWS; y++) {
-      for (let x = 0; x < COLS; x++) {
-        const t = map[y][x];
         const px = x * TILE, py = y * TILE;
         ctx.fillStyle = "#1e1e2e";
         ctx.fillRect(px, py, TILE, TILE);
@@ -476,14 +578,12 @@
           ctx.fillRect(px, py, TILE, TILE);
           ctx.strokeStyle = "rgba(255,255,255,0.7)";
           ctx.strokeRect(px + 3, py + 3, 26, 26);
-          // subtle crack lines
           ctx.beginPath();
           ctx.moveTo(px + 8, py + 10);
           ctx.lineTo(px + 14, py + 18);
           ctx.lineTo(px + 22, py + 12);
           ctx.stroke();
         } else if (t === BLOCK) {
-          // floor under block
           if ((x + y) % 2 === 0) {
             ctx.fillStyle = "#252535";
             ctx.fillRect(px, py, TILE, TILE);
@@ -493,8 +593,53 @@
           ctx.fillStyle = "#252535";
           ctx.fillRect(px, py, TILE, TILE);
         }
+
+        // Editor overlays for P and M
+        if (useEditMap) {
+          const ch = (src[y] && src[y][x]) || ".";
+          if (ch === "P") {
+            drawJoe(px, py, 0, 0);
+          } else if (ch === "M") {
+            ctx.fillStyle = "#27ae60";
+            ctx.beginPath();
+            ctx.ellipse(px + 16, py + 18, 12, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#fff";
+            ctx.beginPath();
+            ctx.arc(px + 11, py + 14, 3.5, 0, Math.PI * 2);
+            ctx.arc(px + 21, py + 14, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#000";
+            ctx.beginPath();
+            ctx.arc(px + 11, py + 14, 1.5, 0, Math.PI * 2);
+            ctx.arc(px + 21, py + 14, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
       }
     }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (gameState === "editor") {
+      if (!editMap.length) {
+        ctx.fillStyle = "#0f0f1a";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+      drawMapTiles(true);
+      return;
+    }
+
+    if (!map.length) {
+      ctx.fillStyle = "#0f0f1a";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+
+    drawMapTiles(false);
 
     for (const e of enemies) {
       const px = e.x * TILE, py = e.y * TILE;
@@ -517,6 +662,193 @@
     drawJoe(player.x * TILE, player.y * TILE, player.dir, player.animTimer);
   }
 
+  // ---------- Editor helpers ----------
+
+  function initEmptyMap(cols, rows) {
+    editCols = cols;
+    editRows = rows;
+    editMap = [];
+    for (let y = 0; y < rows; y++) {
+      let row = "";
+      for (let x = 0; x < cols; x++) {
+        if (y === 0 || y === rows - 1 || x === 0 || x === cols - 1) row += "W";
+        else row += ".";
+      }
+      editMap.push(row);
+    }
+    // Default player near top-left
+    setEditChar(1, 1, "P");
+    // Default exit near bottom-right
+    setEditChar(cols - 2, rows - 2, "E");
+  }
+
+  function setEditChar(x, y, ch) {
+    if (y < 0 || y >= editRows || x < 0 || x >= editCols) return;
+    // Only one P and one E recommended; clear previous P/E when placing new
+    if (ch === "P") {
+      for (let yy = 0; yy < editRows; yy++) {
+        for (let xx = 0; xx < editCols; xx++) {
+          if (editMap[yy][xx] === "P") {
+            editMap[yy] = editMap[yy].substring(0, xx) + "." + editMap[yy].substring(xx + 1);
+          }
+        }
+      }
+    }
+    if (ch === "E") {
+      for (let yy = 0; yy < editRows; yy++) {
+        for (let xx = 0; xx < editCols; xx++) {
+          if (editMap[yy][xx] === "E") {
+            editMap[yy] = editMap[yy].substring(0, xx) + "." + editMap[yy].substring(xx + 1);
+          }
+        }
+      }
+    }
+    editMap[y] = editMap[y].substring(0, x) + ch + editMap[y].substring(x + 1);
+  }
+
+  function buildPalette() {
+    const palette = document.getElementById("palette");
+    palette.innerHTML = "";
+    TILE_CHARS.forEach(ch => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "palette-btn" + (ch === selectedTile ? " active" : "");
+      btn.dataset.ch = ch;
+      btn.title = TILE_LABELS[ch] || ch;
+      btn.textContent = ch === "." ? "·" : ch;
+      btn.addEventListener("click", () => {
+        selectedTile = ch;
+        palette.querySelectorAll(".palette-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        statusEl.textContent = "Paint: " + (TILE_LABELS[ch] || ch);
+      });
+      palette.appendChild(btn);
+    });
+  }
+
+  function enterEditor(seedFromCurrent) {
+    if (seedFromCurrent && map.length) {
+      // Convert current runtime map back to chars (approximate)
+      editCols = COLS;
+      editRows = ROWS;
+      editMap = [];
+      for (let y = 0; y < ROWS; y++) {
+        let row = "";
+        for (let x = 0; x < COLS; x++) {
+          const t = map[y][x];
+          let ch = ".";
+          if (t === WALL) ch = "W";
+          else if (t === WATER) ch = "~";
+          else if (t === EXIT) ch = "E";
+          else if (t === KEY) ch = "K";
+          else if (t === LOCK) ch = "L";
+          else if (t === SPIKE) ch = "S";
+          else if (t === ICE) ch = "I";
+          else if (t === BLOCK) ch = "B";
+          // Player / enemies not recovered perfectly; place P at player pos
+          row += ch;
+        }
+        editMap.push(row);
+      }
+      setEditChar(player.x, player.y, "P");
+      enemies.forEach(e => setEditChar(e.x, e.y, "M"));
+    } else if (!editMap.length) {
+      initEmptyMap(20, 15);
+    }
+
+    COLS = editCols;
+    ROWS = editRows;
+    resizeCanvas();
+    document.getElementById("editCols").value = editCols;
+    document.getElementById("editRows").value = editRows;
+    buildPalette();
+    gameState = "editor";
+    showScreen(editorScreen);
+    document.body.classList.add("editor-mode");
+    statusEl.textContent = "Editor — paint tiles";
+    levelNumEl.textContent = "Edit";
+    levelTotalEl.textContent = "—";
+  }
+
+  function canvasToTile(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = Math.floor(((clientX - rect.left) * scaleX) / TILE);
+    const y = Math.floor(((clientY - rect.top) * scaleY) / TILE);
+    return { x, y };
+  }
+
+  function paintAt(clientX, clientY) {
+    if (gameState !== "editor") return;
+    const { x, y } = canvasToTile(clientX, clientY);
+    if (x < 0 || y < 0 || x >= editCols || y >= editRows) return;
+    setEditChar(x, y, selectedTile);
+  }
+
+  function getLevelData() {
+    return {
+      name: "Custom Level",
+      cols: editCols,
+      rows: editRows,
+      map: editMap.slice(),
+      version: 1
+    };
+  }
+
+  function exportLevel() {
+    const data = getLevelData();
+    const json = JSON.stringify(data, null, 2);
+    document.getElementById("exportText").value = json;
+    showScreen(exportModal);
+  }
+
+  function parseImport(text) {
+    text = text.trim();
+    if (!text) throw new Error("Empty input");
+
+    // Try full JSON object
+    try {
+      const obj = JSON.parse(text);
+      if (obj.map && Array.isArray(obj.map)) {
+        const cols = obj.cols || (obj.map[0] ? obj.map[0].length : 20);
+        const rows = obj.rows || obj.map.length;
+        return {
+          name: obj.name || "Imported Level",
+          cols,
+          rows,
+          map: obj.map.map(r => String(r).padEnd(cols, ".").slice(0, cols)),
+          version: obj.version || 1
+        };
+      }
+      // Array of strings only
+      if (Array.isArray(obj) && typeof obj[0] === "string") {
+        const cols = obj[0].length;
+        return {
+          name: "Imported Level",
+          cols,
+          rows: obj.length,
+          map: obj.map(r => String(r).padEnd(cols, ".").slice(0, cols)),
+          version: 1
+        };
+      }
+    } catch (_) { /* fall through */ }
+
+    // Plain multi-line map
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length);
+    if (lines.length < 3) throw new Error("Need at least a few map rows");
+    const cols = Math.max(...lines.map(l => l.length));
+    return {
+      name: "Imported Level",
+      cols,
+      rows: lines.length,
+      map: lines.map(r => r.padEnd(cols, ".").slice(0, cols)),
+      version: 1
+    };
+  }
+
+  // ---------- Loop & input ----------
+
   let lastTime = 0;
   function loop(ts) {
     const dt = Math.min((ts - lastTime) / 1000, 0.05);
@@ -532,8 +864,19 @@
     requestAnimationFrame(loop);
   }
 
-  // Keyboard
   window.addEventListener("keydown", e => {
+    if (gameState === "editor") {
+      // Number / letter shortcuts for tiles
+      const k = e.key;
+      if (TILE_CHARS.includes(k.toUpperCase()) || k === ".") {
+        selectedTile = k === "." ? "." : k.toUpperCase();
+        document.querySelectorAll(".palette-btn").forEach(b => {
+          b.classList.toggle("active", b.dataset.ch === selectedTile);
+        });
+        statusEl.textContent = "Paint: " + (TILE_LABELS[selectedTile] || selectedTile);
+      }
+      return;
+    }
     if (gameState !== "play") return;
     const k = e.key.toLowerCase();
     if (k === "arrowup" || k === "w") tryMove(0, -1);
@@ -543,10 +886,10 @@
     e.preventDefault();
   });
 
-  // D-pad buttons
   document.querySelectorAll(".dpad-btn").forEach(btn => {
     const fire = (e) => {
       e.preventDefault();
+      if (gameState !== "play") return;
       const dx = parseInt(btn.dataset.dx, 10);
       const dy = parseInt(btn.dataset.dy, 10);
       tryMove(dx, dy);
@@ -556,8 +899,14 @@
     btn.addEventListener("pointerdown", fire);
   });
 
-  // Swipe
   function onTouchStart(e) {
+    if (gameState === "editor") {
+      painting = true;
+      const t = e.changedTouches ? e.changedTouches[0] : e;
+      paintAt(t.clientX, t.clientY);
+      e.preventDefault();
+      return;
+    }
     if (gameState !== "play") return;
     const t = e.changedTouches ? e.changedTouches[0] : e;
     touchStartX = t.clientX;
@@ -565,7 +914,19 @@
     touchActive = true;
   }
 
+  function onTouchMove(e) {
+    if (gameState === "editor" && painting) {
+      const t = e.changedTouches ? e.changedTouches[0] : e;
+      paintAt(t.clientX, t.clientY);
+      e.preventDefault();
+    }
+  }
+
   function onTouchEnd(e) {
+    if (gameState === "editor") {
+      painting = false;
+      return;
+    }
     if (!touchActive || gameState !== "play") return;
     touchActive = false;
     const t = e.changedTouches ? e.changedTouches[0] : e;
@@ -581,18 +942,180 @@
     }
   }
 
-  canvas.addEventListener("touchstart", onTouchStart, { passive: true });
+  canvas.addEventListener("touchstart", onTouchStart, { passive: false });
+  canvas.addEventListener("touchmove", onTouchMove, { passive: false });
   canvas.addEventListener("touchend", onTouchEnd, { passive: true });
   canvas.addEventListener("mousedown", onTouchStart);
+  canvas.addEventListener("mousemove", (e) => {
+    if (painting && gameState === "editor") paintAt(e.clientX, e.clientY);
+  });
   canvas.addEventListener("mouseup", onTouchEnd);
+  canvas.addEventListener("mouseleave", () => { painting = false; });
 
+  // Buttons
   document.getElementById("startBtn").addEventListener("click", () => loadLevel(0));
   document.getElementById("nextBtn").addEventListener("click", () => loadLevel(level + 1));
-  document.getElementById("retryBtn").addEventListener("click", () => loadLevel(level));
-  document.getElementById("restartBtn").addEventListener("click", () => loadLevel(0));
+  document.getElementById("retryBtn").addEventListener("click", () => {
+    if (fromEditor && customLevel) loadCustomLevel(customLevel, true);
+    else if (customLevel) loadCustomLevel(customLevel, false);
+    else loadLevel(level);
+  });
+  document.getElementById("restartBtn").addEventListener("click", () => {
+    if (fromEditor && customLevel) {
+      enterEditor(false);
+      return;
+    }
+    loadLevel(0);
+  });
+
+  document.getElementById("editorBtn").addEventListener("click", () => enterEditor(false));
+  document.getElementById("exitEditorBtn").addEventListener("click", () => {
+    gameState = "start";
+    hideAllScreens();
+    startScreen.classList.remove("hidden");
+    document.body.classList.remove("editor-mode");
+    statusEl.textContent = "Swipe or use D-pad";
+    levelNumEl.textContent = "1";
+    levelTotalEl.textContent = "5";
+    // Reset canvas to default size for menu aesthetics
+    COLS = 20;
+    ROWS = 15;
+    resizeCanvas();
+  });
+
+  document.getElementById("resizeBtn").addEventListener("click", () => {
+    let c = parseInt(document.getElementById("editCols").value, 10) || 20;
+    let r = parseInt(document.getElementById("editRows").value, 10) || 15;
+    c = Math.max(5, Math.min(40, c));
+    r = Math.max(5, Math.min(30, r));
+    document.getElementById("editCols").value = c;
+    document.getElementById("editRows").value = r;
+
+    // Resize preserving existing content where possible
+    const old = editMap.slice();
+    const oldC = editCols, oldR = editRows;
+    editCols = c;
+    editRows = r;
+    editMap = [];
+    for (let y = 0; y < r; y++) {
+      let row = "";
+      for (let x = 0; x < c; x++) {
+        if (y < oldR && x < oldC && old[y]) row += old[y][x] || ".";
+        else if (y === 0 || y === r - 1 || x === 0 || x === c - 1) row += "W";
+        else row += ".";
+      }
+      editMap.push(row);
+    }
+    COLS = editCols;
+    ROWS = editRows;
+    resizeCanvas();
+    statusEl.textContent = `Size ${c}×${r}`;
+  });
+
+  document.getElementById("clearMapBtn").addEventListener("click", () => {
+    initEmptyMap(editCols, editRows);
+    statusEl.textContent = "Map cleared";
+  });
+
+  document.getElementById("testLevelBtn").addEventListener("click", () => {
+    // Require at least a P and an E
+    const hasP = editMap.some(row => row.includes("P"));
+    const hasE = editMap.some(row => row.includes("E"));
+    if (!hasP) {
+      statusEl.textContent = "Place a Player (P) first!";
+      return;
+    }
+    if (!hasE) {
+      statusEl.textContent = "Place an Exit (E) first!";
+      return;
+    }
+    const data = getLevelData();
+    loadCustomLevel(data, true);
+  });
+
+  document.getElementById("exportBtn").addEventListener("click", exportLevel);
+  document.getElementById("closeExportBtn").addEventListener("click", () => {
+    showScreen(editorScreen);
+  });
+  document.getElementById("copyExportBtn").addEventListener("click", async () => {
+    const text = document.getElementById("exportText").value;
+    try {
+      await navigator.clipboard.writeText(text);
+      statusEl.textContent = "Copied to clipboard!";
+    } catch {
+      // Fallback
+      document.getElementById("exportText").select();
+      document.execCommand("copy");
+      statusEl.textContent = "Copied!";
+    }
+  });
+  document.getElementById("downloadExportBtn").addEventListener("click", () => {
+    const text = document.getElementById("exportText").value;
+    const blob = new Blob([text], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "joejuke-level.json";
+    a.click();
+    URL.revokeObjectURL(url);
+    statusEl.textContent = "Download started";
+  });
+
+  document.getElementById("importBtn").addEventListener("click", () => {
+    document.getElementById("importText").value = "";
+    showScreen(importModal);
+  });
+  document.getElementById("importStartBtn").addEventListener("click", () => {
+    document.getElementById("importText").value = "";
+    showScreen(importModal);
+  });
+  document.getElementById("closeImportBtn").addEventListener("click", () => {
+    if (gameState === "editor") showScreen(editorScreen);
+    else {
+      hideAllScreens();
+      startScreen.classList.remove("hidden");
+    }
+  });
+  document.getElementById("confirmImportBtn").addEventListener("click", () => {
+    try {
+      const data = parseImport(document.getElementById("importText").value);
+      if (gameState === "editor" || document.body.classList.contains("editor-mode")) {
+        editCols = data.cols;
+        editRows = data.rows;
+        editMap = data.map.slice();
+        COLS = editCols;
+        ROWS = editRows;
+        resizeCanvas();
+        document.getElementById("editCols").value = editCols;
+        document.getElementById("editRows").value = editRows;
+        showScreen(editorScreen);
+        statusEl.textContent = "Imported into editor";
+      } else {
+        loadCustomLevel(data, false);
+      }
+    } catch (err) {
+      statusEl.textContent = "Import failed: " + (err.message || "bad format");
+    }
+  });
+
+  function returnToEditor() {
+    if (!customLevel) {
+      enterEditor(false);
+      return;
+    }
+    editCols = customLevel.cols;
+    editRows = customLevel.rows;
+    editMap = customLevel.map.slice();
+    enterEditor(false);
+  }
+
+  backToEditorBtn.addEventListener("click", returnToEditor);
+  backToEditorWinBtn.addEventListener("click", returnToEditor);
 
   document.getElementById("dpad").addEventListener("contextmenu", e => e.preventDefault());
   canvas.addEventListener("contextmenu", e => e.preventDefault());
 
+  // Initial canvas size
+  resizeCanvas();
   requestAnimationFrame(loop);
 })();
