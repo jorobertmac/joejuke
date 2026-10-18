@@ -107,3 +107,17 @@ resources/
 - `blob` — green blob (2-frame squash)
 
 Do not edit game.js / index / css yet — assets only.
+
+## Restoring PNG files
+
+PNGs are stored as `.png.b64` (base64 text). After clone:
+
+```bash
+cd resources && chmod +x decode.sh && ./decode.sh
+```
+
+Or regenerate:
+
+```bash
+python3 generate_sprites.py
+```
