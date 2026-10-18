@@ -289,6 +289,13 @@
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Guard: map is empty until the player presses Start
+    if (!map.length) {
+      ctx.fillStyle = "#0f0f1a";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+
     for (let y = 0; y < ROWS; y++) {
       for (let x = 0; x < COLS; x++) {
         const t = map[y][x];
