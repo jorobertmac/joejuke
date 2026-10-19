@@ -3,76 +3,117 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1a1a2e">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Joe's Juke</title>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Joe's Juke — CC1-style Puzzle + Editor</title>
   <link rel="stylesheet" href="style.css">
+  <script defer src="game.js"></script>
+  <script>
+    // Fallback: if game.js never wires buttons, surface a clear error
+    window.addEventListener("load", function () {
+      setTimeout(function () {
+        if (!window.__JOEJUKE_READY__) {
+          var el = document.getElementById("loadError");
+          if (el) {
+            el.classList.remove("hidden");
+            el.textContent = "Game script failed to load. Check that game.js is next to index.html and open via a local server or file:// with the full folder.";
+          }
+        }
+      }, 800);
+    });
+  </script>
 </head>
 <body>
-  <div id="app">
+  <div id="game-wrapper">
     <header>
       <h1>Joe's Juke</h1>
-      <div id="hud">
-        <span>Chips: <strong id="keyCount">0/0</strong></span>
-        <span id="statusEl">Ready</span>
-      </div>
+      <p class="tagline">Dodge • Collect • Escape • Create</p>
     </header>
+    <div id="hud">
+      <span>Lv <strong id="levelNum">1</strong>/<span id="levelTotal">5</span></span>
+      <span>Keys <strong id="keyCount">0</strong></span>
+      <span id="status">Swipe or use D-pad</span>
+    </div>
     <div id="canvas-wrap">
       <canvas id="canvas" width="640" height="480"></canvas>
-      <div id="dpad" class="dpad">
-        <button data-dir="up">▲</button>
-        <button data-dir="left">◀</button>
-        <button data-dir="down">▼</button>
-        <button data-dir="right">▶</button>
+      <div id="overlay">
+        <div id="startScreen">
+          <h2>Joe's Juke</h2>
+          <p>Help Joe juke past enemies, collect chips and keys, use boots, slide on ice, and reach the exit.</p>
+          <p class="controls">Swipe on the board or use the D-pad</p>
+          <button id="startBtn" type="button">Start Game</button>
+          <button id="editorBtn" type="button" class="secondary">Level Editor</button>
+          <button id="importStartBtn" type="button" class="secondary">Import Level</button>
+          <p id="loadError" class="hidden" style="color:#ff6b6b;margin-top:0.75rem;font-size:0.45rem;"></p>
+        </div>
+        <div id="levelComplete" class="hidden">
+          <h2>Level Cleared!</h2>
+          <button id="nextBtn" type="button">Next Level</button>
+        </div>
+        <div id="gameOver" class="hidden">
+          <h2>Game Over</h2>
+          <p>Joe got caught!</p>
+          <button id="retryBtn" type="button">Retry Level</button>
+          <button id="backToEditorBtn" type="button" class="secondary hidden">Back to Editor</button>
+        </div>
+        <div id="winScreen" class="hidden">
+          <h2>You Win!</h2>
+          <p>Joe juked through all levels.</p>
+          <button id="restartBtn" type="button">Play Again</button>
+          <button id="backToEditorWinBtn" type="button" class="secondary hidden">Back to Editor</button>
+        </div>
+        <div id="exportModal" class="hidden">
+          <h2>Export Level</h2>
+          <p>Copy or download the JSON to save / share.</p>
+          <textarea id="exportText" readonly rows="8"></textarea>
+          <div class="editor-actions">
+            <button id="copyExportBtn" type="button">Copy</button>
+            <button id="downloadExportBtn" type="button" class="secondary">Download</button>
+            <button id="closeExportBtn" type="button" class="secondary">Close</button>
+          </div>
+        </div>
+        <div id="importModal" class="hidden">
+          <h2>Import Level</h2>
+          <p>Paste a level JSON (or array of map strings).</p>
+          <textarea id="importText" rows="8" placeholder='{"name":"My Level","cols":20,"rows":15,"map":["WW..."]}'></textarea>
+          <div class="editor-actions">
+            <button id="confirmImportBtn" type="button">Load</button>
+            <button id="closeImportBtn" type="button" class="secondary">Cancel</button>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- Editor toolbar sits below the canvas so the map stays fully tappable -->
     <div id="editorBar" class="hidden">
-      <div class="editor-tools">
-        <label>W <input type="number" id="editW" min="5" max="40" value="20"></label>
-        <label>H <input type="number" id="editH" min="5" max="30" value="15"></label>
-        <button id="applySize">Apply</button>
-        <button id="testLevel">Test</button>
-        <button id="exportLevel">Export</button>
-        <button id="importLevel">Import</button>
-        <button id="closeEditor">Close</button>
+      <div class="editor-size">
+        <label>W <input type="number" id="editCols" min="5" max="40" value="20" inputmode="numeric"></label>
+        <label>H <input type="number" id="editRows" min="5" max="30" value="15" inputmode="numeric"></label>
+        <button id="resizeBtn" type="button" class="small">Apply</button>
       </div>
-      <div id="palette"></div>
+      <div id="palette" class="palette"></div>
+      <div class="editor-actions">
+        <button id="testLevelBtn" type="button">Test</button>
+        <button id="exportBtn" type="button" class="secondary">Export</button>
+        <button id="importBtn" type="button" class="secondary">Import</button>
+        <button id="clearMapBtn" type="button" class="secondary">Clear</button>
+        <button id="exitEditorBtn" type="button" class="secondary">Exit</button>
+      </div>
     </div>
-    <div id="overlay">
-      <div id="startScreen" class="screen">
-        <h2>Joe's Juke</h2>
-        <p>Collect chips. Open the socket. Reach the exit.</p>
-        <button id="startBtn">Play</button>
-        <button id="editorBtn">Level Editor</button>
+
+    <div id="dpad" aria-label="Movement controls">
+      <button type="button" class="dpad-btn" data-dx="0" data-dy="-1" id="btnUp" aria-label="Up">▲</button>
+      <div class="dpad-mid">
+        <button type="button" class="dpad-btn" data-dx="-1" data-dy="0" id="btnLeft" aria-label="Left">◀</button>
+        <button type="button" class="dpad-btn" data-dx="1" data-dy="0" id="btnRight" aria-label="Right">▶</button>
       </div>
-      <div id="levelComplete" class="screen hidden">
-        <h2>Level Clear!</h2>
-        <button id="nextLevel">Next</button>
-        <button id="backToEditorBtn" class="hidden">Back to Editor</button>
-      </div>
-      <div id="gameOver" class="screen hidden">
-        <h2>Ouch!</h2>
-        <button id="retryBtn">Retry</button>
-        <button id="backToEditorWinBtn" class="hidden">Back to Editor</button>
-      </div>
-      <div id="winScreen" class="screen hidden">
-        <h2>You did it!</h2>
-        <p>Joe juked through all levels!</p>
-        <button id="restartBtn">Play Again</button>
-      </div>
-      <div id="exportModal" class="screen hidden">
-        <h2>Export Level</h2>
-        <textarea id="exportText" readonly></textarea>
-        <button id="copyExport">Copy</button>
-        <button id="closeExport">Close</button>
-      </div>
-      <div id="importModal" class="screen hidden">
-        <h2>Import Level</h2>
-        <textarea id="importText" placeholder="Paste JSON here"></textarea>
-        <button id="doImport">Load</button>
-        <button id="closeImport">Close</button>
-      </div>
+      <button type="button" class="dpad-btn" data-dx="0" data-dy="1" id="btnDown" aria-label="Down">▼</button>
     </div>
   </div>
-  <script src="game.js"></script>
+  <footer>
+    <p>Concept game • Inspired by wd17d.jpg • Level Editor included</p>
+  </footer>
 </body>
 </html>
