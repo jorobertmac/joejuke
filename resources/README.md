@@ -1,6 +1,8 @@
 # Joe's Juke — Resources
 
-All tiles are **32×32** pixels. Generated from the original procedural Canvas style.
+All tiles are **32×32** pixels, RGBA PNG.
+
+Style: pixel art inspired by `rendered/wd17d.jpg` (classic Chip's Challenge aesthetic — dark outlines, shaded surfaces, bald-bearded Joe).
 
 ## Folder layout
 
@@ -88,6 +90,7 @@ resources/
 
 - Columns: frame 0 = idle, frame 1 = walk
 - Rows: 0 = North, 1 = East, 2 = South, 3 = West
+- Design: bald head, brown beard, blue shirt (matches `wd17d.jpg` player)
 
 ## Monster sheet layout
 
@@ -99,25 +102,11 @@ resources/
 - `ball` — pink bouncing ball
 - `glider` — blue diamond / kite
 - `fireball` — red/orange/yellow sphere
-- `bug` — yellow oval
+- `bug` — green oval with antennae
 - `paramecium` — teal elongated
-- `tank` — green body + barrel (direction-aware)
+- `tank` — green body + directional barrel
 - `walker` — purple biped
-- `teeth` — green chaser with teeth
+- `teeth` — green chaser with teeth grin
 - `blob` — green blob (2-frame squash)
 
 Do not edit game.js / index / css yet — assets only.
-
-## Restoring PNG files
-
-PNGs are stored as `.png.b64` (base64 text). After clone:
-
-```bash
-cd resources && chmod +x decode.sh && ./decode.sh
-```
-
-Or regenerate:
-
-```bash
-python3 generate_sprites.py
-```
