@@ -49,7 +49,7 @@ Reference tile set: [Chip's Challenge Wiki – Tile](https://wiki.bitbusters.clu
 | `*` | Bomb | Kills player; block or monster clears it |
 | `$` | Thief | Steals all boots |
 | `=` | Trap | Closed until brown button |
-| `\|` `_` | Toggle wall / floor | Switched by green button |
+| `|` `_` | Toggle wall / floor | Switched by green button |
 | `+` | Cloner | Spawns on red button |
 | `!` `#` `%` `&` | Buttons G/R/B/Brn | Toggle / clone / tanks / traps |
 | `2` `4` `6` `8` | Keys blue/red/green/yellow | Collect |
@@ -76,5 +76,17 @@ Reference tile set: [Chip's Challenge Wiki – Tile](https://wiki.bitbusters.clu
 - Single-page Canvas game, no build step  
 - Variable map size, JSON import/export (version 3)  
 - Open `index.html` in any modern browser  
+
+### Source layout
+
+| File | Role |
+|------|------|
+| `game.js` | Core state, level load, input, main loop |
+| `js/constants.js` | Tile IDs, directions, char maps, sprite indices |
+| `js/levels.js` | Built-in level layouts |
+| `js/tiles.js` | Ice / force / slide helpers |
+| `js/movement.js` | Player move, solid checks, monster AI |
+| `js/drawing.js` | Asset load + sprite / procedural rendering |
+| `js/editor.js` | Level editor UI & painting |
 
 Mechanics follow the CC1 tile list and Lynx/MS movement rules documented on the Bit Busters wiki.
