@@ -9,16 +9,21 @@
   <meta name="mobile-web-app-capable" content="yes">
   <title>Joe's Juke — CC1-style Puzzle + Editor</title>
   <link rel="stylesheet" href="style.css">
+  <script defer src="js/constants.js"></script>
+  <script defer src="js/levels.js"></script>
+  <script defer src="js/tiles.js"></script>
+  <script defer src="js/movement.js"></script>
+  <script defer src="js/drawing.js"></script>
+  <script defer src="js/editor.js"></script>
   <script defer src="game.js"></script>
   <script>
-    // Fallback: if game.js never wires buttons, surface a clear error
     window.addEventListener("load", function () {
       setTimeout(function () {
         if (!window.__JOEJUKE_READY__) {
           var el = document.getElementById("loadError");
           if (el) {
             el.classList.remove("hidden");
-            el.textContent = "Game script failed to load. Check that game.js is next to index.html and open via a local server or file:// with the full folder.";
+            el.textContent = "Game script failed to load. Check that js/ and game.js are next to index.html.";
           }
         }
       }, 800);
