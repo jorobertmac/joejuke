@@ -1,0 +1,21 @@
+/* Keyboard navigation focus styles */
+button:focus-visible {
+  outline: 2px solid #eaeaea;
+  outline-offset: 2px;
+}
+
+button.secondary:focus-visible {
+  outline: 2px solid #7dffc4;
+  outline-offset: 2px;
+}
+
+.palette-btn:focus-visible {
+  outline: 2px solid #7dffc4;
+  outline-offset: 2px;
+  border-color: #7dffc4;
+  z-index: 1;
+}
+
+.palette-btn.active:focus-visible {
+  box-shadow: 0 0 0 2px #7dffc4, 0 0 0 4px rgba(126, 255, 196, 0.35);
+}
