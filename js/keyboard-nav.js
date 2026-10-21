@@ -6,7 +6,7 @@
   "use strict";
 
   function getVisibleOverlay() {
-    var ids = ["startScreen", "levelComplete", "gameOver", "winScreen", "exportModal", "importModal"];
+    var ids = ["pauseMenu", "startScreen", "levelComplete", "gameOver", "winScreen", "exportModal", "importModal"];
     for (var i = 0; i < ids.length; i++) {
       var el = document.getElementById(ids[i]);
       if (el && !el.classList.contains("hidden")) return el;
@@ -71,7 +71,8 @@
   window.addEventListener("keydown", function (e) {
     var state = typeof gameState !== "undefined" ? gameState : "";
     var overlay = getVisibleOverlay();
-    if (overlay && state !== "play" && state !== "editor") {
+    // Arrow-nav any visible overlay menu (pause, start, complete, etc.)
+    if (overlay && state !== "play") {
       if (handleMenuKeys(e, overlay)) {
         e.preventDefault();
         e.stopImmediatePropagation();
