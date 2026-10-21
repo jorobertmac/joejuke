@@ -5,6 +5,9 @@
 
 var TILE = 32;
 
+/** Seconds per tile while Joe slides on ice / force floors. Lower = faster. */
+var slidePace = 0.08;
+
 var T = {
   FLOOR: 0, WALL: 1, WATER: 2, FIRE: 3, ICE: 4,
   ICE_NW: 5, ICE_NE: 6, ICE_SW: 7, ICE_SE: 8,
