@@ -1,5 +1,5 @@
 /**
- * Joe's Juke — game.js loader (fetches compressed payload, expands, evals)
+ * Joe's Juke — game.js loader (fetches compressed payload parts, expands, evals)
  */
 "use strict";
 (function () {
@@ -19,17 +19,15 @@
     fail("Browser too old for game loader");
     return;
   }
-  fetch("game.payload.b64")
-    .then(function (r) {
-      if (!r.ok) throw new Error("payload HTTP " + r.status);
-      return r.text();
-    })
-    .then(function (b64) {
-      var u8 = b64ToU8(b64.trim());
-      var ds = new DecompressionStream("deflate");
-      var stream = new Response(u8).body.pipeThrough(ds);
-      return new Response(stream).text();
-    })
-    .then(function (code) { run(code); })
+  Promise.all([
+    fetch("game.payload.1.b64").then(function (r) { if (!r.ok) throw new Error("p1 " + r.status); return r.text(); }),
+    fetch("game.payload.2.b64").then(function (r) { if (!r.ok) throw new Error("p2 " + r.status); return r.text(); })
+  ]).then(function (parts) {
+    var b64 = parts[0].trim() + parts[1].trim();
+    var u8 = b64ToU8(b64);
+    var ds = new DecompressionStream("deflate");
+    var stream = new Response(u8).body.pipeThrough(ds);
+    return new Response(stream).text();
+  }).then(function (code) { run(code); })
     .catch(function (err) { fail("Failed to load game: " + (err && err.message ? err.message : err)); });
 })();
