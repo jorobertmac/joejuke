@@ -5,6 +5,10 @@
 
 var TILE = 32;
 
+/** Chip's Challenge-style field of view (tiles), centered on the player in play mode. */
+var VIEW_COLS = 9;
+var VIEW_ROWS = 9;
+
 /** Seconds per tile while Joe slides on ice / force floors. Lower = faster. */
 var slidePace = 0.08;
 
