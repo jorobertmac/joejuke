@@ -37,8 +37,9 @@
       <p class="tagline">Dodge • Collect • Escape • Create</p>
     </header>
     <div id="hud">
-      <span>Lv <strong id="levelNum">1</strong>/<span id="levelTotal">5</span></span>
-      <span>Keys <strong id="keyCount">0</strong></span>
+      <span class="hud-level">Lv <strong id="levelNum">1</strong>/<span id="levelTotal">30</span></span>
+      <span class="hud-chips">Chips <strong id="chipCount">0</strong>/<span id="chipsNeededDisplay">0</span></span>
+      <span id="invDisplay" class="hud-inv" title="Keys &amp; boots"></span>
       <span id="status">Swipe or use D-pad</span>
     </div>
     <div id="canvas-wrap">
@@ -56,12 +57,12 @@
         <div id="levelComplete" class="hidden">
           <h2>Level Cleared!</h2>
           <button id="nextBtn" type="button">Next Level</button>
+          <button id="backToEditorBtn" type="button" class="secondary hidden">Back to Editor</button>
         </div>
         <div id="gameOver" class="hidden">
-          <h2>Game Over</h2>
-          <p>Joe got caught!</p>
+          <h2>Ouch!</h2>
           <button id="retryBtn" type="button">Retry Level</button>
-          <button id="backToEditorBtn" type="button" class="secondary hidden">Back to Editor</button>
+          <button id="menuBtn" type="button" class="secondary">Menu</button>
         </div>
         <div id="winScreen" class="hidden">
           <h2>You Win!</h2>
@@ -71,7 +72,6 @@
         </div>
         <div id="exportModal" class="hidden">
           <h2>Export Level</h2>
-          <p>Copy or download the JSON to save / share.</p>
           <textarea id="exportText" readonly rows="8"></textarea>
           <div class="editor-actions">
             <button id="copyExportBtn" type="button">Copy</button>
