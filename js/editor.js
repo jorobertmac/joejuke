@@ -146,9 +146,19 @@ function buildPalette() {
       palette.querySelectorAll(".palette-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       statusEl.textContent = "Paint: " + label;
+      btn.focus();
+    });
+    // Keyboard: Enter/Space activate selection; arrows handled in keyboard-nav.js
+    btn.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter" || ev.key === " ") {
+        ev.preventDefault();
+        btn.click();
+      }
     });
     palette.appendChild(btn);
   });
+  var activeBtn = palette.querySelector(".palette-btn.active");
+  if (activeBtn) activeBtn.setAttribute("tabindex", "0");
 }
 
 function enterEditor() {
@@ -164,9 +174,13 @@ function enterEditor() {
   buildPalette();
   hideAllScreens();
   editorBar.classList.remove("hidden");
-  statusEl.textContent = "Editor";
+  statusEl.textContent = "Editor — arrows navigate palette, Enter selects";
   levelNumEl.textContent = "Edit";
   levelTotalEl.textContent = "—";
+  var activeBtn = document.querySelector("#palette .palette-btn.active");
+  if (activeBtn) {
+    setTimeout(function () { activeBtn.focus(); }, 0);
+  }
 }
 function canvasToTile(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
