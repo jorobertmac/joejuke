@@ -102,7 +102,7 @@ header h1 {
   font-weight: 700;
   line-height: 1;
   color: #0f0f1a;
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.15) inset, 0 0 0 1px rgba(0,0,0,0.35);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.35);
 }
 
 .hud-inv .inv-icon.key-b { background: #3498db; }
@@ -352,8 +352,11 @@ button:active {
   display: none;
   font-size: 0.38rem;
   line-height: 1.1;
-  color: #a0a0c0;
-  margin-top: 1px;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.72);
+  border-radius: 3px;
+  padding: 1px 3px;
+  margin-top: 2px;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -368,6 +371,7 @@ button:active {
 
 .palette-btn.active .palette-key {
   color: #4ecca3;
+  background: rgba(0, 0, 0, 0.8);
 }
 
 /* Desktop: show all tiles + keyboard shortcut under each icon */
