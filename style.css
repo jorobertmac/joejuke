@@ -129,6 +129,37 @@ header h1 {
   min-width: 0;
 }
 
+/* Pause control in HUD */
+.hud-pause {
+  flex-shrink: 0;
+  margin: 0;
+  margin-left: 0.25rem;
+  padding: 0.2rem 0.45rem;
+  min-height: 1.6em;
+  min-width: 1.6em;
+  font-size: clamp(0.4rem, 2vw, 0.5rem);
+  line-height: 1;
+  background: #0f3460;
+  color: #4ecca3;
+  border: 2px solid #4ecca3;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.hud-pause:hover,
+.hud-pause:focus-visible {
+  background: #4ecca3;
+  color: #0f0f1a;
+  transform: none;
+}
+body.editor-mode .hud-pause {
+  display: none !important;
+}
+#pauseMenu button {
+  display: block;
+  width: 100%;
+  margin-top: 0.45rem;
+}
+
 #canvas-wrap {
   position: relative;
   width: 100%;
