@@ -174,7 +174,8 @@ function enterEditor() {
   buildPalette();
   hideAllScreens();
   editorBar.classList.remove("hidden");
-  statusEl.textContent = "Editor — arrows navigate palette, Enter selects";
+  if (typeof setPauseBtnVisible === "function") setPauseBtnVisible(false);
+  statusEl.textContent = "Editor — arrows navigate palette, Enter selects · Esc menu";
   levelNumEl.textContent = "Edit";
   levelTotalEl.textContent = "—";
   var activeBtn = document.querySelector("#palette .palette-btn.active");
