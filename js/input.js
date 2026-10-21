@@ -16,9 +16,19 @@ function selectPaletteTile(ch) {
 }
 
 window.addEventListener("keydown", function (e) {
+  var tag = (e.target && e.target.tagName) || "";
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+
+  // Space / Escape toggles pause menu in play, paused, or editor
+  if (e.key === " " || e.key === "Escape" || e.code === "Space") {
+    if (gameState === "play" || gameState === "paused" || gameState === "editor") {
+      e.preventDefault();
+      if (typeof togglePauseMenu === "function") togglePauseMenu();
+      return;
+    }
+  }
+
   if (gameState === "editor") {
-    var tag = (e.target && e.target.tagName) || "";
-    if (tag === "INPUT" || tag === "TEXTAREA") return;
     // Arrow/Enter palette nav is handled by keyboard-nav.js (capture phase)
     var k = e.key;
     if (ALL_CHARS.includes(k)) {
