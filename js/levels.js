@@ -1,9 +1,11 @@
 /**
  * Joe's Juke — built-in level layouts
+ * 5 training levels + 25 progressive challenge levels (30 total)
  */
 "use strict";
 
 var LEVELS = [
+  /* ========== TRAINING 1 — Movement, chips, blocks, exit ========== */
   [
     "WWWWWWWWWWWWWWWWWWWW",
     "W........A.........W",
@@ -21,6 +23,7 @@ var LEVELS = [
     "W..................W",
     "WWWWWWWWWWWWWWWWWWWW"
   ],
+  /* ========== TRAINING 2 — Keys, locks, chip socket ========== */
   [
     "WWWWWWWWWWWWWWWWWWWW",
     "W.A................W",
@@ -38,6 +41,7 @@ var LEVELS = [
     "W..................W",
     "WWWWWWWWWWWWWWWWWWWW"
   ],
+  /* ========== TRAINING 3 — Boots (water, fire, ice, force) ========== */
   [
     "WWWWWWWWWWWWWWWWWWWW",
     "W.A..f.j.l.q.......W",
@@ -55,6 +59,7 @@ var LEVELS = [
     "W..................W",
     "WWWWWWWWWWWWWWWWWWWW"
   ],
+  /* ========== TRAINING 4 — Monsters (safe observation) ========== */
   [
     "WWWWWWWWWWWWWWWWWWWW",
     "W.A................W",
@@ -72,6 +77,7 @@ var LEVELS = [
     "W..................W",
     "WWWWWWWWWWWWWWWWWWWW"
   ],
+  /* ========== TRAINING 5 — Special tiles overview ========== */
   [
     "WWWWWWWWWWWWWWWWWWWW",
     "W.A.~.F.I.^.[.]....W",
@@ -84,6 +90,457 @@ var LEVELS = [
     "W..................W",
     "W..................W",
     "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+
+  /* ========== LEVEL 6 — First real puzzle: chips + simple maze ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A................W",
+    "W.WWWWWWWWWWWWWWW..W",
+    "W.C..............C.W",
+    "W.W.WWWWWWWWWWWW.W.W",
+    "W.W.C..........C.W.W",
+    "W.W.W.WWWWWWWW.W.W.W",
+    "W.W.W.C......C.W.W.W",
+    "W.W.W.W.WWWW.W.W.W.W",
+    "W.W.W.W.C..C.W.W.W.W",
+    "W.W.W.W.WXXW.W.W.W.W",
+    "W.W.W.W.W.EW.W.W.W.W",
+    "W.C.C.C.C..C.C.C.C.W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 7 — Blocks to bridge water ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A....B.B.B.......W",
+    "W..................W",
+    "W.~~~~~~~~~~~~~~~~~W",
+    "W.~~~~~~~~~~~~~~~~~W",
+    "W.~~~~~~~~~~~~~~~~~W",
+    "W..................W",
+    "W.C.C.C.C.C.C.C.C..W",
+    "W..................W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 8 — Key sequence ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.2..............W",
+    "W.WWWWW.WWWWWWWWWWWW",
+    "W.....(.4..........W",
+    "W.WWWWWWWWW.WWWWWWWW",
+    "W.........).6......W",
+    "W.WWWWWWWWWWWWW.WWWW",
+    "W.............{.8..W",
+    "W.WWWWWWWWWWWWWWW.WW",
+    "W................}.W",
+    "W.C.C.C.C.C.C.C.C.CW",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 9 — Ice skating ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A................W",
+    "W.j................W",
+    "W.IIIIIIIIIIIIIIII.W",
+    "W.I..............I.W",
+    "W.I.IIIIIIIIIIII.I.W",
+    "W.I.I..........I.I.W",
+    "W.I.I.C.C.C.C..I.I.W",
+    "W.I.I..........I.I.W",
+    "W.I.IIIIIIIIIIII.I.W",
+    "W.I..............I.W",
+    "W.IIIIIIIIIIIIIIII.W",
+    "W........X.........W",
+    "W........E.........W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 10 — Force floors ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.q..............W",
+    "W.>>>>>>>>>>>>>>>>>W",
+    "W.^...............vW",
+    "W.^...............vW",
+    "W.^...C.C.C.C.....vW",
+    "W.^...............vW",
+    "W.^...............vW",
+    "W.<<<<<<<<<<<<<<<<<W",
+    "W..................W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 11 — Fire path ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.l..............W",
+    "W.FFFFFFFFFFFFFFFF.W",
+    "W.F..............F.W",
+    "W.F.FFFFFFFFFFFF.F.W",
+    "W.F.F..........F.F.W",
+    "W.F.F.C.C.C.C..F.F.W",
+    "W.F.F..........F.F.W",
+    "W.F.FFFFFFFFFFFF.F.W",
+    "W.F..............F.W",
+    "W.FFFFFFFFFFFFFFFF.W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 12 — Ball dodging ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A................W",
+    "W.WWWWWWWWWWWWWWWW.W",
+    "W.p...............pW",
+    "W..................W",
+    "W.P...............PW",
+    "W..................W",
+    "W.C.C.C.C.C.C.C.C.CW",
+    "W..................W",
+    "W.p...............pW",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 13 — Toggle walls ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A................W",
+    "W.!.|..............W",
+    "W...|..............W",
+    "W...|...C..........W",
+    "W...|..............W",
+    "W...|...C..........W",
+    "W...|..............W",
+    "W...|...C..........W",
+    "W...|..............W",
+    "W...|...X..........W",
+    "W...|...E..........W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 14 — Teleporters ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A................W",
+    "W.@................W",
+    "W.WWWWWWWWWWWWWWWW.W",
+    "W..................W",
+    "W.C.C.C.C.C.C.C.C.CW",
+    "W..................W",
+    "W.WWWWWWWWWWWWWWWW.W",
+    "W.................@W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 15 — Dirt & gravel ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A................W",
+    "W.DDDDDDDDDDDDDDDD.W",
+    "W.D..............D.W",
+    "W.D.GGGGGGGGGGGG.D.W",
+    "W.D.G..........G.D.W",
+    "W.D.G.C.C.C.C..G.D.W",
+    "W.D.G..........G.D.W",
+    "W.D.GGGGGGGGGGGG.D.W",
+    "W.D..............D.W",
+    "W.DDDDDDDDDDDDDDDD.W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 16 — Cloner + red button ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A................W",
+    "W.+>B..............W",
+    "W..................W",
+    "W.#................W",
+    "W.~~~~~~~~~~~~~~~~~W",
+    "W.~~~~~~~~~~~~~~~~~W",
+    "W.C.C.C.C.C.C.C.C.CW",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 17 — Trap & brown button ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A................W",
+    "W.&=...............W",
+    "W.W................W",
+    "W.C................W",
+    "W.W................W",
+    "W.C................W",
+    "W.W................W",
+    "W.C................W",
+    "W.W................W",
+    "W.X................W",
+    "W.E................W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 18 — Mixed boots maze ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.f.l.j.q........W",
+    "W.~~~~~~~~~~~~~~~~~W",
+    "W.FFFFFFF..........W",
+    "W.IIIIIIII.........W",
+    "W.^^^^^^^^.........W",
+    "W.C.C.C.C.C.C.C.C.CW",
+    "W..................W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 19 — Glider / fireball chase ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A................W",
+    "W.m...............zW",
+    "W..................W",
+    "W.C...............CW",
+    "W..................W",
+    "W.m...............zW",
+    "W..................W",
+    "W.C...............CW",
+    "W..................W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 20 — Multi-key + socket ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.2.4.6.8........W",
+    "W.(.).{.}.WWWWWWW..W",
+    "W.........C........W",
+    "W.WWWWWWWW.WWWWWWW.W",
+    "W.........C........W",
+    "W.WWWWWWWW.WWWWWWW.W",
+    "W.........C........W",
+    "W.WWWWWWWW.WWWWWWW.W",
+    "W.........C........W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 21 — Ice corners ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.j..............W",
+    "W.1IIIIIIIIIIIIII3.W",
+    "W.I..............I.W",
+    "W.I.1IIIIIIIIII3.I.W",
+    "W.I.I..........I.I.W",
+    "W.I.I.C.C.C.C..I.I.W",
+    "W.I.I..........I.I.W",
+    "W.I.7IIIIIIIIII9.I.W",
+    "W.I..............I.W",
+    "W.7IIIIIIIIIIIIII9.W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 22 — Thief & boots race ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.f..............W",
+    "W.~.~.~.~.~.~.~.~.~W",
+    "W.$................W",
+    "W.l................W",
+    "W.F.F.F.F.F.F.F.F.FW",
+    "W.C.C.C.C.C.C.C.C.CW",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 23 — Tank & blue button ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A................W",
+    "W.t................W",
+    "W..................W",
+    "W.%................W",
+    "W..................W",
+    "W.C.C.C.C.C.C.C.C.CW",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 24 — Bomb clearing ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.B..............W",
+    "W.*................W",
+    "W.*................W",
+    "W.*................W",
+    "W.*................W",
+    "W.C.C.C.C.C.C.C.C.CW",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 25 — Blue walls (real/fake) ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A................W",
+    "W.[[[.[[[.[[[.[[[..W",
+    "W.]].]].]].]].]]...W",
+    "W.C.C.C.C.C.C.C.C.CW",
+    "W.[[[.[[[.[[[.[[[..W",
+    "W.]].]].]].]].]]...W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 26 — Teeth chase ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A................W",
+    "W.T................W",
+    "W..................W",
+    "W.C...............CW",
+    "W..................W",
+    "W.T................W",
+    "W..................W",
+    "W.C...............CW",
+    "W..................W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 27 — Complex force + ice ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.j.q............W",
+    "W.IIII>>>>>>>>>>>>.W",
+    "W.I..............v.W",
+    "W.I.C.C.C.C.C.C..v.W",
+    "W.I..............v.W",
+    "W.IIII<<<<<<<<<<<<.W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 28 — Multi-monster gauntlet ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A................W",
+    "W.p.m.z.a.c.t.k.T.xW",
+    "W..................W",
+    "W.C.C.C.C.C.C.C.C.CW",
+    "W..................W",
+    "W.p.m.z.a.c.t.k.T.xW",
+    "W..................W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 29 — Full toolkit puzzle ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.2.f.l.j.q......W",
+    "W.(.~.F.I.^........W",
+    "W.4.B.B.B.B........W",
+    "W.)................W",
+    "W.6................W",
+    "W.{.C.C.C.C.C.C.C.CW",
+    "W.8................W",
+    "W.}................W",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  /* ========== LEVEL 30 — Final challenge ========== */
+  [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.2.4.6.8.f.l.j.qW",
+    "W.(.).{.}.~.F.I.^..W",
+    "W.B.B.B.B.B.B.B.B.BW",
+    "W.p.m.z.a.c.t.k.T.xW",
+    "W.@.!.#.%.&.|.+.*=.W",
+    "W.C.C.C.C.C.C.C.C.CW",
+    "W.D.G.r.h.i.[.]N.Y.W",
+    "W.H.Z..............W",
+    "W........X.........W",
+    "W........E.........W",
     "W..................W",
     "W..................W",
     "W..................W",
