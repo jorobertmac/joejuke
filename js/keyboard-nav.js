@@ -1,6 +1,6 @@
 /**
  * Keyboard navigation for start menu and editor palette.
- * Loaded after game.js; patches keydown handling.
+ * Loaded after game.js; captures keydown in capture phase.
  */
 (function () {
   "use strict";
@@ -57,6 +57,15 @@
     return true;
   }
 
+  function handlePaletteActivate(e) {
+    if (e.key !== "Enter" && e.key !== " ") return false;
+    var t = e.target;
+    if (!t || !t.classList || !t.classList.contains("palette-btn")) return false;
+    e.preventDefault();
+    t.click();
+    return true;
+  }
+
   window.addEventListener("keydown", function (e) {
     var state = typeof gameState !== "undefined" ? gameState : "";
     var overlay = getVisibleOverlay();
@@ -70,6 +79,10 @@
     if (state === "editor") {
       var tag = (e.target && e.target.tagName) || "";
       if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (handlePaletteActivate(e)) {
+        e.stopImmediatePropagation();
+        return;
+      }
       if (handlePaletteNav(e)) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -77,7 +90,30 @@
     }
   }, true);
 
-  // Focus start button on load
+  function focusActivePalette() {
+    var active = document.querySelector("#palette .palette-btn.active");
+    if (active) setTimeout(function () { active.focus(); }, 0);
+  }
+
+  if (typeof enterEditor === "function") {
+    var orig = enterEditor;
+    window.enterEditor = function () {
+      var r = orig.apply(this, arguments);
+      focusActivePalette();
+      if (typeof statusEl !== "undefined" && statusEl) {
+        statusEl.textContent = "Editor — arrows navigate palette, Enter selects";
+      }
+      return r;
+    };
+  }
+
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    if (!t) return;
+    var btn = t.closest ? t.closest(".palette-btn") : null;
+    if (btn) btn.focus();
+  });
+
   window.addEventListener("load", function () {
     setTimeout(function () {
       if (typeof gameState !== "undefined" && gameState === "start") {
