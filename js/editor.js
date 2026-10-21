@@ -152,7 +152,7 @@ function buildPalette() {
 }
 
 function enterEditor() {
-  if (!editMap.length) initEmptyMap(20, 15);
+  if (!editMap.length) initEmptyMap(32, 32);
   COLS = editCols; ROWS = editRows; resizeCanvas();
   document.getElementById("editCols").value = editCols;
   document.getElementById("editRows").value = editRows;
