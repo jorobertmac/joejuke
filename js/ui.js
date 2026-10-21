@@ -1,18 +1,110 @@
 /**
- * Joe's Juke — screens, buttons, import/export UI
+ * Joe's Juke — screens, buttons, pause menu, import/export UI
  */
 "use strict";
 
 function hideAllScreens() {
-  [startScreen, levelComplete, gameOver, winScreen, exportModal, importModal]
+  [startScreen, levelComplete, gameOver, winScreen, exportModal, importModal, pauseMenu]
     .forEach(function (el) { if (el) el.classList.add("hidden"); });
   if (editorBar) editorBar.classList.add("hidden");
 }
 function showScreen(el) {
   hideAllScreens();
   el.classList.remove("hidden");
+  if (typeof setPauseBtnVisible === "function") setPauseBtnVisible(false);
   var btn = el.querySelector("button:not(.hidden)");
   if (btn) setTimeout(function () { btn.focus(); }, 0);
+}
+
+function setPauseBtnVisible(show) {
+  if (!pauseBtn) return;
+  if (show) pauseBtn.classList.remove("hidden");
+  else pauseBtn.classList.add("hidden");
+}
+
+/** Open pause menu during play (or editor). */
+function openPauseMenu() {
+  var inEditorMenu = (gameState === "editor");
+  if (gameState === "play") {
+    gameState = "paused";
+    if (player) {
+      player.sliding = false;
+      player.slideQueue = [];
+      player.moving = false;
+    }
+  } else if (gameState === "editor") {
+    // keep editor state; just show overlay
+  } else if (gameState !== "paused") {
+    return;
+  }
+
+  // Hide other overlays but keep editor bar when editing
+  [startScreen, levelComplete, gameOver, winScreen, exportModal, importModal]
+    .forEach(function (el) { if (el) el.classList.add("hidden"); });
+  if (inEditorMenu) {
+    if (editorBar) editorBar.classList.remove("hidden");
+  } else if (editorBar) {
+    editorBar.classList.add("hidden");
+  }
+
+  var title = document.getElementById("pauseTitle");
+  var hint = document.getElementById("pauseHint");
+  var restartBtn = document.getElementById("restartPauseBtn");
+  var exitBtn = document.getElementById("exitPauseBtn");
+
+  if (inEditorMenu) {
+    if (title) title.textContent = "Editor Menu";
+    if (hint) hint.textContent = "Esc / Space to close";
+    if (restartBtn) restartBtn.classList.add("hidden");
+    if (exitBtn) {
+      exitBtn.textContent = "Exit to Menu";
+      exitBtn.classList.remove("hidden");
+    }
+  } else {
+    if (title) title.textContent = "Paused";
+    if (hint) hint.textContent = "Space / Esc to resume";
+    if (restartBtn) {
+      restartBtn.classList.remove("hidden");
+      restartBtn.textContent = fromEditor ? "Restart Test" : "Restart Level";
+    }
+    if (exitBtn) {
+      exitBtn.classList.remove("hidden");
+      exitBtn.textContent = fromEditor ? "Back to Editor" : "Exit to Menu";
+    }
+  }
+
+  if (pauseMenu) {
+    pauseMenu.classList.remove("hidden");
+    var first = pauseMenu.querySelector("button:not(.hidden)");
+    if (first) setTimeout(function () { first.focus(); }, 0);
+  }
+  if (statusEl && gameState === "paused") statusEl.textContent = "Paused";
+}
+
+function closePauseMenu() {
+  if (!pauseMenu) return;
+  pauseMenu.classList.add("hidden");
+  if (gameState === "paused") {
+    gameState = "play";
+    if (statusEl) statusEl.textContent = fromEditor ? "Testing" : "Swipe or D-pad";
+  } else if (gameState === "editor") {
+    if (editorBar) editorBar.classList.remove("hidden");
+    if (statusEl) statusEl.textContent = "Editor — arrows navigate palette, Enter selects";
+  }
+}
+
+function togglePauseMenu() {
+  var tag = (document.activeElement && document.activeElement.tagName) || "";
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+
+  if (gameState === "play") {
+    openPauseMenu();
+  } else if (gameState === "paused") {
+    closePauseMenu();
+  } else if (gameState === "editor") {
+    if (pauseMenu && !pauseMenu.classList.contains("hidden")) closePauseMenu();
+    else openPauseMenu();
+  }
 }
 
 function on(id, handler) {
@@ -47,6 +139,7 @@ on("exitEditorBtn", function () {
   gameState = "start"; hideAllScreens();
   startScreen.classList.remove("hidden");
   document.body.classList.remove("editor-mode");
+  setPauseBtnVisible(false);
   statusEl.textContent = "Swipe or use D-pad";
   levelNumEl.textContent = "1"; levelTotalEl.textContent = String(LEVELS.length);
   COLS = 20; ROWS = 15; resizeCanvas();
@@ -137,4 +230,34 @@ on("closeImportBtn", function () {
   } else {
     hideAllScreens(); startScreen.classList.remove("hidden");
   }
+});
+
+/* ---- Pause menu ---- */
+on("pauseBtn", function () { togglePauseMenu(); });
+on("resumeBtn", function () { closePauseMenu(); });
+on("restartPauseBtn", function () {
+  if (fromEditor && customLevel) loadCustomLevel(customLevel, true);
+  else if (customLevel) loadCustomLevel(customLevel, false);
+  else loadLevel(level);
+});
+on("exitPauseBtn", function () {
+  // Testing from editor → return to editor
+  if (fromEditor && customLevel && gameState === "paused") {
+    enterEditor();
+    return;
+  }
+  // Editor menu or normal play → start screen
+  gameState = "start";
+  customLevel = null;
+  fromEditor = false;
+  hideAllScreens();
+  startScreen.classList.remove("hidden");
+  document.body.classList.remove("editor-mode");
+  setPauseBtnVisible(false);
+  statusEl.textContent = "Swipe or use D-pad";
+  levelNumEl.textContent = "1";
+  levelTotalEl.textContent = String(LEVELS.length);
+  COLS = 20; ROWS = 15; resizeCanvas();
+  var sb = document.getElementById("startBtn");
+  if (sb) setTimeout(function () { sb.focus(); }, 0);
 });
