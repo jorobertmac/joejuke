@@ -45,42 +45,49 @@
     <div id="canvas-wrap">
       <canvas id="canvas" width="640" height="480"></canvas>
       <div id="overlay">
-        <div id="startScreen" class="screen">
+        <div id="startScreen">
           <h2>Joe's Juke</h2>
-          <p>Collect all chips, dodge monsters, reach the exit.</p>
-          <p class="hint">Swipe or use the D-pad. Keys & boots help.</p>
-          <button id="startBtn" type="button">Play</button>
+          <p>Help Joe juke past enemies, collect chips and keys, use boots, slide on ice, and reach the exit.</p>
+          <p class="controls">Swipe on the board or use the D-pad</p>
+          <button id="startBtn" type="button">Start Game</button>
           <button id="editorBtn" type="button" class="secondary">Level Editor</button>
-          <p id="loadError" class="hidden error"></p>
+          <button id="importStartBtn" type="button" class="secondary">Import Level</button>
+          <p id="loadError" class="hidden" style="color:#ff6b6b;margin-top:0.75rem;font-size:0.45rem;"></p>
         </div>
-        <div id="levelComplete" class="screen hidden">
-          <h2>Level Clear!</h2>
+        <div id="levelComplete" class="hidden">
+          <h2>Level Cleared!</h2>
           <button id="nextBtn" type="button">Next Level</button>
-          <button id="retryBtn" type="button" class="secondary">Retry</button>
+        </div>
+        <div id="gameOver" class="hidden">
+          <h2>Game Over</h2>
+          <p>Joe got caught!</p>
+          <button id="retryBtn" type="button">Retry Level</button>
           <button id="backToEditorBtn" type="button" class="secondary hidden">Back to Editor</button>
         </div>
-        <div id="gameOver" class="screen hidden">
-          <h2>Ouch!</h2>
-          <p id="deathMsg">You died.</p>
-          <button id="retryBtn2" type="button">Retry</button>
-          <button id="restartBtn" type="button" class="secondary">Title</button>
-        </div>
-        <div id="winScreen" class="screen hidden">
+        <div id="winScreen" class="hidden">
           <h2>You Win!</h2>
-          <p>All levels cleared.</p>
-          <button id="restartBtn2" type="button">Title</button>
+          <p>Joe juked through all levels.</p>
+          <button id="restartBtn" type="button">Play Again</button>
           <button id="backToEditorWinBtn" type="button" class="secondary hidden">Back to Editor</button>
         </div>
-        <div id="exportModal" class="screen hidden modal">
+        <div id="exportModal" class="hidden">
           <h2>Export Level</h2>
-          <textarea id="exportText" readonly rows="12"></textarea>
-          <button id="closeExportBtn" type="button">Close</button>
+          <p>Copy or download the JSON to save / share.</p>
+          <textarea id="exportText" readonly rows="8"></textarea>
+          <div class="editor-actions">
+            <button id="copyExportBtn" type="button">Copy</button>
+            <button id="downloadExportBtn" type="button" class="secondary">Download</button>
+            <button id="closeExportBtn" type="button" class="secondary">Close</button>
+          </div>
         </div>
-        <div id="importModal" class="screen hidden modal">
+        <div id="importModal" class="hidden">
           <h2>Import Level</h2>
-          <textarea id="importText" rows="12" placeholder="Paste JSON or map text"></textarea>
-          <button id="confirmImportBtn" type="button">Import</button>
-          <button id="closeImportBtn" type="button" class="secondary">Cancel</button>
+          <p>Paste a level JSON (or array of map strings).</p>
+          <textarea id="importText" rows="8" placeholder='{"name":"My Level","cols":20,"rows":15,"map":["WW..."]}'></textarea>
+          <div class="editor-actions">
+            <button id="confirmImportBtn" type="button">Load</button>
+            <button id="closeImportBtn" type="button" class="secondary">Cancel</button>
+          </div>
         </div>
       </div>
     </div>
@@ -111,5 +118,8 @@
       <button type="button" class="dpad-btn" data-dx="0" data-dy="1" id="btnDown" aria-label="Down">▼</button>
     </div>
   </div>
+  <footer>
+    <p>Concept game • Inspired by wd17d.jpg • Level Editor included</p>
+  </footer>
 </body>
 </html>
