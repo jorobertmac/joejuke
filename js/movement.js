@@ -23,26 +23,19 @@ function solidToPlayer(x, y, fromDir) {
   if (t === T.HIDDEN) { map[y][x] = T.WALL; return true; }
   if (t === T.BLUE_REAL) { map[y][x] = T.WALL; return true; }
   if (t === T.BLUE_FAKE) { map[y][x] = T.FLOOR; return false; }
-  if (t === T.RECESSED) return false; // pass once then becomes wall after step
+  if (t === T.RECESSED) return false;
   if (t === T.TOGGLE_WALL && !toggleOpen) return true;
   if (t === T.TOGGLE_FLOOR && toggleOpen) return true;
-  // Closed traps are ENTERABLE (you get stuck). Do not treat as solid.
-  // locks
   if (t === T.LOCK_B && inv.keys.b <= 0) return true;
   if (t === T.LOCK_R && inv.keys.r <= 0) return true;
   if (t === T.LOCK_G && inv.keys.g <= 0) return true;
   if (t === T.LOCK_Y && inv.keys.y <= 0) return true;
-  // thin walls
   if (t === T.THIN_N && fromDir === DIR.S) return true;
   if (t === T.THIN_S && fromDir === DIR.N) return true;
   if (t === T.THIN_E && fromDir === DIR.W) return true;
   if (t === T.THIN_W && fromDir === DIR.E) return true;
-  // ice corners
   if (isIce(t) && t !== T.ICE && !canEnterIceCorner(t, fromDir)) return true;
-  // Water / fire are NOT solid: enterable, lethal without boots (checked on land)
-  // socket
   if (t === T.SOCKET && chipsCollected < chipsNeeded) return true;
-  // gravel/dirt: player may enter
   return false;
 }
 
@@ -56,13 +49,9 @@ function solidToMonster(e, x, y) {
   if (t === T.TOGGLE_WALL && !toggleOpen) return true;
   if (t === T.TOGGLE_FLOOR && toggleOpen) return true;
   if (t === T.SOCKET || t === T.EXIT || t === T.LOCK_B || t === T.LOCK_R || t === T.LOCK_G || t === T.LOCK_Y) return true;
-  // Closed traps are enterable (monster gets stuck until opened)
-  // Water / fire are enterable: most monsters die on them (checked after move)
-  // Glider immune to water, fireball immune to fire
   if (isIce(t) && t !== T.ICE && !canEnterIceCorner(t, e.dir)) return true;
   return false;
 }
-
 
 function slidePath(sx, sy, dir, isBlock, monster) {
   let x = sx, y = sy, d = dir;
@@ -85,14 +74,12 @@ function slidePath(sx, sy, dir, isBlock, monster) {
       if (solidToMonster(monster, nx, ny)) break;
       const nt = map[ny][nx];
       x = nx; y = ny;
-      // stop at lethal tiles so death is applied at this position
       if (nt === T.WATER && monster.type !== "glider") break;
       if (nt === T.FIRE && monster.type !== "fireball") break;
       if (nt === T.BOMB) break;
       if (!isSlide(nt)) break;
     } else {
       if (solidToPlayer(nx, ny, d)) break;
-      // ice skates: stop sliding on ice
       const nt = map[ny][nx];
       if (isIce(nt) && inv.boots.ice) { x = nx; y = ny; break; }
       if (isForce(nt) && inv.boots.suction) { x = nx; y = ny; break; }
@@ -105,7 +92,6 @@ function slidePath(sx, sy, dir, isBlock, monster) {
 
 function tryMove(dx, dy) {
   if (gameState !== "play") return;
-  // Stuck in closed trap until brown button opens it
   if (isClosedTrap(player.x, player.y)) {
     statusEl.textContent = "Trapped!";
     return;
@@ -114,7 +100,6 @@ function tryMove(dx, dy) {
   const nx = player.x + dx, ny = player.y + dy;
   if (!inBounds(nx, ny)) return;
 
-  // push block?
   const blk = blockAt(nx, ny);
   if (blk) {
     const bx = nx + dx, by = ny + dy;
@@ -122,12 +107,11 @@ function tryMove(dx, dy) {
       statusEl.textContent = "Can't push!";
       return;
     }
-    // move block
     blk.x = bx; blk.y = by;
     const destT = map[by][bx];
     if (destT === T.WATER) {
       blocks = blocks.filter(b => b !== blk);
-      map[by][bx] = T.DIRT; // becomes dirt (CC1)
+      map[by][bx] = T.DIRT;
       statusEl.textContent = "Block filled water!";
     } else if (destT === T.BOMB) {
       blocks = blocks.filter(b => b !== blk);
@@ -161,75 +145,66 @@ function tryMove(dx, dy) {
   player.dir = dir === DIR.E ? 0 : dir === DIR.W ? 1 : dir === DIR.S ? 2 : 3;
   player.moving = true; player.animTimer = 0;
 
-  // land effects
   const lx = player.x, ly = player.y;
   const land = map[ly][lx];
   const ov = overlay[ly][lx];
 
-  // recessed becomes wall after stepping
   if (land === T.RECESSED) map[ly][lx] = T.WALL;
-
-  // dirt becomes floor
   if (land === T.DIRT) map[ly][lx] = T.FLOOR;
 
-  // collect overlay items
+  var invChanged = false;
   if (ov === T.CHIP) {
     overlay[ly][lx] = null; chipsCollected++;
-    keyCountEl.textContent = chipsCollected + "/" + chipsNeeded;
     statusEl.textContent = "Chip!";
-  } else if (ov === T.KEY_B) { overlay[ly][lx] = null; inv.keys.b++; statusEl.textContent = "Blue key!"; }
-  else if (ov === T.KEY_R) { overlay[ly][lx] = null; inv.keys.r++; statusEl.textContent = "Red key!"; }
-  else if (ov === T.KEY_G) { overlay[ly][lx] = null; inv.keys.g++; statusEl.textContent = "Green key!"; }
-  else if (ov === T.KEY_Y) { overlay[ly][lx] = null; inv.keys.y++; statusEl.textContent = "Yellow key!"; }
-  else if (ov === T.BOOT_FLIP) { overlay[ly][lx] = null; inv.boots.flip = true; statusEl.textContent = "Flippers!"; }
-  else if (ov === T.BOOT_FIRE) { overlay[ly][lx] = null; inv.boots.fire = true; statusEl.textContent = "Fire boots!"; }
-  else if (ov === T.BOOT_ICE) { overlay[ly][lx] = null; inv.boots.ice = true; statusEl.textContent = "Ice skates!"; }
-  else if (ov === T.BOOT_SUCTION) { overlay[ly][lx] = null; inv.boots.suction = true; statusEl.textContent = "Suction boots!"; }
+    invChanged = true;
+  } else if (ov === T.KEY_B) { overlay[ly][lx] = null; inv.keys.b++; statusEl.textContent = "Blue key!"; invChanged = true; }
+  else if (ov === T.KEY_R) { overlay[ly][lx] = null; inv.keys.r++; statusEl.textContent = "Red key!"; invChanged = true; }
+  else if (ov === T.KEY_G) { overlay[ly][lx] = null; inv.keys.g++; statusEl.textContent = "Green key!"; invChanged = true; }
+  else if (ov === T.KEY_Y) { overlay[ly][lx] = null; inv.keys.y++; statusEl.textContent = "Yellow key!"; invChanged = true; }
+  else if (ov === T.BOOT_FLIP) { overlay[ly][lx] = null; inv.boots.flip = true; statusEl.textContent = "Flippers!"; invChanged = true; }
+  else if (ov === T.BOOT_FIRE) { overlay[ly][lx] = null; inv.boots.fire = true; statusEl.textContent = "Fire boots!"; invChanged = true; }
+  else if (ov === T.BOOT_ICE) { overlay[ly][lx] = null; inv.boots.ice = true; statusEl.textContent = "Ice skates!"; invChanged = true; }
+  else if (ov === T.BOOT_SUCTION) { overlay[ly][lx] = null; inv.boots.suction = true; statusEl.textContent = "Suction boots!"; invChanged = true; }
 
-  // terrain pickups that are on map layer (fallback / older levels)
-  if (land === T.KEY_B) { map[ly][lx] = T.FLOOR; inv.keys.b++; }
-  if (land === T.KEY_R) { map[ly][lx] = T.FLOOR; inv.keys.r++; }
-  if (land === T.KEY_G) { map[ly][lx] = T.FLOOR; inv.keys.g++; }
-  if (land === T.KEY_Y) { map[ly][lx] = T.FLOOR; inv.keys.y++; }
-  if (land === T.BOOT_FLIP) { map[ly][lx] = T.FLOOR; inv.boots.flip = true; }
-  if (land === T.BOOT_FIRE) { map[ly][lx] = T.FLOOR; inv.boots.fire = true; }
-  if (land === T.BOOT_ICE) { map[ly][lx] = T.FLOOR; inv.boots.ice = true; }
-  if (land === T.BOOT_SUCTION) { map[ly][lx] = T.FLOOR; inv.boots.suction = true; }
+  if (land === T.KEY_B) { map[ly][lx] = T.FLOOR; inv.keys.b++; invChanged = true; }
+  if (land === T.KEY_R) { map[ly][lx] = T.FLOOR; inv.keys.r++; invChanged = true; }
+  if (land === T.KEY_G) { map[ly][lx] = T.FLOOR; inv.keys.g++; invChanged = true; }
+  if (land === T.KEY_Y) { map[ly][lx] = T.FLOOR; inv.keys.y++; invChanged = true; }
+  if (land === T.BOOT_FLIP) { map[ly][lx] = T.FLOOR; inv.boots.flip = true; invChanged = true; }
+  if (land === T.BOOT_FIRE) { map[ly][lx] = T.FLOOR; inv.boots.fire = true; invChanged = true; }
+  if (land === T.BOOT_ICE) { map[ly][lx] = T.FLOOR; inv.boots.ice = true; invChanged = true; }
+  if (land === T.BOOT_SUCTION) { map[ly][lx] = T.FLOOR; inv.boots.suction = true; invChanged = true; }
 
-  // open locks
-  if (land === T.LOCK_B && inv.keys.b > 0) { map[ly][lx] = T.FLOOR; inv.keys.b--; statusEl.textContent = "Blue lock!"; }
-  if (land === T.LOCK_R && inv.keys.r > 0) { map[ly][lx] = T.FLOOR; inv.keys.r--; statusEl.textContent = "Red lock!"; }
-  if (land === T.LOCK_G && inv.keys.g > 0) { map[ly][lx] = T.FLOOR; inv.keys.g--; statusEl.textContent = "Green lock!"; }
-  if (land === T.LOCK_Y && inv.keys.y > 0) { map[ly][lx] = T.FLOOR; inv.keys.y--; statusEl.textContent = "Yellow lock!"; }
+  if (land === T.LOCK_B && inv.keys.b > 0) { map[ly][lx] = T.FLOOR; inv.keys.b--; statusEl.textContent = "Blue lock!"; invChanged = true; }
+  if (land === T.LOCK_R && inv.keys.r > 0) { map[ly][lx] = T.FLOOR; inv.keys.r--; statusEl.textContent = "Red lock!"; invChanged = true; }
+  if (land === T.LOCK_G && inv.keys.g > 0) { map[ly][lx] = T.FLOOR; inv.keys.g--; statusEl.textContent = "Green lock!"; invChanged = true; }
+  if (land === T.LOCK_Y && inv.keys.y > 0) { map[ly][lx] = T.FLOOR; inv.keys.y--; statusEl.textContent = "Yellow lock!"; invChanged = true; }
 
-  // socket
   if (land === T.SOCKET && chipsCollected >= chipsNeeded) {
     map[ly][lx] = T.FLOOR; statusEl.textContent = "Socket open!";
   }
 
-  // thief
   if (land === T.THIEF) {
     inv.boots = { flip:false, fire:false, ice:false, suction:false };
     statusEl.textContent = "Thief stole boots!";
+    invChanged = true;
   }
 
-  // hint
+  if (invChanged) updateHud();
+
   if (land === T.HINT) {
     statusEl.textContent = "Hint: collect chips, avoid monsters, use boots!";
   }
 
-  // bomb
   if (land === T.BOMB) {
     gameState = "dead"; showScreen(gameOver); return;
   }
 
-  // buttons
   if (land === T.BTN_GREEN) {
     toggleOpen = !toggleOpen;
     statusEl.textContent = toggleOpen ? "Toggles open" : "Toggles closed";
   }
   if (land === T.BTN_BLUE) {
-    // reverse all tanks
     enemies.forEach(e => { if (e.type === "tank") e.dir = (e.dir + 2) % 4; });
     statusEl.textContent = "Tanks reversed!";
   }
@@ -238,7 +213,6 @@ function tryMove(dx, dy) {
     statusEl.textContent = "Traps open!";
   }
   if (land === T.BTN_RED) {
-    // clone from each cloner
     cloners.forEach(cl => {
       const cx = cl.x + DX[cl.dir], cy = cl.y + DY[cl.dir];
       if (inBounds(cx, cy) && !blockAt(cx, cy) && !solidToMonster({type:cl.template,dir:cl.dir}, cx, cy)) {
@@ -248,9 +222,7 @@ function tryMove(dx, dy) {
     statusEl.textContent = "Cloned!";
   }
 
-  // teleport
   if (land === T.TELEPORT && teleporters.length > 1) {
-    // reverse reading order: previous teleport
     const idx = teleporters.findIndex(tp => tp.x === lx && tp.y === ly);
     for (let i = 1; i <= teleporters.length; i++) {
       const tp = teleporters[(idx - i + teleporters.length * 2) % teleporters.length];
@@ -263,12 +235,10 @@ function tryMove(dx, dy) {
     }
   }
 
-  // fire / water death (if somehow)
   const finalT = map[player.y][player.x];
   if (finalT === T.FIRE && !inv.boots.fire) { gameState = "dead"; showScreen(gameOver); return; }
   if (finalT === T.WATER && !inv.boots.flip) { gameState = "dead"; showScreen(gameOver); return; }
 
-  // exit
   if (finalT === T.EXIT) {
     if (chipsCollected >= chipsNeeded) {
       if (customLevel || fromEditor) {
@@ -283,7 +253,6 @@ function tryMove(dx, dy) {
     } else statusEl.textContent = "Need more chips!";
   }
 
-  // monster or block collision (block landing on Joe)
   if (enemies.some(e => e.x === player.x && e.y === player.y) ||
       blocks.some(b => b.x === player.x && b.y === player.y)) {
     gameState = "dead"; showScreen(gameOver);
@@ -341,19 +310,15 @@ function pickMonsterDir(e) {
 }
 
 function updateEnemies(dt) {
-  // iterate copy so we can safely remove
   for (const e of enemies.slice()) {
-    if (!enemies.includes(e)) continue; // already removed
+    if (!enemies.includes(e)) continue;
     e.timer += dt;
     const interval = e.type === "teeth" || e.type === "blob" ? 0.5 : 0.38;
     if (e.timer < interval) continue;
     e.timer = 0;
     e.step++;
 
-    // stuck in closed trap until brown button opens it
     if (isClosedTrap(e.x, e.y)) continue;
-
-    // teeth move every other step
     if (e.type === "teeth" && e.step % 2 === 0) continue;
 
     let d = pickMonsterDir(e);
@@ -369,7 +334,6 @@ function updateEnemies(dt) {
       e.x = nx; e.y = ny;
     }
 
-    // lethal tiles for monsters (CC rules)
     const landT = map[e.y][e.x];
     if (landT === T.BOMB) {
       map[e.y][e.x] = T.FLOOR;
