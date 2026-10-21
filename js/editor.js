@@ -153,14 +153,17 @@ function buildPalette() {
 
 function enterEditor() {
   if (!editMap.length) initEmptyMap(32, 32);
-  COLS = editCols; ROWS = editRows; resizeCanvas();
+  // Set editor state before resize so canvas uses full map size (not 9x9 FOV).
+  gameState = "editor";
+  document.body.classList.add("editor-mode");
+  COLS = editCols;
+  ROWS = editRows;
+  resizeCanvas();
   document.getElementById("editCols").value = editCols;
   document.getElementById("editRows").value = editRows;
   buildPalette();
-  gameState = "editor";
   hideAllScreens();
   editorBar.classList.remove("hidden");
-  document.body.classList.add("editor-mode");
   statusEl.textContent = "Editor";
   levelNumEl.textContent = "Edit";
   levelTotalEl.textContent = "—";
