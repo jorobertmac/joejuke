@@ -35,7 +35,11 @@ var backToEditorWinBtn = document.getElementById("backToEditorWinBtn");
 
 var level = 0;
 var chipsCollected = 0, chipsNeeded = 0;
-var player = { x: 1, y: 1, dir: 0, frame: 0, moving: false, animTimer: 0 };
+var player = {
+  x: 1, y: 1, dir: 0, frame: 0, moving: false, animTimer: 0,
+  sliding: false, slideQueue: [], slideTimer: 0,
+  fromX: 1, fromY: 1
+};
 var enemies = [];
 var map = [];
 var overlay = [];
@@ -158,6 +162,8 @@ function loadLevel(n) {
   customLevel = null; fromEditor = false; level = n;
   parseLevel(LEVELS[n]);
   player.dir = 0; player.frame = 0; player.moving = false;
+  player.sliding = false; player.slideQueue = []; player.slideTimer = 0;
+  player.fromX = player.x; player.fromY = player.y;
   levelNumEl.textContent = n + 1;
   levelTotalEl.textContent = LEVELS.length;
   updateHud();
@@ -173,6 +179,8 @@ function loadCustomLevel(data, testing) {
   customLevel = data; fromEditor = !!testing;
   parseLevel(data.map);
   player.dir = 0; player.frame = 0; player.moving = false;
+  player.sliding = false; player.slideQueue = []; player.slideTimer = 0;
+  player.fromX = player.x; player.fromY = player.y;
   levelNumEl.textContent = testing ? "Test" : "Custom";
   levelTotalEl.textContent = "1";
   updateHud();
@@ -201,10 +209,11 @@ function loop(ts) {
   const dt = Math.min((ts - lastTime) / 1000, 0.05);
   lastTime = ts;
   if (gameState === "play") {
+    if (typeof updateSlide === "function") updateSlide(dt);
     updateEnemies(dt);
     if (player.moving) {
       player.animTimer += dt;
-      if (player.animTimer > 0.35) player.moving = false;
+      if (player.animTimer > 0.35 && !player.sliding) player.moving = false;
     }
   }
   draw();
