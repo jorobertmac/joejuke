@@ -16,6 +16,7 @@
   <script defer src="js/drawing.js"></script>
   <script defer src="js/editor.js"></script>
   <script defer src="game.js"></script>
+  <script defer src="js/keyboard-nav.js"></script>
   <script defer src="js/fov-overrides.js"></script>
   <script>
     window.addEventListener("load", function () {
@@ -46,10 +47,10 @@
     <div id="canvas-wrap">
       <canvas id="canvas" width="640" height="480"></canvas>
       <div id="overlay">
-        <div id="startScreen">
+        <div id="startScreen" role="dialog" aria-label="Start menu">
           <h2>Joe's Juke</h2>
           <p>Help Joe juke past enemies, collect chips and keys, use boots, slide on ice, and reach the exit.</p>
-          <p class="controls">Swipe on the board or use the D-pad</p>
+          <p class="controls">Swipe on the board or use the D-pad · Arrows / Tab to move, Enter to select</p>
           <button id="startBtn" type="button">Start Game</button>
           <button id="editorBtn" type="button" class="secondary">Level Editor</button>
           <button id="importStartBtn" type="button" class="secondary">Import Level</button>
