@@ -118,11 +118,11 @@
         <button id="resizeBtn" type="button" class="small">Apply</button>
       </div>
       <div class="edit-utils" aria-label="Editor utilities">
-        <div class="util-group" title="Zoom map (− / = or Ctrl+wheel)">
-          <button type="button" id="zoomOutBtn" class="small util-btn" aria-label="Zoom out">−</button>
-          <span id="zoomLabel" class="util-label">100%</span>
-          <button type="button" id="zoomInBtn" class="small util-btn" aria-label="Zoom in">+</button>
-          <button type="button" id="zoomResetBtn" class="small util-btn secondary" aria-label="Reset zoom">1:1</button>
+        <div class="util-group" title="View size: − more tiles, + fewer tiles (Shift+wheel)">
+          <button type="button" id="zoomOutBtn" class="small util-btn" aria-label="Show more tiles">−</button>
+          <span id="zoomLabel" class="util-label">32×32</span>
+          <button type="button" id="zoomInBtn" class="small util-btn" aria-label="Show fewer tiles">+</button>
+          <button type="button" id="zoomResetBtn" class="small util-btn secondary" aria-label="Reset view to 32×32">32</button>
         </div>
         <div class="util-group" title="Brush size ([ / ])">
           <span class="util-caption">Brush</span>
@@ -141,7 +141,7 @@
         <button id="clearMapBtn" type="button" class="secondary">Clear</button>
         <button id="exitEditorBtn" type="button" class="secondary">Exit</button>
       </div>
-      <p class="edit-hint">0–9 favorites · Shift+click / drag to fav · [ ] brush · +/− zoom · Alt+click sample · RMB erase</p>
+      <p class="edit-hint">Shift+wheel zoom · MMB drag pan · 0–9 fav · Shift+click fav · [ ] brush · +/− view · Alt sample · RMB erase</p>
     </div>
 
     <div id="dpad" aria-label="Movement controls">
