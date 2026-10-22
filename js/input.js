@@ -31,7 +31,36 @@ window.addEventListener("keydown", function (e) {
   if (gameState === "editor") {
     // Arrow/Enter palette nav is handled by keyboard-nav.js (capture phase)
     var k = e.key;
-    if (ALL_CHARS.includes(k)) {
+    // 0–9: favorites (digits reserved; no longer select digit-char tiles by key)
+    if (k >= "0" && k <= "9") {
+      e.preventDefault();
+      if (typeof selectFavorite === "function") selectFavorite(parseInt(k, 10));
+      return;
+    }
+    // Brush size: [ smaller, ] larger
+    if (k === "[") {
+      e.preventDefault();
+      if (typeof cycleBrushSize === "function") cycleBrushSize(-1);
+      return;
+    }
+    if (k === "]") {
+      e.preventDefault();
+      if (typeof cycleBrushSize === "function") cycleBrushSize(1);
+      return;
+    }
+    // Zoom: - / = (or +)
+    if (k === "-" || k === "_") {
+      e.preventDefault();
+      if (typeof zoomOut === "function") zoomOut();
+      return;
+    }
+    if (k === "=" || k === "+") {
+      e.preventDefault();
+      if (typeof zoomIn === "function") zoomIn();
+      return;
+    }
+    // Letter/symbol palette shortcuts (not digits)
+    if (ALL_CHARS.includes(k) && !(k >= "0" && k <= "9")) {
       selectPaletteTile(k);
     }
     return;
@@ -58,8 +87,22 @@ document.querySelectorAll(".dpad-btn").forEach(function (btn) {
 
 function onTouchStart(e) {
   if (gameState === "editor") {
-    painting = true;
     var t = e.changedTouches ? e.changedTouches[0] : e;
+    // Alt / Option = eyedropper; right-click = erase to floor
+    if (e.altKey && typeof eyedropAt === "function") {
+      eyedropAt(t.clientX, t.clientY);
+      e.preventDefault();
+      return;
+    }
+    if (e.button === 2) {
+      var prev = selectedTile;
+      selectedTile = ".";
+      paintAt(t.clientX, t.clientY);
+      selectedTile = prev;
+      e.preventDefault();
+      return;
+    }
+    painting = true;
     paintAt(t.clientX, t.clientY);
     e.preventDefault();
     return;
