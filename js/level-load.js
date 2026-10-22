@@ -128,6 +128,7 @@ function loadLevel(n) {
   backToEditorBtn.classList.add("hidden");
   backToEditorWinBtn.classList.add("hidden");
   document.body.classList.remove("editor-mode");
+  if (typeof applyEditZoom === "function") applyEditZoom();
   if (typeof setPauseBtnVisible === "function") setPauseBtnVisible(true);
 }
 
@@ -152,5 +153,6 @@ function loadCustomLevel(data, testing) {
     backToEditorWinBtn.classList.add("hidden");
   }
   document.body.classList.remove("editor-mode");
+  if (typeof applyEditZoom === "function") applyEditZoom();
   if (typeof setPauseBtnVisible === "function") setPauseBtnVisible(true);
 }
