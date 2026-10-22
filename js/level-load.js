@@ -7,10 +7,9 @@ function resizeCanvas() {
   var inEditor = (gameState === "editor") ||
     (document.body && document.body.classList.contains("editor-mode"));
   if (inEditor) {
-    var w = (typeof editCols === "number" && editCols > 0) ? editCols : COLS;
-    var h = (typeof editRows === "number" && editRows > 0) ? editRows : ROWS;
-    canvas.width = Math.max(1, w) * TILE;
-    canvas.height = Math.max(1, h) * TILE;
+    var vs = (typeof editViewSize === "number" && editViewSize > 0) ? editViewSize : 32;
+    canvas.width = Math.max(1, vs) * TILE;
+    canvas.height = Math.max(1, vs) * TILE;
   } else {
     canvas.width = ((typeof VIEW_COLS === "number") ? VIEW_COLS : 9) * TILE;
     canvas.height = ((typeof VIEW_ROWS === "number") ? VIEW_ROWS : 9) * TILE;
