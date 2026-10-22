@@ -1,41 +1,78 @@
 /**
- * Joe's Juke — editor utilities: zoom, brush size, favorites (0–9)
+ * Joe's Juke — editor utilities: tile viewport zoom/pan, brush, favorites (0–9)
+ * Zoom changes displayed tile count (8…100 by 4); on-screen map footprint stays fixed.
  */
 "use strict";
 
-var EDIT_ZOOM_MIN = 0.5;
-var EDIT_ZOOM_MAX = 2;
-var EDIT_ZOOM_STEP = 0.25;
+var EDIT_VIEW_MIN = 8;
+var EDIT_VIEW_MAX = 100;
+var EDIT_VIEW_STEP = 4;
+var EDIT_VIEW_DEFAULT = 32;
 var BRUSH_SIZES = [1, 3, 5];
 
-function clampEditZoom(z) {
-  z = Math.round(z / EDIT_ZOOM_STEP) * EDIT_ZOOM_STEP;
-  return Math.max(EDIT_ZOOM_MIN, Math.min(EDIT_ZOOM_MAX, z));
+function clampEditViewSize(n) {
+  n = Math.round(n / EDIT_VIEW_STEP) * EDIT_VIEW_STEP;
+  return Math.max(EDIT_VIEW_MIN, Math.min(EDIT_VIEW_MAX, n));
+}
+
+function clampEditCam() {
+  var vs = editViewSize || EDIT_VIEW_DEFAULT;
+  var cols = editCols || 32;
+  var rows = editRows || 32;
+  if (cols <= vs) editCamX = Math.floor((cols - vs) / 2);
+  else editCamX = Math.max(0, Math.min(cols - vs, editCamX | 0));
+  if (rows <= vs) editCamY = Math.floor((rows - vs) / 2);
+  else editCamY = Math.max(0, Math.min(rows - vs, editCamY | 0));
 }
 
 function applyEditZoom() {
   var wrap = document.getElementById("canvas-wrap");
-  if (!wrap) return;
-  if (typeof gameState !== "undefined" && gameState === "editor") {
-    wrap.style.transform = "scale(" + editZoom + ")";
-    wrap.style.transformOrigin = "top center";
-  } else {
+  if (wrap) {
     wrap.style.transform = "";
     wrap.style.transformOrigin = "";
   }
+  if (typeof gameState !== "undefined" && gameState === "editor") {
+    editViewSize = clampEditViewSize(editViewSize || EDIT_VIEW_DEFAULT);
+    clampEditCam();
+    if (typeof resizeCanvas === "function") resizeCanvas();
+  }
   var label = document.getElementById("zoomLabel");
-  if (label) label.textContent = Math.round(editZoom * 100) + "%";
+  if (label) label.textContent = editViewSize + "×" + editViewSize;
 }
 
-function setEditZoom(z) {
-  editZoom = clampEditZoom(z);
+function setEditViewSize(n, anchorClientX, anchorClientY) {
+  var old = editViewSize;
+  var next = clampEditViewSize(n);
+  if (next === old) {
+    applyEditZoom();
+    return;
+  }
+  var ax = editCamX + Math.floor(old / 2);
+  var ay = editCamY + Math.floor(old / 2);
+  if (anchorClientX != null && typeof canvasToTile === "function" && canvas) {
+    var t = canvasToTile(anchorClientX, anchorClientY);
+    if (t && !isNaN(t.x) && !isNaN(t.y)) {
+      ax = t.x;
+      ay = t.y;
+    }
+  }
+  editViewSize = next;
+  editCamX = ax - Math.floor(next / 2);
+  editCamY = ay - Math.floor(next / 2);
+  clampEditCam();
   applyEditZoom();
-  if (statusEl) statusEl.textContent = "Zoom " + Math.round(editZoom * 100) + "%";
+  if (statusEl) statusEl.textContent = "View " + editViewSize + "×" + editViewSize;
 }
 
-function zoomIn() { setEditZoom(editZoom + EDIT_ZOOM_STEP); }
-function zoomOut() { setEditZoom(editZoom - EDIT_ZOOM_STEP); }
-function zoomReset() { setEditZoom(1); }
+function zoomIn(ax, ay) {
+  setEditViewSize(editViewSize - EDIT_VIEW_STEP, ax, ay);
+}
+function zoomOut(ax, ay) {
+  setEditViewSize(editViewSize + EDIT_VIEW_STEP, ax, ay);
+}
+function zoomReset() {
+  setEditViewSize(EDIT_VIEW_DEFAULT);
+}
 
 function setBrushSize(n) {
   n = parseInt(n, 10);
@@ -56,7 +93,6 @@ function cycleBrushSize(dir) {
   setBrushSize(BRUSH_SIZES[i]);
 }
 
-/** Paint selectedTile in a brushSize×brushSize block centered on (cx, cy). */
 function paintBrushAt(cx, cy) {
   if (gameState !== "editor") return;
   var half = Math.floor(brushSize / 2);
@@ -102,10 +138,6 @@ function loadFavorites() {
   } catch (_) {}
 }
 
-/**
- * Shift+click on palette: remove if already a favorite; else add to first empty.
- * No-op if full and not already stored.
- */
 function toggleFavoriteFromPalette(ch) {
   if (!ALL_CHARS.includes(ch)) return;
   var idx = favoriteSlotOf(ch);
@@ -201,10 +233,38 @@ function eyedropAt(clientX, clientY) {
   if (statusEl) statusEl.textContent = "Eyedrop: " + (TILE_LABELS[ch] || ch);
 }
 
+function startEditPan(clientX, clientY) {
+  editPanning = true;
+  editPanStartX = clientX;
+  editPanStartY = clientY;
+  editPanCamX = editCamX;
+  editPanCamY = editCamY;
+  if (canvas) canvas.style.cursor = "grabbing";
+}
+
+function moveEditPan(clientX, clientY) {
+  if (!editPanning || !canvas) return;
+  var rect = canvas.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+  var vs = editViewSize || EDIT_VIEW_DEFAULT;
+  var dxTiles = ((clientX - editPanStartX) / rect.width) * vs;
+  var dyTiles = ((clientY - editPanStartY) / rect.height) * vs;
+  editCamX = Math.round(editPanCamX - dxTiles);
+  editCamY = Math.round(editPanCamY - dyTiles);
+  clampEditCam();
+}
+
+function endEditPan() {
+  if (!editPanning) return;
+  editPanning = false;
+  if (canvas) canvas.style.cursor = "";
+}
+
 function initEditUtils() {
   loadFavorites();
   renderFavoritesBar();
   setBrushSize(brushSize);
+  editViewSize = clampEditViewSize(editViewSize || EDIT_VIEW_DEFAULT);
   applyEditZoom();
 
   var zin = document.getElementById("zoomInBtn");
@@ -222,14 +282,35 @@ function initEditUtils() {
   });
 
   var wrap = document.getElementById("canvas-wrap");
-  if (wrap) {
-    wrap.addEventListener("wheel", function (e) {
+  var target = wrap || canvas;
+  if (target) {
+    target.addEventListener("wheel", function (e) {
       if (gameState !== "editor") return;
-      if (!(e.ctrlKey || e.metaKey)) return;
+      if (!(e.shiftKey || e.ctrlKey || e.metaKey)) return;
       e.preventDefault();
-      if (e.deltaY < 0) zoomIn();
-      else zoomOut();
+      if (e.deltaY < 0) zoomIn(e.clientX, e.clientY);
+      else zoomOut(e.clientX, e.clientY);
     }, { passive: false });
+
+    target.addEventListener("mousedown", function (e) {
+      if (gameState !== "editor") return;
+      if (e.button === 1) {
+        e.preventDefault();
+        startEditPan(e.clientX, e.clientY);
+      }
+    });
+    window.addEventListener("mousemove", function (e) {
+      if (editPanning) {
+        e.preventDefault();
+        moveEditPan(e.clientX, e.clientY);
+      }
+    });
+    window.addEventListener("mouseup", function (e) {
+      if (e.button === 1 || editPanning) endEditPan();
+    });
+    target.addEventListener("auxclick", function (e) {
+      if (gameState === "editor" && e.button === 1) e.preventDefault();
+    });
   }
 }
 
