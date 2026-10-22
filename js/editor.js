@@ -93,10 +93,6 @@ function setEditChar(x, y, ch) {
   editMap[y] = editMap[y].substring(0, x) + ch + editMap[y].substring(x + 1);
 }
 
-/**
- * Palette shortcut labels. Digits 0–9 are reserved for Favorites,
- * so tiles whose map char is a digit show no key hint.
- */
 function paletteKeyLabel(ch) {
   if (ch === " ") return "Sp";
   if (ch >= "0" && ch <= "9") return "";
@@ -180,7 +176,6 @@ function buildPalette() {
 
 function enterEditor() {
   if (!editMap.length) initEmptyMap(32, 32);
-  // Set editor state before resize so canvas uses full map size (not 9x9 FOV).
   gameState = "editor";
   document.body.classList.add("editor-mode");
   COLS = editCols;
@@ -189,13 +184,17 @@ function enterEditor() {
   document.getElementById("editCols").value = editCols;
   document.getElementById("editRows").value = editRows;
   buildPalette();
+  if (typeof editViewSize !== "number" || editViewSize < 8) editViewSize = 32;
+  editCamX = 0;
+  editCamY = 0;
   if (typeof renderFavoritesBar === "function") renderFavoritesBar();
   if (typeof applyEditZoom === "function") applyEditZoom();
+  else resizeCanvas();
   if (typeof setBrushSize === "function") setBrushSize(brushSize);
   hideAllScreens();
   editorBar.classList.remove("hidden");
   if (typeof setPauseBtnVisible === "function") setPauseBtnVisible(false);
-  statusEl.textContent = "Editor — 0–9 favorites · [ ] brush · +/- zoom · Shift+click fav · Esc menu";
+  statusEl.textContent = "Editor — Shift+wheel zoom · MMB pan · 0–9 fav · [ ] brush · Esc menu";
   levelNumEl.textContent = "Edit";
   levelTotalEl.textContent = "—";
   var activeBtn = document.querySelector("#palette .palette-btn.active");
@@ -206,9 +205,11 @@ function enterEditor() {
 function canvasToTile(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+  var ox = (typeof editCamX === "number") ? editCamX : 0;
+  var oy = (typeof editCamY === "number") ? editCamY : 0;
   return {
-    x: Math.floor(((clientX - rect.left) * scaleX) / TILE),
-    y: Math.floor(((clientY - rect.top) * scaleY) / TILE)
+    x: Math.floor(((clientX - rect.left) * scaleX) / TILE) + ox,
+    y: Math.floor(((clientY - rect.top) * scaleY) / TILE) + oy
   };
 }
 function paintAt(clientX, clientY) {
