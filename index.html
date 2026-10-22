@@ -18,6 +18,7 @@
   <script defer src="js/state.js"></script>
   <script defer src="js/level-load.js"></script>
   <script defer src="js/editor.js"></script>
+  <script defer src="js/edit-utils.js"></script>
   <script defer src="js/input.js"></script>
   <script defer src="js/ui.js"></script>
   <script defer src="js/import-export.js"></script>
@@ -48,16 +49,16 @@
       <span class="hud-level">Lv <strong id="levelNum">1</strong>/<span id="levelTotal">30</span></span>
       <span class="hud-chips">Chips <strong id="chipCount">0</strong>/<span id="chipsNeededDisplay">0</span></span>
       <span id="invDisplay" class="hud-inv" title="Keys & boots"></span>
+      <button type="button" id="pauseBtn" class="hud-pause" aria-label="Pause" title="Pause (Space / Esc)">❚❚</button>
       <span id="status">Swipe or use D-pad</span>
-      <button type="button" id="pauseBtn" class="hud-pause hidden" title="Pause (Space / Esc)" aria-label="Pause">❚❚</button>
     </div>
     <div id="canvas-wrap">
       <canvas id="canvas" width="640" height="480"></canvas>
       <div id="overlay">
-        <div id="startScreen" role="dialog" aria-label="Start menu">
+        <div id="startScreen">
           <h2>Joe's Juke</h2>
           <p>Help Joe juke past enemies, collect chips and keys, use boots, slide on ice, and reach the exit.</p>
-          <p class="controls">Swipe or D-pad · Space / Esc pause · Arrows / Tab menus, Enter select</p>
+          <p class="controls">Swipe on the board or use the D-pad</p>
           <button id="startBtn" type="button">Start Game</button>
           <button id="editorBtn" type="button" class="secondary">Level Editor</button>
           <button id="importStartBtn" type="button" class="secondary">Import Level</button>
@@ -115,6 +116,22 @@
         <label>H <input type="number" id="editRows" min="5" max="100" value="32" inputmode="numeric"></label>
         <button id="resizeBtn" type="button" class="small">Apply</button>
       </div>
+      <div class="edit-utils" aria-label="Editor utilities">
+        <div class="util-group" title="Zoom map (− / = or Ctrl+wheel)">
+          <button type="button" id="zoomOutBtn" class="small util-btn" aria-label="Zoom out">−</button>
+          <span id="zoomLabel" class="util-label">100%</span>
+          <button type="button" id="zoomInBtn" class="small util-btn" aria-label="Zoom in">+</button>
+          <button type="button" id="zoomResetBtn" class="small util-btn secondary" aria-label="Reset zoom">1:1</button>
+        </div>
+        <div class="util-group" title="Brush size ([ / ])">
+          <span class="util-caption">Brush</span>
+          <button type="button" class="small brush-btn active" data-size="1">1×1</button>
+          <button type="button" class="small brush-btn" data-size="3">3×3</button>
+          <button type="button" class="small brush-btn" data-size="5">5×5</button>
+          <span id="brushLabel" class="util-label hidden">1×1</span>
+        </div>
+      </div>
+      <div id="favoritesBar" class="favorites-bar" aria-label="Favorite tiles 0–9"></div>
       <div id="palette" class="palette"></div>
       <div class="editor-actions">
         <button id="testLevelBtn" type="button">Test</button>
@@ -123,6 +140,7 @@
         <button id="clearMapBtn" type="button" class="secondary">Clear</button>
         <button id="exitEditorBtn" type="button" class="secondary">Exit</button>
       </div>
+      <p class="edit-hint">0–9 favorites · Shift+click / drag to fav · [ ] brush · +/− zoom · Alt+click sample · RMB erase</p>
     </div>
 
     <div id="dpad" aria-label="Movement controls">
