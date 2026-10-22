@@ -1,0 +1,108 @@
+/* —— Editor utilities: zoom, brush, favorites —— */
+.edit-utils {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.util-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.util-caption {
+  font-size: clamp(0.32rem, 1.8vw, 0.4rem);
+  color: #a0a0c0;
+  margin-right: 0.15rem;
+}
+.util-label {
+  min-width: 2.4rem;
+  text-align: center;
+  font-size: clamp(0.32rem, 1.8vw, 0.4rem);
+  color: #4ecca3;
+}
+.util-btn, .brush-btn {
+  min-width: 1.6rem;
+  padding: 0.25rem 0.4rem;
+  font-size: clamp(0.32rem, 1.8vw, 0.4rem);
+}
+.brush-btn.active {
+  background: #3db892;
+  border-color: #4ecca3;
+  color: #0f0f1a;
+}
+.favorites-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: center;
+  width: 100%;
+  padding: 0.2rem 0;
+}
+.fav-slot {
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f0f1a;
+  border: 2px solid #0f3460;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #c0c0e0;
+}
+.fav-slot.empty {
+  border-style: dashed;
+  opacity: 0.75;
+}
+.fav-slot.drag-over {
+  border-color: #4ecca3;
+  box-shadow: 0 0 0 2px rgba(78, 204, 163, 0.35);
+}
+.fav-slot.active {
+  border-color: #4ecca3;
+}
+.fav-key {
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  font-size: 0.28rem;
+  color: #7dffc4;
+  line-height: 1;
+  pointer-events: none;
+}
+.fav-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+.fav-fallback, .fav-empty {
+  font-size: 0.55rem;
+  line-height: 1;
+}
+.edit-hint {
+  margin: 0;
+  font-size: clamp(0.28rem, 1.5vw, 0.35rem);
+  color: #6a6a8a;
+  text-align: center;
+  line-height: 1.35;
+  max-width: 100%;
+}
+#canvas-wrap {
+  transition: transform 0.12s ease-out;
+}
+@media (max-width: 480px) {
+  .fav-slot {
+    width: 1.85rem;
+    height: 1.85rem;
+  }
+  .fav-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+}
