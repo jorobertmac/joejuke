@@ -58,6 +58,10 @@ var inv = { keys: {b:0,r:0,g:0,y:0}, boots: {flip:false, fire:false, ice:false, 
 var editMap = [], editCols = 32, editRows = 32, selectedTile = "W", painting = false;
 var touchStartX = 0, touchStartY = 0, touchActive = false;
 var SWIPE_THRESHOLD = 24;
+/** Editor utilities: brush 1/3/5, zoom 0.5–2, favorites slots 0–9. */
+var brushSize = 1;
+var editZoom = 1;
+var favorites = [null, null, null, null, null, null, null, null, null, null];
 
 /** Refresh chips count and key/boot symbols in the HUD. */
 function updateHud() {
