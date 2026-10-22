@@ -58,10 +58,15 @@ var inv = { keys: {b:0,r:0,g:0,y:0}, boots: {flip:false, fire:false, ice:false, 
 var editMap = [], editCols = 32, editRows = 32, selectedTile = "W", painting = false;
 var touchStartX = 0, touchStartY = 0, touchActive = false;
 var SWIPE_THRESHOLD = 24;
-/** Editor utilities: brush 1/3/5, zoom 0.5–2, favorites slots 0–9. */
+/** Editor utilities: brush 1/3/5, tile-viewport zoom (8–100 step 4), pan, favorites 0–9. */
 var brushSize = 1;
-var editZoom = 1;
+var editViewSize = 32;
+var editCamX = 0;
+var editCamY = 0;
+var editZoom = 1; // legacy alias; real zoom is editViewSize
 var favorites = [null, null, null, null, null, null, null, null, null, null];
+var editPanning = false;
+var editPanStartX = 0, editPanStartY = 0, editPanCamX = 0, editPanCamY = 0;
 
 /** Refresh chips count and key/boot symbols in the HUD. */
 function updateHud() {
