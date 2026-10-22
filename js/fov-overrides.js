@@ -1,6 +1,6 @@
 /**
  * FOV + editor size safety net (load after game.js).
- * Ensures 9×9 play FOV and full-map editor even if game.js is an older build.
+ * Ensures 9×9 play FOV; editor uses tile viewport (editViewSize).
  */
 "use strict";
 
@@ -8,10 +8,9 @@ function resizeCanvas() {
   var inEditor = (gameState === "editor") ||
     (document.body && document.body.classList.contains("editor-mode"));
   if (inEditor) {
-    var w = (typeof editCols === "number" && editCols > 0) ? editCols : COLS;
-    var h = (typeof editRows === "number" && editRows > 0) ? editRows : ROWS;
-    canvas.width = Math.max(1, w) * TILE;
-    canvas.height = Math.max(1, h) * TILE;
+    var vs = (typeof editViewSize === "number" && editViewSize > 0) ? editViewSize : 32;
+    canvas.width = Math.max(1, vs) * TILE;
+    canvas.height = Math.max(1, vs) * TILE;
   } else {
     canvas.width = ((typeof VIEW_COLS === "number") ? VIEW_COLS : 9) * TILE;
     canvas.height = ((typeof VIEW_ROWS === "number") ? VIEW_ROWS : 9) * TILE;
@@ -34,7 +33,6 @@ function getCamera() {
   return { camX: camX, camY: camY };
 }
 
-// After loadLevel / loadCustomLevel, force FOV canvas size
 (function wrapLoaders() {
   if (typeof loadLevel === "function") {
     var _loadLevel = loadLevel;
@@ -54,12 +52,12 @@ function getCamera() {
     var _enterEditor = enterEditor;
     enterEditor = function () {
       _enterEditor();
-      // enterEditor should set editor state then resize; reinforce full-map size
       gameState = "editor";
       if (document.body) document.body.classList.add("editor-mode");
       COLS = editCols;
       ROWS = editRows;
-      resizeCanvas();
+      if (typeof applyEditZoom === "function") applyEditZoom();
+      else resizeCanvas();
     };
   }
 })();
