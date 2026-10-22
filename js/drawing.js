@@ -195,11 +195,19 @@ function drawEnemy(e, px, py) {
 
 function drawMapTiles(useEdit, camX, camY) {
   if (useEdit) {
-    const rows = editRows, cols = editCols;
-    for (let y = 0; y < rows; y++) {
-      for (let x = 0; x < cols; x++) {
-        const px = x * TILE, py = y * TILE;
-        const ch = (editMap[y] && editMap[y][x]) || ".";
+    var vs = (typeof editViewSize === "number" && editViewSize > 0) ? editViewSize : 32;
+    var ox = (typeof editCamX === "number") ? editCamX : 0;
+    var oy = (typeof editCamY === "number") ? editCamY : 0;
+    for (let vy = 0; vy < vs; vy++) {
+      for (let vx = 0; vx < vs; vx++) {
+        const x = ox + vx, y = oy + vy;
+        const px = vx * TILE, py = vy * TILE;
+        if (y < 0 || y >= editRows || x < 0 || x >= editCols || !editMap[y]) {
+          ctx.fillStyle = "#0a0a14";
+          ctx.fillRect(px, py, TILE, TILE);
+          continue;
+        }
+        const ch = editMap[y][x] || ".";
         if (CH[ch] !== undefined) drawTerrain(CH[ch], px, py);
         else if (MONSTER_CHARS[ch]) {
           drawTerrain(T.FLOOR, px, py);
