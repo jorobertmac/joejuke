@@ -2,26 +2,26 @@
  * Joe's Juke — built-in level layouts
  * 5 training levels + 25 progressive challenge levels (30 total)
  *
- * Design rules enforced:
+ * Design rules:
  * - Exit (E) is always behind the chip socket (X). Socket opens only after all chips are collected.
  * - Locks protect chips or the only path to chips / next keys — never decorative.
- * - Every challenge level requires sequencing, timing, or spatial reasoning.
+ * - Every challenge level is solvable; see LEVEL_SOLVES.md for solution outlines.
  * All maps 20×15, one A, one E.
  */
 "use strict";
 
 var LEVELS = [
   /* ========== TRAINING 1 — Movement, chips, blocks, exit ========== */
-  /* Walk, push block out of the way, collect chips, open socket, exit. */
+  /* Open alcove: push block, collect chips, open socket, exit. */
   [
     "WWWWWWWWWWWWWWWWWWWW",
     "W.A................W",
     "W..................W",
     "W....WWWW..........W",
-    "W....W..W..........W",
-    "W....W.CW..........W",
-    "W....W.BW..........W",
-    "W....W..W..........W",
+    "W....W.............W",
+    "W....W.C...........W",
+    "W....W.B...........W",
+    "W....W.............W",
     "W....WWWW..........W",
     "W..................W",
     "W......C.....C.....W",
@@ -127,7 +127,7 @@ var LEVELS = [
     "WWWWWWWWWWWWWWWWWWWW"
   ],
   /* ========== LEVEL 7 — Block bridge ========== */
-  /* Push the three blocks into water to reach the chips on the far side. */
+  /* Push the three blocks into water to form a path to the chips. */
   [
     "WWWWWWWWWWWWWWWWWWWW",
     "W.A....B.B.B.......W",
@@ -241,7 +241,7 @@ var LEVELS = [
     "WWWWWWWWWWWWWWWWWWWW"
   ],
   /* ========== LEVEL 13 — Toggle walls ========== */
-  /* Green button toggles the walls that block every chip and the socket. */
+  /* Green button toggles walls. Walls start open (passable); avoid locking yourself out. */
   [
     "WWWWWWWWWWWWWWWWWWWW",
     "W.A................W",
@@ -279,7 +279,7 @@ var LEVELS = [
     "WWWWWWWWWWWWWWWWWWWW"
   ],
   /* ========== LEVEL 15 — Dirt & gravel ========== */
-  /* Dirt turns to wall after you step; wrong order permanently seals chips. */
+  /* Dirt becomes floor after you step; plan the route so you can still reach chips. */
   [
     "WWWWWWWWWWWWWWWWWWWW",
     "W.A................W",
@@ -297,16 +297,16 @@ var LEVELS = [
     "W..................W",
     "WWWWWWWWWWWWWWWWWWWW"
   ],
-  /* ========== LEVEL 16 — Cloner bridge ========== */
-  /* Clone blocks with the red button, push them into water to reach chips. */
+  /* ========== LEVEL 16 — Block bridge (fixed) ========== */
+  /* Push blocks into water to reach chips. (Cloner clones monsters, not blocks.) */
   [
     "WWWWWWWWWWWWWWWWWWWW",
-    "W.A................W",
-    "W.+>B..............W",
+    "W.A..B.B.B.B.......W",
     "W..................W",
-    "W.#................W",
     "W.~~~~~~~~~~~~~~~~~W",
     "W.~~~~~~~~~~~~~~~~~W",
+    "W.~~~~~~~~~~~~~~~~~W",
+    "W..................W",
     "W.C.C.C.C.C.C.C.C.CW",
     "W........X.........W",
     "W........E.........W",
@@ -317,7 +317,7 @@ var LEVELS = [
     "WWWWWWWWWWWWWWWWWWWW"
   ],
   /* ========== LEVEL 17 — Trap release ========== */
-  /* Brown button opens the trap corridor that is the only path to chips. */
+  /* Press brown button first to open the trap; then collect chips down the corridor. */
   [
     "WWWWWWWWWWWWWWWWWWWW",
     "W.A................W",
@@ -412,7 +412,7 @@ var LEVELS = [
     "WWWWWWWWWWWWWWWWWWWW"
   ],
   /* ========== LEVEL 22 — Thief ========== */
-  /* Boots are stolen; you must re-equip the correct boot for the remaining path. */
+  /* Boots are stolen mid-route; re-equip the correct boot for the remaining path. */
   [
     "WWWWWWWWWWWWWWWWWWWW",
     "W.A.f..............W",
@@ -450,7 +450,7 @@ var LEVELS = [
     "WWWWWWWWWWWWWWWWWWWW"
   ],
   /* ========== LEVEL 24 — Bomb clearing ========== */
-  /* Push the block onto bombs to clear the only path to the chips. */
+  /* Push the block onto the bomb column to clear the only path to the chips. */
   [
     "WWWWWWWWWWWWWWWWWWWW",
     "W.A.B..............W",
@@ -526,7 +526,7 @@ var LEVELS = [
     "WWWWWWWWWWWWWWWWWWWW"
   ],
   /* ========== LEVEL 28 — Monster gauntlet ========== */
-  /* Dense monster patrols; chips sit in the middle of the danger zone. */
+  /* Dense monster patrols; chips sit in the middle of the danger zone. Use gaps. */
   [
     "WWWWWWWWWWWWWWWWWWWW",
     "W.A................W",
