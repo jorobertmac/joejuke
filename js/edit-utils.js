@@ -1,14 +1,13 @@
 /**
- * Joe's Juke — editor utilities: tile viewport zoom/pan, brush, favorites (0–9)
- * Zoom changes displayed tile count (8…100 by 4); on-screen map footprint stays fixed.
+ * Joe's Juke — editor utilities (zoom, brush, favorites, layers, pan)
  */
 "use strict";
 
+var BRUSH_SIZES = [1, 3, 5];
 var EDIT_VIEW_MIN = 8;
 var EDIT_VIEW_MAX = 100;
 var EDIT_VIEW_STEP = 4;
 var EDIT_VIEW_DEFAULT = 32;
-var BRUSH_SIZES = [1, 3, 5];
 
 function clampEditViewSize(n) {
   n = Math.round(n / EDIT_VIEW_STEP) * EDIT_VIEW_STEP;
@@ -17,61 +16,40 @@ function clampEditViewSize(n) {
 
 function clampEditCam() {
   var vs = editViewSize || EDIT_VIEW_DEFAULT;
-  var cols = editCols || 32;
-  var rows = editRows || 32;
-  if (cols <= vs) editCamX = Math.floor((cols - vs) / 2);
-  else editCamX = Math.max(0, Math.min(cols - vs, editCamX | 0));
-  if (rows <= vs) editCamY = Math.floor((rows - vs) / 2);
-  else editCamY = Math.max(0, Math.min(rows - vs, editCamY | 0));
+  var maxX = Math.max(0, editCols - vs);
+  var maxY = Math.max(0, editRows - vs);
+  editCamX = Math.max(0, Math.min(maxX, editCamX | 0));
+  editCamY = Math.max(0, Math.min(maxY, editCamY | 0));
 }
 
 function applyEditZoom() {
-  var wrap = document.getElementById("canvas-wrap");
-  if (wrap) {
-    wrap.style.transform = "";
-    wrap.style.transformOrigin = "";
-  }
-  if (typeof gameState !== "undefined" && gameState === "editor") {
-    editViewSize = clampEditViewSize(editViewSize || EDIT_VIEW_DEFAULT);
-    clampEditCam();
-    if (typeof resizeCanvas === "function") resizeCanvas();
-  }
-  var label = document.getElementById("zoomLabel");
-  if (label) label.textContent = editViewSize + "×" + editViewSize;
-}
-
-function setEditViewSize(n, anchorClientX, anchorClientY) {
-  var old = editViewSize;
-  var next = clampEditViewSize(n);
-  if (next === old) {
-    applyEditZoom();
-    return;
-  }
-  var ax = editCamX + Math.floor(old / 2);
-  var ay = editCamY + Math.floor(old / 2);
-  if (anchorClientX != null && typeof canvasToTile === "function" && canvas) {
-    var t = canvasToTile(anchorClientX, anchorClientY);
-    if (t && !isNaN(t.x) && !isNaN(t.y)) {
-      ax = t.x;
-      ay = t.y;
-    }
-  }
-  editViewSize = next;
-  editCamX = ax - Math.floor(next / 2);
-  editCamY = ay - Math.floor(next / 2);
+  editViewSize = clampEditViewSize(editViewSize || EDIT_VIEW_DEFAULT);
   clampEditCam();
-  applyEditZoom();
-  if (statusEl) statusEl.textContent = "View " + editViewSize + "×" + editViewSize;
+  var lab = document.getElementById("zoomLabel");
+  if (lab) lab.textContent = editViewSize + "×" + editViewSize;
+  if (typeof resizeCanvas === "function") resizeCanvas();
 }
 
-function zoomIn(ax, ay) {
-  setEditViewSize(editViewSize - EDIT_VIEW_STEP, ax, ay);
+function zoomIn(cx, cy) {
+  if (gameState !== "editor") return;
+  var old = editViewSize;
+  editViewSize = clampEditViewSize(editViewSize - EDIT_VIEW_STEP);
+  if (editViewSize === old) return;
+  applyEditZoom();
 }
-function zoomOut(ax, ay) {
-  setEditViewSize(editViewSize + EDIT_VIEW_STEP, ax, ay);
+
+function zoomOut(cx, cy) {
+  if (gameState !== "editor") return;
+  var old = editViewSize;
+  editViewSize = clampEditViewSize(editViewSize + EDIT_VIEW_STEP);
+  if (editViewSize === old) return;
+  applyEditZoom();
 }
+
 function zoomReset() {
-  setEditViewSize(EDIT_VIEW_DEFAULT);
+  editViewSize = EDIT_VIEW_DEFAULT;
+  editCamX = 0; editCamY = 0;
+  applyEditZoom();
 }
 
 function setBrushSize(n) {
@@ -81,9 +59,8 @@ function setBrushSize(n) {
   document.querySelectorAll(".brush-btn").forEach(function (b) {
     b.classList.toggle("active", parseInt(b.dataset.size, 10) === brushSize);
   });
-  var bl = document.getElementById("brushLabel");
-  if (bl) bl.textContent = brushSize + "×" + brushSize;
-  if (statusEl) statusEl.textContent = "Brush " + brushSize + "×" + brushSize;
+  var lab = document.getElementById("brushLabel");
+  if (lab) lab.textContent = brushSize + "×" + brushSize;
 }
 
 function cycleBrushSize(dir) {
@@ -119,10 +96,25 @@ function setFavorite(slot, ch) {
   if (slot < 0 || slot > 9) return;
   if (ch != null && !ALL_CHARS.includes(ch)) return;
   favorites[slot] = ch == null ? null : ch;
+  saveFavorites();
   renderFavoritesBar();
-  try {
-    localStorage.setItem("joejuke_favorites", JSON.stringify(favorites));
-  } catch (_) {}
+}
+
+function selectFavorite(slot) {
+  slot = slot | 0;
+  if (slot < 0 || slot > 9) return;
+  var ch = favorites[slot];
+  if (ch == null) return;
+  if (typeof selectPaletteTile === "function") selectPaletteTile(ch);
+}
+
+function toggleFavoriteFromPalette(ch) {
+  var slot = favoriteSlotOf(ch);
+  if (slot >= 0) setFavorite(slot, null);
+  else {
+    var empty = firstEmptyFavorite();
+    if (empty >= 0) setFavorite(empty, ch);
+  }
 }
 
 function loadFavorites() {
@@ -132,54 +124,15 @@ function loadFavorites() {
     var arr = JSON.parse(raw);
     if (!Array.isArray(arr)) return;
     for (var i = 0; i < 10; i++) {
-      var v = arr[i];
-      favorites[i] = (v != null && ALL_CHARS.includes(v)) ? v : null;
+      favorites[i] = (arr[i] && ALL_CHARS.includes(arr[i])) ? arr[i] : null;
     }
-  } catch (_) {}
+  } catch (e) {}
 }
 
-function toggleFavoriteFromPalette(ch) {
-  if (!ALL_CHARS.includes(ch)) return;
-  var idx = favoriteSlotOf(ch);
-  if (idx >= 0) {
-    setFavorite(idx, null);
-    if (statusEl) statusEl.textContent = "Removed from favorites";
-    return;
-  }
-  var empty = firstEmptyFavorite();
-  if (empty < 0) {
-    if (statusEl) statusEl.textContent = "Favorites full (0–9)";
-    return;
-  }
-  setFavorite(empty, ch);
-  if (statusEl) statusEl.textContent = "Favorite " + empty + ": " + (TILE_LABELS[ch] || ch);
-}
-
-function selectFavorite(slot) {
-  slot = slot | 0;
-  if (slot < 0 || slot > 9) return;
-  var ch = favorites[slot];
-  if (ch == null) {
-    if (statusEl) statusEl.textContent = "Favorite " + slot + " empty";
-    return;
-  }
-  if (typeof selectPaletteTile === "function") selectPaletteTile(ch);
-  else {
-    selectedTile = ch;
-    document.querySelectorAll(".palette-btn").forEach(function (b) {
-      b.classList.toggle("active", b.dataset.ch === selectedTile);
-    });
-  }
-  document.querySelectorAll(".fav-slot").forEach(function (b) {
-    b.classList.toggle("active", parseInt(b.dataset.slot, 10) === slot);
-  });
-}
-
-function favIconHtml(ch) {
-  if (ch == null) return '<span class="fav-empty">·</span>';
-  var src = (typeof PALETTE_ICONS !== "undefined" && PALETTE_ICONS[ch]) ? PALETTE_ICONS[ch] : null;
-  if (src) return '<img class="fav-icon" src="' + src + '" alt="" draggable="false">';
-  return '<span class="fav-fallback">' + (ch === "." ? "·" : ch) + "</span>";
+function saveFavorites() {
+  try {
+    localStorage.setItem("joejuke_favorites", JSON.stringify(favorites));
+  } catch (e) {}
 }
 
 function renderFavoritesBar() {
@@ -190,35 +143,39 @@ function renderFavoritesBar() {
     (function (slot) {
       var btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "fav-slot" + (favorites[slot] ? "" : " empty");
+      btn.className = "fav-slot" + (favorites[slot] == null ? " empty" : "");
       btn.dataset.slot = String(slot);
-      btn.title = favorites[slot]
-        ? ("Fav " + slot + ": " + (TILE_LABELS[favorites[slot]] || favorites[slot]))
-        : ("Favorite " + slot + " (empty) — drop a tile here");
-      btn.innerHTML = '<span class="fav-key">' + slot + "</span>" + favIconHtml(favorites[slot]);
-      btn.addEventListener("click", function () { selectFavorite(slot); });
-      btn.addEventListener("dragover", function (e) {
-        e.preventDefault();
-        btn.classList.add("drag-over");
-      });
-      btn.addEventListener("dragleave", function () { btn.classList.remove("drag-over"); });
-      btn.addEventListener("drop", function (e) {
-        e.preventDefault();
-        btn.classList.remove("drag-over");
-        var ch = e.dataTransfer.getData("text/joejuke-tile") || e.dataTransfer.getData("text/plain");
-        if (ch && ALL_CHARS.includes(ch)) {
-          setFavorite(slot, ch);
-          if (statusEl) statusEl.textContent = "Favorite " + slot + ": " + (TILE_LABELS[ch] || ch);
+      var key = document.createElement("span");
+      key.className = "fav-key";
+      key.textContent = String(slot);
+      btn.appendChild(key);
+      var ch = favorites[slot];
+      if (ch) {
+        var icons = (typeof PALETTE_ICONS !== "undefined") ? PALETTE_ICONS : null;
+        if (icons && icons[ch]) {
+          var img = document.createElement("img");
+          img.src = icons[ch]; img.alt = ""; img.className = "fav-icon"; img.draggable = false;
+          btn.appendChild(img);
+        } else {
+          var fb = document.createElement("span");
+          fb.className = "fav-fallback";
+          fb.textContent = ch === "." ? "·" : ch;
+          btn.appendChild(fb);
         }
-      });
-      if (favorites[slot]) {
-        btn.draggable = true;
-        btn.addEventListener("dragstart", function (e) {
-          e.dataTransfer.setData("text/joejuke-tile", favorites[slot]);
-          e.dataTransfer.setData("text/plain", favorites[slot]);
-          e.dataTransfer.effectAllowed = "copy";
-        });
+      } else {
+        var em = document.createElement("span");
+        em.className = "fav-empty";
+        em.textContent = "+";
+        btn.appendChild(em);
       }
+      btn.addEventListener("click", function () {
+        if (favorites[slot]) selectFavorite(slot);
+        else if (selectedTile) setFavorite(slot, selectedTile);
+      });
+      btn.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+        setFavorite(slot, null);
+      });
       bar.appendChild(btn);
     })(i);
   }
@@ -228,9 +185,18 @@ function eyedropAt(clientX, clientY) {
   if (gameState !== "editor") return;
   var t = canvasToTile(clientX, clientY);
   if (t.x < 0 || t.y < 0 || t.x >= editCols || t.y >= editRows) return;
-  var ch = (editMap[t.y] && editMap[t.y][t.x]) || ".";
+  var layer = editLayer || "base";
+  var ch = ".";
+  if (layer === "item") {
+    ch = (typeof getOverlayChar === "function") ? getOverlayChar(t.x, t.y) : " ";
+    if (!ch || ch === " ") ch = ".";
+  } else if (layer === "block") {
+    ch = (typeof hasEditBlock === "function" && hasEditBlock(t.x, t.y)) ? "B" : ".";
+  } else {
+    ch = (editMap[t.y] && editMap[t.y][t.x]) || ".";
+  }
   if (typeof selectPaletteTile === "function") selectPaletteTile(ch);
-  if (statusEl) statusEl.textContent = "Eyedrop: " + (TILE_LABELS[ch] || ch);
+  if (statusEl) statusEl.textContent = "Eyedrop (" + layer + "): " + (TILE_LABELS[ch] || ch);
 }
 
 function startEditPan(clientX, clientY) {
@@ -280,6 +246,20 @@ function initEditUtils() {
       setBrushSize(b.dataset.size);
     });
   });
+
+  document.querySelectorAll(".layer-btn").forEach(function (b) {
+    b.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (typeof setEditLayer === "function") setEditLayer(b.dataset.layer);
+      else {
+        editLayer = b.dataset.layer;
+        document.querySelectorAll(".layer-btn").forEach(function (x) {
+          x.classList.toggle("active", x.dataset.layer === editLayer);
+        });
+      }
+    });
+  });
+  if (typeof updateLayerUI === "function") updateLayerUI();
 
   var wrap = document.getElementById("canvas-wrap");
   var target = wrap || canvas;
