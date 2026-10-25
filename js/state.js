@@ -56,6 +56,12 @@ var customLevel = null, fromEditor = false;
 var inv = { keys: {b:0,r:0,g:0,y:0}, boots: {flip:false, fire:false, ice:false, suction:false} };
 
 var editMap = [], editCols = 32, editRows = 32, selectedTile = "W", painting = false;
+/** Item overlay layer (parallel strings; space = empty). Blocks live in editBlocks. */
+var editOverlay = [];
+/** Block positions in the editor: array of {x,y}. */
+var editBlocks = [];
+/** Active editor paint layer: "base" | "item" | "block". */
+var editLayer = "base";
 var touchStartX = 0, touchStartY = 0, touchActive = false;
 var SWIPE_THRESHOLD = 24;
 /** Editor utilities: brush 1/3/5, tile-viewport zoom (8–100 step 4), pan, favorites 0–9. */
