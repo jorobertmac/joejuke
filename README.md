@@ -14,11 +14,14 @@ Reference tile set: [Chip's Challenge Wiki – Tile](https://wiki.bitbusters.clu
 ## Level Editor
 
 1. Title → **Level Editor**  
-2. Set size (W 5–40, H 5–30) → Apply  
-3. Paint from the palette (or press the character key)  
-4. Place one **A** (player) and one **E** (exit)  
-5. **Test** → play; **Back to Editor** from win/lose  
-6. **Export** JSON to share; **Import** to load  
+2. Set size (W/H up to 100) → Apply  
+3. Choose **Layer**: **Base** (terrain, always filled), **Item** (chips/keys/boots; can be empty), or **Block** (pushable blocks; can sit on items)  
+4. Paint from the palette (or press the character key)  
+5. Place one **A** (player) and one **E** (exit) on the base layer  
+6. **Test** → play; **Back to Editor** from win/lose  
+7. **Export** JSON to share; **Import** to load  
+
+Items on the item layer can hide under blocks. Push the block away in play to reveal and collect them.
 
 ## Tile Legend (CC1-accurate)
 
@@ -49,7 +52,7 @@ Reference tile set: [Chip's Challenge Wiki – Tile](https://wiki.bitbusters.clu
 | `*` | Bomb | Kills player; block or monster clears it |
 | `$` | Thief | Steals all boots |
 | `=` | Trap | Closed until brown button |
-| `|` `_` | Toggle wall / floor | Switched by green button |
+| `\|` `_` | Toggle wall / floor | Switched by green button |
 | `+` | Cloner | Spawns on red button |
 | `!` `#` `%` `&` | Buttons G/R/B/Brn | Toggle / clone / tanks / traps |
 | `2` `4` `6` `8` | Keys blue/red/green/yellow | Collect |
@@ -74,7 +77,7 @@ Reference tile set: [Chip's Challenge Wiki – Tile](https://wiki.bitbusters.clu
 ## Tech
 
 - Single-page Canvas game, no build step  
-- Variable map size, JSON import/export (version 3)  
+- Variable map size, layered JSON import/export (version 4: `map` + optional `overlay` + `blocks`)  
 - Open `index.html` in any modern browser  
 
 ### Source layout
