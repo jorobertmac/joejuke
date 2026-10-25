@@ -104,6 +104,7 @@
   }
 }
 
+
 /* —— Editor fit: map + palette fully on screen; fixed map footprint —— */
 body.editor-mode {
   height: 100dvh;
@@ -150,6 +151,7 @@ body.editor-mode #canvas {
   height: 100%;
   max-height: 100%;
   object-fit: contain;
+  /* keep square footprint when internal resolution changes with zoom */
   aspect-ratio: 1 / 1;
 }
 body.editor-mode #editorBar {
@@ -204,6 +206,33 @@ body.editor-mode .favorites-bar {
   }
 }
 
+/* Remove CSS scale zoom (tile viewport handles zoom now) */
 #canvas-wrap {
   transition: none;
+}
+
+/* Layer selector (Base / Item / Block) */
+.layer-group .layer-btn {
+  min-width: 2.2rem;
+  padding: 0.25rem 0.45rem;
+  font-size: clamp(0.32rem, 1.8vw, 0.4rem);
+  background: #16213e;
+  border: 1px solid #0f3460;
+  color: #c0c0e0;
+}
+.layer-group .layer-btn.active {
+  background: #3db892;
+  border-color: #4ecca3;
+  color: #0f0f1a;
+  font-weight: 600;
+}
+.layer-group .layer-btn[data-layer="item"].active {
+  background: #e8b84a;
+  border-color: #f1c40f;
+  color: #0f0f1a;
+}
+.layer-group .layer-btn[data-layer="block"].active {
+  background: #7b5ea7;
+  border-color: #9b7bc7;
+  color: #fff;
 }
