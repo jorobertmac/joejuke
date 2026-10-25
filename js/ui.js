@@ -139,6 +139,7 @@ on("exitEditorBtn", function () {
   gameState = "start"; hideAllScreens();
   startScreen.classList.remove("hidden");
   document.body.classList.remove("editor-mode");
+  if (typeof applyEditZoom === "function") applyEditZoom();
   setPauseBtnVisible(false);
   statusEl.textContent = "Swipe or use D-pad";
   levelNumEl.textContent = "1"; levelTotalEl.textContent = String(LEVELS.length);
@@ -152,37 +153,52 @@ on("resizeBtn", function () {
   c = Math.max(5, Math.min(100, c)); r = Math.max(5, Math.min(100, r));
   document.getElementById("editCols").value = c;
   document.getElementById("editRows").value = r;
-  var old = editMap.slice(), oldC = editCols, oldR = editRows;
-  editCols = c; editRows = r; editMap = [];
+  var old = editMap.slice(), oldOv = (editOverlay || []).slice(), oldBl = (editBlocks || []).slice();
+  var oldC = editCols, oldR = editRows;
+  editCols = c; editRows = r; editMap = []; editOverlay = [];
   for (var y = 0; y < r; y++) {
     var row = "";
+    var oRow = "";
     for (var x = 0; x < c; x++) {
       if (y < oldR && x < oldC && old[y]) row += old[y][x] || ".";
       else if (y === 0 || y === r - 1 || x === 0 || x === c - 1) row += "W";
       else row += ".";
+      if (y < oldR && x < oldC && oldOv[y] && oldOv[y][x] && oldOv[y][x] !== " ") oRow += oldOv[y][x];
+      else oRow += " ";
     }
     editMap.push(row);
+    editOverlay.push(oRow);
   }
+  editBlocks = oldBl.filter(function (b) { return b.x < c && b.y < r; });
   COLS = editCols; ROWS = editRows; resizeCanvas();
 });
 on("clearMapBtn", function () {
-  editMap = [];
+  editMap = []; editOverlay = []; editBlocks = [];
   for (var y = 0; y < editRows; y++) {
     var row = "";
+    var oRow = "";
     for (var x = 0; x < editCols; x++) {
       if (y === 0 || y === editRows - 1 || x === 0 || x === editCols - 1) row += "W";
       else row += ".";
+      oRow += " ";
     }
     editMap.push(row);
+    editOverlay.push(oRow);
   }
   statusEl.textContent = "Cleared";
 });
 on("testLevelBtn", function () {
-  var data = { name: "Test", cols: editCols, rows: editRows, map: editMap.slice(), version: 1 };
+  var data = (typeof getLevelData === "function")
+    ? getLevelData()
+    : { name: "Test", cols: editCols, rows: editRows, map: editMap.slice(), version: 4 };
+  data.name = "Test";
   loadCustomLevel(data, true);
 });
 on("exportBtn", function () {
-  var data = { name: "Custom", cols: editCols, rows: editRows, map: editMap.slice(), version: 1 };
+  var data = (typeof getLevelData === "function")
+    ? getLevelData()
+    : { name: "Custom", cols: editCols, rows: editRows, map: editMap.slice(), version: 4 };
+  data.name = "Custom";
   document.getElementById("exportText").value = JSON.stringify(data, null, 2);
   hideAllScreens();
   exportModal.classList.remove("hidden");
@@ -253,6 +269,7 @@ on("exitPauseBtn", function () {
   hideAllScreens();
   startScreen.classList.remove("hidden");
   document.body.classList.remove("editor-mode");
+  if (typeof applyEditZoom === "function") applyEditZoom();
   setPauseBtnVisible(false);
   statusEl.textContent = "Swipe or use D-pad";
   levelNumEl.textContent = "1";
