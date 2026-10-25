@@ -1,5 +1,6 @@
 /**
  * Joe's Juke — asset loading & rendering
+ * Composite: base terrain → item overlay → blocks → actors
  */
 "use strict";
 
@@ -95,11 +96,8 @@ function drawMonsterSprite(e, px, py) {
   if (!img) return false;
   const row = e.dir & 3;
   let col = 0;
-  if (e.type === "blob") {
-    col = (Math.floor((performance.now() / 200) % 2));
-  }
-  const fw = TILE;
-  return drawSheetFrame(img, col * fw, row * TILE, fw, TILE, px, py);
+  if (e.type === "blob") col = (Math.floor((performance.now() / 200) % 2));
+  return drawSheetFrame(img, col * TILE, row * TILE, TILE, TILE, px, py);
 }
 
 function drawBlockSprite(px, py) {
@@ -118,10 +116,8 @@ function drawJoe(px, py, dir, frame) {
     ctx.fillRect(px + 9, py + 22, 6, 8);
     ctx.fillRect(px + 17, py + 22, 6, 8);
   }
-  ctx.fillStyle = "#3498db";
-  ctx.fillRect(px + 7, py + 10 + bob, 18, 14);
-  ctx.fillStyle = "#2980b9";
-  ctx.fillRect(px + 7, py + 10 + bob, 18, 3);
+  ctx.fillStyle = "#3498db"; ctx.fillRect(px + 7, py + 10 + bob, 18, 14);
+  ctx.fillStyle = "#2980b9"; ctx.fillRect(px + 7, py + 10 + bob, 18, 3);
   ctx.fillStyle = "#f5cba7";
   ctx.beginPath(); ctx.arc(px + 16, py + 7 + bob, 7, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = "#2c3e50";
@@ -136,20 +132,16 @@ function drawJoe(px, py, dir, frame) {
 
 function drawBlock(px, py) {
   if (drawBlockSprite(px, py)) return;
-  ctx.fillStyle = "#6B4226";
-  ctx.fillRect(px + 2, py + 2, 28, 28);
-  ctx.fillStyle = "#A0522D";
-  ctx.fillRect(px + 4, py + 4, 24, 24);
-  ctx.strokeStyle = "#3E2723";
-  ctx.lineWidth = 2;
+  ctx.fillStyle = "#6B4226"; ctx.fillRect(px + 2, py + 2, 28, 28);
+  ctx.fillStyle = "#A0522D"; ctx.fillRect(px + 4, py + 4, 24, 24);
+  ctx.strokeStyle = "#3E2723"; ctx.lineWidth = 2;
   ctx.strokeRect(px + 4, py + 4, 24, 24);
   ctx.beginPath();
   ctx.moveTo(px + 4, py + 16); ctx.lineTo(px + 28, py + 16);
   ctx.moveTo(px + 16, py + 4); ctx.lineTo(px + 16, py + 28);
   ctx.stroke();
   ctx.lineWidth = 1;
-  ctx.fillStyle = "rgba(255,220,150,0.25)";
-  ctx.fillRect(px + 6, py + 6, 10, 6);
+  ctx.fillStyle = "rgba(255,220,150,0.25)"; ctx.fillRect(px + 6, py + 6, 10, 6);
 }
 
 function drawTerrain(t, px, py) {
@@ -162,18 +154,10 @@ function drawTerrain(t, px, py) {
     ctx.fillStyle = "#5a5a7a"; ctx.fillRect(px + 2, py + 2, TILE - 4, TILE - 4);
   } else if (t === T.WATER) {
     ctx.fillStyle = "#1a5a8a"; ctx.fillRect(px, py, TILE, TILE);
-    ctx.fillStyle = "rgba(100,180,255,0.35)";
-    ctx.fillRect(px + 4, py + 8, 8, 4); ctx.fillRect(px + 16, py + 18, 10, 3);
   } else if (t === T.FIRE) {
     ctx.fillStyle = "#c0392b"; ctx.fillRect(px, py, TILE, TILE);
-    ctx.fillStyle = "#e67e22";
-    ctx.beginPath();
-    ctx.moveTo(px + 8, py + 24); ctx.lineTo(px + 12, py + 10);
-    ctx.lineTo(px + 16, py + 18); ctx.lineTo(px + 20, py + 8);
-    ctx.lineTo(px + 24, py + 24); ctx.closePath(); ctx.fill();
   } else if (t === T.ICE || t === T.ICE_NW || t === T.ICE_NE || t === T.ICE_SW || t === T.ICE_SE) {
     ctx.fillStyle = "#a0d8ef"; ctx.fillRect(px, py, TILE, TILE);
-    ctx.strokeStyle = "rgba(255,255,255,0.7)"; ctx.strokeRect(px + 3, py + 3, 26, 26);
   } else if (typeof isForce === "function" && isForce(t)) {
     ctx.fillStyle = t === T.FORCE_R ? "#1a4a3a" : "#2d5a27";
     ctx.fillRect(px, py, TILE, TILE);
@@ -198,6 +182,7 @@ function drawMapTiles(useEdit, camX, camY) {
     var vs = (typeof editViewSize === "number" && editViewSize > 0) ? editViewSize : 32;
     var ox = (typeof editCamX === "number") ? editCamX : 0;
     var oy = (typeof editCamY === "number") ? editCamY : 0;
+    if (typeof ensureEditOverlay === "function") ensureEditOverlay();
     for (let vy = 0; vy < vs; vy++) {
       for (let vx = 0; vx < vs; vx++) {
         const x = ox + vx, y = oy + vy;
@@ -208,14 +193,36 @@ function drawMapTiles(useEdit, camX, camY) {
           continue;
         }
         const ch = editMap[y][x] || ".";
-        if (CH[ch] !== undefined) drawTerrain(CH[ch], px, py);
-        else if (MONSTER_CHARS[ch]) {
+        if (CH[ch] !== undefined) {
+          const id = CH[ch];
+          if ((id >= T.KEY_B && id <= T.KEY_Y) || (id >= T.BOOT_FLIP && id <= T.BOOT_SUCTION) || id === T.CHIP || id === T.BLOCK) {
+            drawTerrain(T.FLOOR, px, py);
+          } else {
+            drawTerrain(id, px, py);
+          }
+        } else if (MONSTER_CHARS[ch]) {
           drawTerrain(T.FLOOR, px, py);
-          drawEnemy({ type: MONSTER_CHARS[ch].type, dir: MONSTER_CHARS[ch].dir }, px, py);
         } else if (ch === "A") {
           drawTerrain(T.FLOOR, px, py);
+        } else {
+          drawTerrain(T.FLOOR, px, py);
+        }
+        var och = (typeof getOverlayChar === "function") ? getOverlayChar(x, y) : " ";
+        if (och && och !== " " && CH[och] !== undefined) {
+          drawOverlayItem(CH[och], px, py);
+        } else if (CH[ch] !== undefined) {
+          const id2 = CH[ch];
+          if ((id2 >= T.KEY_B && id2 <= T.KEY_Y) || (id2 >= T.BOOT_FLIP && id2 <= T.BOOT_SUCTION) || id2 === T.CHIP) {
+            drawOverlayItem(id2, px, py);
+          }
+        }
+        var hasBlk = (typeof hasEditBlock === "function") ? hasEditBlock(x, y) : false;
+        if (hasBlk || ch === "B") drawBlock(px, py);
+        if (MONSTER_CHARS[ch]) {
+          drawEnemy({ type: MONSTER_CHARS[ch].type, dir: MONSTER_CHARS[ch].dir }, px, py);
+        } else if (ch === "A") {
           drawJoe(px, py, 0, 0);
-        } else drawTerrain(T.FLOOR, px, py);
+        }
       }
     }
     return;
