@@ -19,7 +19,8 @@ Reference tile set: [Chip's Challenge Wiki – Tile](https://wiki.bitbusters.clu
 4. Paint from the palette (or press the character key)  
 5. Place one **A** (player) and one **E** (exit) on the base layer  
 6. **Test** → play; **Back to Editor** from win/lose  
-7. **Export** JSON to share; **Import** to load  
+7. **Rate** runs a static puzzle-quality report (see `LEVEL_RATING.md`)
+8. **Export** JSON to share; **Import** to load  
 
 Items on the item layer can hide under blocks. Push the block away in play to reveal and collect them.
 
@@ -91,5 +92,6 @@ Items on the item layer can hide under blocks. Push the block away in play to re
 | `js/movement.js` | Player move, solid checks, monster AI |
 | `js/drawing.js` | Asset load + sprite / procedural rendering |
 | `js/editor.js` | Level editor UI & painting |
+| `js/level-rating.js` | Static puzzle rating heuristics |
 
 Mechanics follow the CC1 tile list and Lynx/MS movement rules documented on the Bit Busters wiki.
