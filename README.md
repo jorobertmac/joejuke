@@ -10,6 +10,12 @@ Reference tile set: [Chip's Challenge Wiki – Tile](https://wiki.bitbusters.clu
 
 - **Desktop:** Arrow keys / WASD  
 - **Mobile:** Swipe or on-screen D-pad  
+- **Pause:** Space / Esc (or HUD ❚❚)  
+
+## Level select
+
+- **Start menu:** choose any of the 30 built-in levels, then **Start Game**
+- **Pause menu** (campaign play): **Go to** + level list → **Go** jumps to that level (hidden while testing from the editor)
 
 ## Level Editor
 
