@@ -292,6 +292,34 @@ function initEditUtils() {
       if (gameState === "editor" && e.button === 1) e.preventDefault();
     });
   }
+
+  // Mobile editor section tabs (Tools / Tiles / Actions)
+  function setEditorPanel(name) {
+    name = name || "tools";
+    document.querySelectorAll(".ed-nav-btn").forEach(function (b) {
+      var on = b.dataset.edPanel === name;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    document.querySelectorAll(".ed-panel").forEach(function (p) {
+      p.classList.toggle("ed-panel-active", p.dataset.edPanel === name);
+    });
+  }
+  document.querySelectorAll(".ed-nav-btn").forEach(function (b) {
+    b.addEventListener("click", function (e) {
+      e.preventDefault();
+      setEditorPanel(b.dataset.edPanel);
+    });
+  });
+  setEditorPanel("tools");
+
+  // Palette category chips
+  document.querySelectorAll(".palette-cat").forEach(function (b) {
+    b.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (typeof setPaletteFilter === "function") setPaletteFilter(b.dataset.cat);
+    });
+  });
 }
 
 if (typeof document !== "undefined") {
