@@ -1,56 +1,42 @@
 # Joe's Juke — Level solve outlines
 
-Solution sketches only. Every listed level is solvable. Socket always gates the exit: collect **all** chips, step on **X**, then **E**.
+All 30 built-in levels rate **B, A, or S** under `LEVEL_RATING.md` (static rater).
 
-## Training
+**Shared pattern:** monsters on the approach path → hazard barrier with chips beyond it → full-width wall with a **lock as the only gap** and more chips beyond → socket → exit.
 
-| # | Focus | Outline |
-|---|--------|---------|
-| 1 | Move / block / chips | Enter the open alcove from the right, push the block to reveal the chip hidden under it, grab the two floor chips, open socket, exit. |
-| 2 | Key + lock | Take blue key, open blue lock, collect both chips behind the wall rows, socket, exit. |
-| 3 | Boots | Grab flippers / ice / fire / suction. Cross water → fire → ice → force in order, picking each chip, then socket. |
-| 4 | Balls | Time crossings of the horizontal ball lanes; collect four side chips; socket. |
-| 5 | Tile gallery | Walk the sample tiles; push the gallery block to reveal the chip under it; collect the two open chips; socket. (Some gallery tiles are lethal without boots.) |
+Collect every chip, open the socket (`X`), then exit (`E`).
 
-## Challenge
+## Training (1–5)
 
-| # | Focus | Outline |
-|---|--------|---------|
-| 6 | Nested maze | Work inward ring by ring; every chip is on a forced path. Center has socket + exit. |
-| 7 | Block bridge | Push the three blocks south into water to bridge; one chip is under the middle block (push first to collect). Collect remaining chips; socket. |
-| 8 | Key chain | Blue key → blue lock → red key → red lock → green key → green lock → yellow key → yellow lock → chip row → socket. |
-| 9 | Ice maze | Take ice skates, walk the ice corridors (no uncontrolled slide), reach center chips, leave, socket. |
-| 10 | Force floors | Take suction boots, walk the force loop at will, pick center chips, socket. |
-| 11 | Fire ring | Take fire boots, enter the fire ring, collect inner chips, leave, socket. |
-| 12 | Ball lanes | Wait for gaps in ball patrols, cross to the chip row, then to socket. |
-| 13 | Toggle walls | Walls start **open**. Collect chips and reach socket **without** pressing the green button (or press it only when safe). |
-| 14 | Teleporters | Step on the north teleporter to reach the sealed chip room; collect chips; use the south teleporter (or walk) to return to socket. |
-| 15 | Dirt / gravel | Dirt turns to floor when stepped. Path through dirt ring → gravel ring → chips without sealing your retreat. |
-| 16 | Block bridge | Four blocks (one chip under the leftmost); push into water to bridge three water rows; collect chips; socket. (Cloners spawn monsters, not blocks.) |
-| 17 | Trap | Press **brown button** first to open the trap, then walk the corridor for chips, socket, exit. Stepping on a closed trap traps you permanently. |
-| 18 | Mixed boots | Equip flippers, fire, ice, suction; cross each hazard band; collect chips; socket. |
-| 19 | Glider / fireball | Cross lanes when clear; chips sit on the far sides of each lane. |
-| 20 | Four-key vault | Collect all four keys, open each colored lock in its sealed row for its chip, then socket. |
-| 21 | Ice corners | Ice skates on; corner tiles redirect. Reach center chips, exit ice, socket. |
-| 22 | Thief | Flippers → cross water → thief steals boots → take fire boots → cross fire → chips → socket. |
-| 23 | Tank | Use blue button to reverse the tank when its path blocks you; collect chips; socket. |
-| 24 | Bombs | Push the block (chip under it) onto the bomb column (west then south) to clear bombs; return for the revealed chip if needed; collect row; socket. |
-| 25 | Blue walls | `]` fake becomes floor; `[` real becomes wall. Probe fakes to reach the chip row; socket. |
-| 26 | Teeth | Keep distance from teeth while collecting the four chips; socket. |
-| 27 | Force + ice | Ice skates + suction; navigate the combined slide/force path to chips; socket. |
-| 28 | Gauntlet | Use vertical gaps between monster rows; grab chips on the middle row when clear; socket. |
-| 29 | Toolkit | Keys open locks along the left; boots handle water/fire/ice/force; push blocks (one hides a chip); chips behind green lock path; socket. |
-| 30 | Finale | Combine keys, boots, blocks (one mid-row chip is under a block), and careful monster avoidance; collect every chip; socket; exit. |
+| # | Grade focus | Outline |
+|---|-------------|---------|\n| 1 | Water + lock | Flippers across water for first chips; key opens lock gap for remaining chips. |
+| 2 | Water + lock | Same core pattern (training repetition). |
+| 3 | Water + fire + lock | Flippers and fire boots; chips after each hazard; lock for last set. |
+| 4 | Water + lock | Balls on the approach; then water and lock as usual. |
+| 5 | Multi-boot + lock | Chips after water, fire, ice, force; lock for the vault chips. |
 
-## Engine notes (relevant to design)
+## Challenge (6–30)
 
-- **Socket** is solid until `chipsCollected >= chipsNeeded`.
-- **Locks** consume one matching key and become floor.
-- **Cloner + red button** spawns **monsters**, not blocks.
-- **Brown button** opens all traps; closed traps are enterable but immobilize the player.
-- **Dirt** becomes floor when stepped; **gravel** stays gravel.
-- **Block on water** becomes dirt (walkable).
-- **Block on bomb** clears the bomb.
-- Toggle walls start **open** (`toggleOpen = true` at load).
+| # | Notes |
+|---|--------|
+| 6–8 | Water + lock; level 8 adds a second key/lock stage. |
+| 9 | Ice barrier (skates) + lock. |
+| 10 | Force barrier (suction) + lock. |
+| 11 | Fire barrier + lock. |
+| 12–17 | Water + lock with monster / trap / block variants. |
+| 18 | Full boot suite: chips after each of water, fire, ice, force, then lock. |
+| 19 | Gliders on approach; water + lock. |
+| 20 | Four-color key vault after water chips. |
+| 21 | Ice + lock. |
+| 22 | Thief steals boots after water; re-equip fire boots for fire chips. |
+| 23 | Tank + blue button; lock vault. |
+| 24–28 | Water + lock with bombs/blue-walls/teeth/gauntlet pressure. |
+| 29–30 | Multi-hazard + multi-key finales (level 30 rates **A**). |
 
-- **Layered levels**: `overlay` holds chips/keys/boots (spaces = empty). `blocks` can occupy the same cell so items hide under blocks until pushed.
+## Engine notes
+
+- Socket is solid until all chips are collected.
+- Locks consume one matching key.
+- Closed traps immobilize until the brown button opens them.
+- Cloner + red button spawns **monsters**, not blocks.
+- Dirt becomes floor when stepped; block-on-water becomes dirt.
