@@ -129,7 +129,6 @@ header h1 {
   min-width: 0;
 }
 
-/* Pause control in HUD */
 .hud-pause {
   flex-shrink: 0;
   margin: 0;
@@ -292,14 +291,7 @@ button:active {
   gap: 0.45rem;
 }
 
-@media (min-width: 701px) {
-  body.editor-mode #game-wrapper {
-    max-width: 960px;
-  }
-  body.editor-mode #editorBar {
-    max-width: 920px;
-  }
-}
+/* Desktop layout max-width / side panel driven by edit-utils.css */
 
 .editor-size {
   display: flex;
@@ -361,6 +353,9 @@ button:active {
   overflow: hidden;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .palette-btn .palette-icon {
@@ -400,12 +395,22 @@ button:active {
   background: #1e3a5f;
 }
 
+.palette-btn:focus-visible {
+  outline: 2px solid #7dffc4;
+  outline-offset: 2px;
+  border-color: #7dffc4;
+  z-index: 1;
+}
+
+.palette-btn.active:focus-visible {
+  box-shadow: 0 0 0 2px #7dffc4, 0 0 0 4px rgba(126, 255, 196, 0.35);
+}
+
 .palette-btn.active .palette-key {
   color: #4ecca3;
   background: rgba(0, 0, 0, 0.8);
 }
 
-/* Desktop: show all tiles + keyboard shortcut under each icon */
 @media (min-width: 701px) {
   .palette {
     max-height: none;
@@ -581,7 +586,9 @@ body.editor-mode #dpad { display: none; }
 body.editor-mode header .tagline { display: none; }
 body.editor-mode #hud { opacity: 0.9; }
 body.editor-mode footer { display: none; }
-
+body.editor-mode #game-wrapper {
+  position: relative;
+}
 
 /* CC1 expanded palette color fallbacks (under icons) */
 .palette-btn[data-ch="F"] { background: #c0392b; }
