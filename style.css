@@ -679,3 +679,89 @@ body.editor-mode #game-wrapper {
 .rate-issues .rate-warn { color: #fde68a; }
 .rate-issues .rate-info { color: #a8b4c8; }
 .rate-issues .rate-ok { color: #86efac; }
+
+/* Import modal: built-in levels + JSON file/paste */
+#importModal {
+  max-width: min(92vw, 22rem);
+  max-height: 88vh;
+  overflow-y: auto;
+}
+.import-section-label {
+  font-size: 0.42rem;
+  color: #7dd3fc;
+  text-align: left;
+  margin: 0.55rem 0 0.25rem;
+  letter-spacing: 0.5px;
+}
+.import-section-label:first-of-type {
+  margin-top: 0.2rem;
+}
+.import-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+.import-row select {
+  flex: 1 1 10rem;
+  min-width: 0;
+  font-family: inherit;
+  font-size: 0.42rem;
+  padding: 0.4rem 0.35rem;
+  background: #0f3460;
+  color: #eaeaea;
+  border: 2px solid #4ecca3;
+  border-radius: 4px;
+}
+.import-row button {
+  flex: 0 0 auto;
+  font-size: 0.4rem;
+  padding: 0.4rem 0.55rem;
+  min-height: 34px;
+}
+.import-file-row {
+  margin-bottom: 0.35rem;
+}
+.import-file-label {
+  font-size: 0.4rem;
+  color: #a0a0c0;
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  border: 2px dashed #4ecca3;
+  border-radius: 4px;
+  background: #16213e;
+}
+.import-file-label:hover,
+.import-file-label:focus {
+  color: #4ecca3;
+  border-style: solid;
+}
+#importFileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+#importText {
+  width: 100%;
+  font-family: ui-monospace, monospace;
+  font-size: 0.4rem;
+  margin: 0.25rem 0 0.35rem;
+  padding: 0.4rem;
+  background: #0f172a;
+  color: #e2e8f0;
+  border: 2px solid #0f3460;
+  border-radius: 4px;
+  resize: vertical;
+  min-height: 4.5rem;
+}
+.import-error {
+  font-size: 0.4rem;
+  color: #fca5a5;
+  text-align: left;
+  margin: 0.2rem 0 0.35rem;
+  line-height: 1.35;
+}
