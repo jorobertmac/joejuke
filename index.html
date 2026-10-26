@@ -24,6 +24,7 @@
   <script defer src="js/input.js"></script>
   <script defer src="js/ui.js"></script>
   <script defer src="js/import-export.js"></script>
+  <script defer src="js/level-rating.js"></script>
   <script defer src="game.js"></script>
   <script defer src="js/keyboard-nav.js"></script>
   <script defer src="js/fov-overrides.js"></script>
@@ -101,6 +102,16 @@
             <button id="closeImportBtn" type="button" class="secondary">Cancel</button>
           </div>
         </div>
+        <div id="rateModal" class="hidden">
+          <h2>Level Rating</h2>
+          <p id="rateSummary" class="rate-summary"></p>
+          <div id="rateScoreLine" class="rate-score-line"></div>
+          <ul id="rateDims" class="rate-dims"></ul>
+          <ul id="rateIssues" class="rate-issues"></ul>
+          <div class="editor-actions">
+            <button id="closeRateBtn" type="button">Close</button>
+          </div>
+        </div>
         <div id="pauseMenu" class="hidden" role="dialog" aria-label="Pause menu">
           <h2 id="pauseTitle">Paused</h2>
           <p id="pauseHint" class="controls">Space / Esc to resume</p>
@@ -167,6 +178,7 @@
       <div class="ed-panel ed-panel-actions" id="edPanelActions" data-ed-panel="actions">
         <div class="editor-actions">
           <button id="testLevelBtn" type="button">Test</button>
+          <button id="rateLevelBtn" type="button" class="secondary">Rate</button>
           <button id="exportBtn" type="button" class="secondary">Export</button>
           <button id="importBtn" type="button" class="secondary">Import</button>
           <button id="clearMapBtn" type="button" class="secondary">Clear</button>
