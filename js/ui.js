@@ -271,9 +271,13 @@ on("exportBtn", function () {
   exportModal.classList.remove("hidden");
 });
 on("importBtn", function () {
-  hideAllScreens();
-  importModal.classList.remove("hidden");
-  document.getElementById("importText").value = "";
+  if (typeof openImportModal === "function") {
+    openImportModal();
+  } else {
+    hideAllScreens();
+    importModal.classList.remove("hidden");
+    document.getElementById("importText").value = "";
+  }
 });
 on("copyExportBtn", function () {
   var ta = document.getElementById("exportText");
