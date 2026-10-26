@@ -51,11 +51,14 @@ function openPauseMenu() {
   var hint = document.getElementById("pauseHint");
   var restartBtn = document.getElementById("restartPauseBtn");
   var exitBtn = document.getElementById("exitPauseBtn");
+  var levelWrap = document.getElementById("pauseLevelSelectWrap");
+  var pauseSel = document.getElementById("pauseLevelSelect");
 
   if (inEditorMenu) {
     if (title) title.textContent = "Editor Menu";
     if (hint) hint.textContent = "Esc / Space to close";
     if (restartBtn) restartBtn.classList.add("hidden");
+    if (levelWrap) levelWrap.classList.add("hidden");
     if (exitBtn) {
       exitBtn.textContent = "Exit to Menu";
       exitBtn.classList.remove("hidden");
@@ -70,6 +73,15 @@ function openPauseMenu() {
     if (exitBtn) {
       exitBtn.classList.remove("hidden");
       exitBtn.textContent = fromEditor ? "Back to Editor" : "Exit to Menu";
+    }
+    // Level jump only for campaign play (not editor test / custom-only)
+    if (levelWrap) {
+      if (fromEditor || customLevel) {
+        levelWrap.classList.add("hidden");
+      } else {
+        levelWrap.classList.remove("hidden");
+        populateLevelSelect(pauseSel, typeof level === "number" ? level : 0);
+      }
     }
   }
 
@@ -116,7 +128,49 @@ function on(id, handler) {
   });
 }
 
-on("startBtn", function () { loadLevel(0); });
+/** Fill a <select> with built-in LEVELS names (0-based values). */
+function populateLevelSelect(sel, selectedIndex) {
+  if (!sel || typeof LEVELS === "undefined") return;
+  var prev = selectedIndex != null ? String(selectedIndex) : sel.value;
+  sel.innerHTML = "";
+  for (var i = 0; i < LEVELS.length; i++) {
+    var opt = document.createElement("option");
+    opt.value = String(i);
+    opt.textContent = (typeof LEVEL_NAMES !== "undefined" && LEVEL_NAMES[i])
+      ? LEVEL_NAMES[i]
+      : ("Level " + (i + 1));
+    sel.appendChild(opt);
+  }
+  if (prev !== "" && !isNaN(parseInt(prev, 10))) {
+    var idx = parseInt(prev, 10);
+    if (idx >= 0 && idx < LEVELS.length) sel.value = String(idx);
+  }
+}
+
+function getSelectedStartLevel() {
+  var sel = document.getElementById("startLevelSelect");
+  if (!sel || sel.value === "") return 0;
+  var n = parseInt(sel.value, 10);
+  if (isNaN(n) || n < 0 || (typeof LEVELS !== "undefined" && n >= LEVELS.length)) return 0;
+  return n;
+}
+
+function initLevelSelects() {
+  populateLevelSelect(document.getElementById("startLevelSelect"), 0);
+  populateLevelSelect(document.getElementById("pauseLevelSelect"), 0);
+}
+
+// Populate after LEVELS / LEVEL_NAMES are available (defer scripts + load)
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initLevelSelects);
+} else {
+  setTimeout(initLevelSelects, 0);
+}
+window.addEventListener("load", initLevelSelects);
+
+on("startBtn", function () {
+  loadLevel(getSelectedStartLevel());
+});
 on("nextBtn", function () { loadLevel(level + 1); });
 if (document.getElementById("startBtn")) {
   setTimeout(function () {
@@ -125,6 +179,14 @@ if (document.getElementById("startBtn")) {
     }
   }, 0);
 }
+on("gotoLevelBtn", function () {
+  if (fromEditor) return;
+  var sel = document.getElementById("pauseLevelSelect");
+  if (!sel) return;
+  var n = parseInt(sel.value, 10);
+  if (isNaN(n) || typeof LEVELS === "undefined" || !LEVELS[n]) return;
+  loadLevel(n);
+});
 on("retryBtn", function () {
   if (fromEditor && customLevel) loadCustomLevel(customLevel, true);
   else if (customLevel) loadCustomLevel(customLevel, false);
@@ -144,6 +206,7 @@ on("exitEditorBtn", function () {
   statusEl.textContent = "Swipe or use D-pad";
   levelNumEl.textContent = "1"; levelTotalEl.textContent = String(LEVELS.length);
   COLS = 20; ROWS = 15; resizeCanvas();
+  populateLevelSelect(document.getElementById("startLevelSelect"), 0);
   var sb = document.getElementById("startBtn");
   if (sb) setTimeout(function () { sb.focus(); }, 0);
 });
@@ -334,6 +397,7 @@ on("exitPauseBtn", function () {
     return;
   }
   // Editor menu or normal play → start screen
+  var lastLevel = typeof level === "number" ? level : 0;
   gameState = "start";
   customLevel = null;
   fromEditor = false;
@@ -346,6 +410,7 @@ on("exitPauseBtn", function () {
   levelNumEl.textContent = "1";
   levelTotalEl.textContent = String(LEVELS.length);
   COLS = 20; ROWS = 15; resizeCanvas();
+  populateLevelSelect(document.getElementById("startLevelSelect"), lastLevel);
   var sb = document.getElementById("startBtn");
   if (sb) setTimeout(function () { sb.focus(); }, 0);
 });
