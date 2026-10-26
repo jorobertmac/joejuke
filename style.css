@@ -153,10 +153,19 @@ header h1 {
 body.editor-mode .hud-pause {
   display: none !important;
 }
-#pauseMenu button {
+#pauseMenu > button {
   display: block;
   width: 100%;
   margin-top: 0.45rem;
+}
+#pauseMenu .level-select-row {
+  margin-top: 0.45rem;
+  width: 100%;
+}
+#pauseMenu .level-select-row button {
+  display: inline-flex;
+  width: auto;
+  margin-top: 0;
 }
 
 #canvas-wrap {
@@ -764,4 +773,35 @@ body.editor-mode #game-wrapper {
   text-align: left;
   margin: 0.2rem 0 0.35rem;
   line-height: 1.35;
+}
+
+/* Level select on start / pause menus */
+.level-select-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin: 0.55rem 0 0.25rem;
+  width: 100%;
+}
+.level-select-label {
+  font-size: 0.4rem;
+  color: #7dd3fc;
+  letter-spacing: 0.5px;
+}
+.level-select-row select {
+  flex: 1 1 10rem;
+  min-width: 0;
+  max-width: 100%;
+  font-family: inherit;
+  font-size: 0.4rem;
+  padding: 0.45rem 0.4rem;
+  background: #0f3460;
+  color: #eaeaea;
+  border: 2px solid #4ecca3;
+  border-radius: 4px;
+}
+#startScreen .level-select-row {
+  margin-bottom: 0.35rem;
 }
