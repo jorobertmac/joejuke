@@ -95,10 +95,26 @@
         </div>
         <div id="importModal" class="hidden">
           <h2>Import Level</h2>
-          <p>Paste a level JSON (or array of map strings).</p>
-          <textarea id="importText" rows="8" placeholder='{"name":"My Level","cols":20,"rows":15,"map":["WW..."]}'></textarea>
+          <p class="import-section-label">From game levels</p>
+          <div class="import-row">
+            <select id="importBuiltinSelect" aria-label="Built-in level">
+              <option value="">— Choose a built-in level —</option>
+            </select>
+            <button id="loadBuiltinBtn" type="button">Load selected</button>
+          </div>
+          <p class="import-section-label">Or load a levels JSON</p>
+          <div class="import-row import-file-row">
+            <label class="import-file-label" for="importFileInput">Choose .json file</label>
+            <input type="file" id="importFileInput" accept=".json,application/json,text/plain">
+          </div>
+          <textarea id="importText" rows="6" placeholder='Paste level JSON here, or a full levels array…'></textarea>
+          <div id="importJsonPickWrap" class="import-row hidden">
+            <select id="importJsonLevelSelect" aria-label="Level from JSON pack"></select>
+            <button id="loadJsonPickBtn" type="button">Load selected</button>
+          </div>
+          <p id="importError" class="import-error hidden"></p>
           <div class="editor-actions">
-            <button id="confirmImportBtn" type="button">Load</button>
+            <button id="confirmImportBtn" type="button">Load JSON</button>
             <button id="closeImportBtn" type="button" class="secondary">Cancel</button>
           </div>
         </div>
