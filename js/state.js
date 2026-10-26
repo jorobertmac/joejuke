@@ -30,6 +30,7 @@ var winScreen = document.getElementById("winScreen");
 var editorBar = document.getElementById("editorBar");
 var exportModal = document.getElementById("exportModal");
 var importModal = document.getElementById("importModal");
+var rateModal = document.getElementById("rateModal");
 var pauseMenu = document.getElementById("pauseMenu");
 var pauseBtn = document.getElementById("pauseBtn");
 var backToEditorBtn = document.getElementById("backToEditorBtn");
