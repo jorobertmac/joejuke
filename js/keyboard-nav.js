@@ -17,7 +17,7 @@
   function handleMenuKeys(e, container) {
     var key = e.key;
     if (key !== "ArrowUp" && key !== "ArrowDown" && key !== "ArrowLeft" && key !== "ArrowRight") return false;
-    if (e.target && (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT")) return false;
+    if (e.target && (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT" || e.target.tagName === "SELECT")) return false;
     var buttons = Array.prototype.slice.call(container.querySelectorAll("button:not(.hidden)"));
     if (!buttons.length) return false;
     var idx = buttons.indexOf(document.activeElement);
