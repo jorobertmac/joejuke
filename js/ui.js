@@ -4,7 +4,7 @@
 "use strict";
 
 function hideAllScreens() {
-  [startScreen, levelComplete, gameOver, winScreen, exportModal, importModal, pauseMenu]
+  [startScreen, levelComplete, gameOver, winScreen, exportModal, importModal, rateModal, pauseMenu]
     .forEach(function (el) { if (el) el.classList.add("hidden"); });
   if (editorBar) editorBar.classList.add("hidden");
 }
@@ -39,7 +39,7 @@ function openPauseMenu() {
   }
 
   // Hide other overlays but keep editor bar when editing
-  [startScreen, levelComplete, gameOver, winScreen, exportModal, importModal]
+  [startScreen, levelComplete, gameOver, winScreen, exportModal, importModal, rateModal]
     .forEach(function (el) { if (el) el.classList.add("hidden"); });
   if (inEditorMenu) {
     if (editorBar) editorBar.classList.remove("hidden");
@@ -193,6 +193,73 @@ on("testLevelBtn", function () {
     : { name: "Test", cols: editCols, rows: editRows, map: editMap.slice(), version: 4 };
   data.name = "Test";
   loadCustomLevel(data, true);
+});
+on("rateLevelBtn", function () {
+  if (typeof rateCurrentEditor !== "function") {
+    if (statusEl) statusEl.textContent = "Rating module missing";
+    return;
+  }
+  var report = rateCurrentEditor();
+  var summaryEl = document.getElementById("rateSummary");
+  var scoreEl = document.getElementById("rateScoreLine");
+  var dimsEl = document.getElementById("rateDims");
+  var issuesEl = document.getElementById("rateIssues");
+  if (summaryEl) summaryEl.textContent = report.summary || "";
+  if (scoreEl) {
+    scoreEl.textContent = "Score " + report.score + " / 10  ·  Grade " + report.grade;
+    scoreEl.setAttribute("data-grade", report.grade || "");
+  }
+  if (dimsEl) {
+    dimsEl.innerHTML = "";
+    var labels = {
+      hazardNecessity: "Hazard necessity",
+      lockUtility: "Lock utility",
+      resourceTension: "Resource tension",
+      chipChallenge: "Chip challenge",
+      mechanicDensity: "Mechanic density",
+      monsterPressure: "Monster pressure",
+      pathComplexity: "Path complexity",
+      structure: "Structure",
+    };
+    Object.keys(labels).forEach(function (k) {
+      var li = document.createElement("li");
+      var v = report.dimensions && report.dimensions[k] != null ? report.dimensions[k] : "—";
+      li.textContent = labels[k] + ": " + v;
+      dimsEl.appendChild(li);
+    });
+  }
+  if (issuesEl) {
+    issuesEl.innerHTML = "";
+    var list = (report.issues || []).slice(0, 12);
+    if (list.length === 0) {
+      var ok = document.createElement("li");
+      ok.className = "rate-ok";
+      ok.textContent = "No major issues flagged.";
+      issuesEl.appendChild(ok);
+    } else {
+      list.forEach(function (iss) {
+        var li = document.createElement("li");
+        li.className = "rate-" + (iss.severity || "info");
+        li.textContent = (iss.severity || "info").toUpperCase() + " · " + iss.msg;
+        issuesEl.appendChild(li);
+      });
+    }
+  }
+  hideAllScreens();
+  if (rateModal) rateModal.classList.remove("hidden");
+  if (statusEl) statusEl.textContent = "Rated " + report.score + " (" + report.grade + ")";
+  var closeBtn = document.getElementById("closeRateBtn");
+  if (closeBtn) setTimeout(function () { closeBtn.focus(); }, 0);
+});
+on("closeRateBtn", function () {
+  if (document.body.classList.contains("editor-mode")) {
+    hideAllScreens();
+    if (editorBar) editorBar.classList.remove("hidden");
+    gameState = "editor";
+  } else {
+    hideAllScreens();
+    if (startScreen) startScreen.classList.remove("hidden");
+  }
 });
 on("exportBtn", function () {
   var data = (typeof getLevelData === "function")
