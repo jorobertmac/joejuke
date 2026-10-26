@@ -62,6 +62,10 @@
           <h2>Joe's Juke</h2>
           <p>Help Joe juke past enemies, collect chips and keys, use boots, slide on ice, and reach the exit.</p>
           <p class="controls">Swipe or D-pad · Space / Esc pause · Arrows / Tab menus, Enter select</p>
+          <div class="level-select-row">
+            <label for="startLevelSelect" class="level-select-label">Level</label>
+            <select id="startLevelSelect" aria-label="Select starting level"></select>
+          </div>
           <button id="startBtn" type="button">Start Game</button>
           <button id="editorBtn" type="button" class="secondary">Level Editor</button>
           <button id="importStartBtn" type="button" class="secondary">Import Level</button>
@@ -133,6 +137,11 @@
           <p id="pauseHint" class="controls">Space / Esc to resume</p>
           <button id="resumeBtn" type="button">Resume</button>
           <button id="restartPauseBtn" type="button" class="secondary">Restart Level</button>
+          <div id="pauseLevelSelectWrap" class="level-select-row">
+            <label for="pauseLevelSelect" class="level-select-label">Go to</label>
+            <select id="pauseLevelSelect" aria-label="Select level to play"></select>
+            <button id="gotoLevelBtn" type="button" class="secondary small">Go</button>
+          </div>
           <button id="exitPauseBtn" type="button" class="secondary">Exit to Menu</button>
         </div>
       </div>
