@@ -30,6 +30,9 @@ function fetchJson(url) {
   });
 }
 
+/**
+ * Normalize a level JSON into the shape parseLevel expects, preserving metadata.
+ */
 function normalizePackLevel(raw, index) {
   if (!raw || typeof raw !== "object") {
     return { map: [], title: "Level " + (index + 1), number: index + 1 };
@@ -65,6 +68,10 @@ function applyLevelPack(pack, levelObjs) {
   }
 }
 
+/**
+ * Load campaign from levels/manifest.json + per-level JSON files.
+ * Returns a Promise that resolves when LEVELS is populated.
+ */
 function loadLevelPack() {
   var base = levelBasePath();
   levelsReady = fetchJson(base + "manifest.json")
@@ -102,4 +109,5 @@ function loadLevelPack() {
   return levelsReady;
 }
 
+// Kick off load immediately when the script runs
 loadLevelPack();
