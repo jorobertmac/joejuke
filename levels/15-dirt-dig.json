@@ -1,1 +1,28 @@
-{"id":"15-dirt-dig","number":15,"title":"Dirt Dig","author":"Joe's Juke","timeLimit":220,"chipsRequired":5,"maxMoves":0,"password":null,"hint":"","map":["WWWWWWWWWWWWWWWWWWWW","W.A.2.f............W","W.p...............pW","W~~~~~~~~~~~~~~~~~~W","W.C................W","WDDDDDDDDDDDDDDDDDDW","WD................DW","WD.GGGGGGGGGGGGGG.DW","WD.G....C.......G.DW","WWWWWWWW(WWWWWWWWWWW","W.C.C.C............W","W........X.........W","W........E.........W","W..................W","WWWWWWWWWWWWWWWWWWWW"]}
+{
+  "id": "15-dirt-dig",
+  "number": 15,
+  "title": "Dirt Dig",
+  "author": "Joe's Juke",
+  "timeLimit": 220,
+  "chipsRequired": 5,
+  "maxMoves": 0,
+  "password": null,
+  "hint": "",
+  "map": [
+    "9999999999999999999999999999999999999999",
+    "9900J000KB00Bf00000000000000000000000099",
+    "9900mb000000000000000000000000000000mb99",
+    "99~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~99",
+    "9900CH0000000000000000000000000000000099",
+    "99DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD99",
+    "99DD00000000000000000000000000000000DD99",
+    "99DD00GGGGGGGGGGGGGGGGGGGGGGGGGGGG00DD99",
+    "99DD00GG00000000CH00000000000000GG00DD99",
+    "9999999999999999LB9999999999999999999999",
+    "9900CH00CH00CH00000000000000000000000099",
+    "990000000000000000SX00000000000000000099",
+    "990000000000000000EX00000000000000000099",
+    "9900000000000000000000000000000000000099",
+    "9999999999999999999999999999999999999999"
+  ]
+}
