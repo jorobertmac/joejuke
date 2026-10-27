@@ -101,7 +101,7 @@ function onTouchStart(e) {
     }
     if (e.button === 2) {
       var prev = selectedTile;
-      selectedTile = ".";
+      selectedTile = FLOOR_ID;
       paintAt(t.clientX, t.clientY);
       selectedTile = prev;
       e.preventDefault();
