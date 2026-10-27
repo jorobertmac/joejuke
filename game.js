@@ -8,6 +8,7 @@ function loop(ts) {
   var dt = Math.min((ts - lastTime) / 1000, 0.05);
   lastTime = ts;
   if (gameState === "play") {
+    if (typeof tickLevelClock === "function") tickLevelClock(dt);
     if (typeof updateSlide === "function") updateSlide(dt);
     if (typeof updateEnemies === "function") updateEnemies(dt);
     if (player.moving) {
