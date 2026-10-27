@@ -1,5 +1,5 @@
 /**
- * Joe's Juke — player & monster movement
+ * Joe's Juke - player & monster movement
  */
 "use strict";
 
@@ -90,7 +90,6 @@ function slidePath(sx, sy, dir, isBlock, monster) {
   return { x, y, dir: d };
 }
 
-/** Build ordered tiles Joe will visit while sliding (includes the entry tile). */
 function buildPlayerSlidePath(sx, sy, dir) {
   const path = [{ x: sx, y: sy, dir: dir }];
   let x = sx, y = sy, d = dir;
@@ -148,7 +147,6 @@ function startPlayerSlide(path, isForceFloor) {
   }
 }
 
-/** Advance Joe along ice/force at slidePace seconds per tile. */
 function updateSlide(dt) {
   if (!player.sliding) return;
   if (gameState !== "play") {
@@ -189,7 +187,6 @@ function updateSlide(dt) {
   }
 }
 
-/** Pixel position for drawing Joe (lerps between tiles while sliding). */
 function playerDrawPos() {
   if (!player.sliding || !player.slideQueue) {
     return { px: player.x * TILE, py: player.y * TILE };
@@ -249,6 +246,8 @@ function tryMove(dx, dy) {
     const target = map[ny][nx];
     if (isSlide(target) && !(isIce(target) && inv.boots.ice) && !(isForce(target) && inv.boots.suction)) {
       const path = buildPlayerSlidePath(nx, ny, dir);
+      if (typeof recordPlayerMove === "function") recordPlayerMove();
+      else { moveCount = (moveCount || 0) + 1; if (typeof updateHud === "function") updateHud(); }
       startPlayerSlide(path, isForce(target));
       return;
     }
@@ -259,6 +258,8 @@ function tryMove(dx, dy) {
 
   player.dir = dirToFacing(dir);
   player.moving = true; player.animTimer = 0;
+  if (typeof recordPlayerMove === "function") recordPlayerMove();
+  else { moveCount = (moveCount || 0) + 1; if (typeof updateHud === "function") updateHud(); }
   applyLandEffects(dir);
 }
 
