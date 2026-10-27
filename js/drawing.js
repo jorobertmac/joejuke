@@ -192,7 +192,7 @@ function drawMapTiles(useEdit, camX, camY) {
           ctx.fillRect(px, py, TILE, TILE);
           continue;
         }
-        const ch = editMap[y][x] || ".";
+        const ch = (typeof getEditChar === "function") ? getEditChar(x, y) : cellId(editMap[y], x, FLOOR_ID);
         if (CH[ch] !== undefined) {
           const id = CH[ch];
           if ((id >= T.KEY_B && id <= T.KEY_Y) || (id >= T.BOOT_FLIP && id <= T.BOOT_SUCTION) || id === T.CHIP || id === T.BLOCK) {
@@ -202,13 +202,13 @@ function drawMapTiles(useEdit, camX, camY) {
           }
         } else if (MONSTER_CHARS[ch]) {
           drawTerrain(T.FLOOR, px, py);
-        } else if (ch === "A") {
+        } else if (ch === PLAYER_ID) {
           drawTerrain(T.FLOOR, px, py);
         } else {
           drawTerrain(T.FLOOR, px, py);
         }
-        var och = (typeof getOverlayChar === "function") ? getOverlayChar(x, y) : " ";
-        if (och && och !== " " && CH[och] !== undefined) {
+        var och = (typeof getOverlayChar === "function") ? getOverlayChar(x, y) : EMPTY_ID;
+        if (och && och !== EMPTY_ID && och !== FLOOR_ID && CH[och] !== undefined) {
           drawOverlayItem(CH[och], px, py);
         } else if (CH[ch] !== undefined) {
           const id2 = CH[ch];
@@ -217,10 +217,10 @@ function drawMapTiles(useEdit, camX, camY) {
           }
         }
         var hasBlk = (typeof hasEditBlock === "function") ? hasEditBlock(x, y) : false;
-        if (hasBlk || ch === "B") drawBlock(px, py);
+        if (hasBlk || ch === "BK") drawBlock(px, py);
         if (MONSTER_CHARS[ch]) {
           drawEnemy({ type: MONSTER_CHARS[ch].type, dir: MONSTER_CHARS[ch].dir }, px, py);
-        } else if (ch === "A") {
+        } else if (ch === PLAYER_ID) {
           drawJoe(px, py, 0, 0);
         }
       }
