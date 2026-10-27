@@ -1,1 +1,36 @@
-PLACEHOLDER_WILL_REPLACE
+{
+  "name": "Joe's Juke Campaign",
+  "version": 1,
+  "levels": [
+    {"id": "01-block-door", "file": "01-block-door.json", "title": "Block Door", "number": 1},
+    {"id": "02-keys", "file": "02-keys.json", "title": "Keys", "number": 2},
+    {"id": "03-boots-tour", "file": "03-boots-tour.json", "title": "Boots Tour", "number": 3},
+    {"id": "04-balls", "file": "04-balls.json", "title": "Balls", "number": 4},
+    {"id": "05-tile-gallery", "file": "05-tile-gallery.json", "title": "Tile Gallery", "number": 5},
+    {"id": "06-nested-maze", "file": "06-nested-maze.json", "title": "Nested Maze", "number": 6},
+    {"id": "07-block-bridge", "file": "07-block-bridge.json", "title": "Block Bridge", "number": 7},
+    {"id": "08-key-chain", "file": "08-key-chain.json", "title": "Key Chain", "number": 8},
+    {"id": "09-ice-maze", "file": "09-ice-maze.json", "title": "Ice Maze", "number": 9},
+    {"id": "10-force-loop", "file": "10-force-loop.json", "title": "Force Loop", "number": 10},
+    {"id": "11-fire-ring", "file": "11-fire-ring.json", "title": "Fire Ring", "number": 11},
+    {"id": "12-ball-lanes", "file": "12-ball-lanes.json", "title": "Ball Lanes", "number": 12},
+    {"id": "13-toggle", "file": "13-toggle.json", "title": "Toggle", "number": 13},
+    {"id": "14-teleport", "file": "14-teleport.json", "title": "Teleport", "number": 14},
+    {"id": "15-dirt-dig", "file": "15-dirt-dig.json", "title": "Dirt Dig", "number": 15},
+    {"id": "16-heavy-blocks", "file": "16-heavy-blocks.json", "title": "Heavy Blocks", "number": 16},
+    {"id": "17-spring-trap", "file": "17-spring-trap.json", "title": "Spring Trap", "number": 17},
+    {"id": "18-full-kit", "file": "18-full-kit.json", "title": "Full Kit", "number": 18},
+    {"id": "19-crossfire", "file": "19-crossfire.json", "title": "Crossfire", "number": 19},
+    {"id": "20-rainbow-vault", "file": "20-rainbow-vault.json", "title": "Rainbow Vault", "number": 20},
+    {"id": "21-ice-corners", "file": "21-ice-corners.json", "title": "Ice Corners", "number": 21},
+    {"id": "22-pickpocket", "file": "22-pickpocket.json", "title": "Pickpocket", "number": 22},
+    {"id": "23-tank-trouble", "file": "23-tank-trouble.json", "title": "Tank Trouble", "number": 23},
+    {"id": "24-minefield", "file": "24-minefield.json", "title": "Minefield", "number": 24},
+    {"id": "25-illusions", "file": "25-illusions.json", "title": "Illusions", "number": 25},
+    {"id": "26-hungry", "file": "26-hungry.json", "title": "Hungry", "number": 26},
+    {"id": "27-mixed-signals", "file": "27-mixed-signals.json", "title": "Mixed Signals", "number": 27},
+    {"id": "28-gauntlet", "file": "28-gauntlet.json", "title": "Gauntlet", "number": 28},
+    {"id": "29-master-key", "file": "29-master-key.json", "title": "Master Key", "number": 29},
+    {"id": "30-endgame", "file": "30-endgame.json", "title": "Endgame", "number": 30}
+  ]
+}
