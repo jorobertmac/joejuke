@@ -1,1 +1,28 @@
-{"id":"30-endgame","number":30,"title":"Endgame","author":"Joe's Juke","timeLimit":400,"chipsRequired":8,"maxMoves":0,"password":null,"hint":"","map":["WWWWWWWWWWWWWWWWWWWW","W.A.2.4.6.8.f.l.j.qW","W.p.m.z.a.c.t.T....W","W~~~~~~~~~~~~~~~~~~W","W.C................W","WFFFFFFFFFFFFFFFFFFW","W.C................W","WIIIIIIIIIIIIIIIIIIW","W.C................W","W^^^^^^^^^^^^^^^^^^W","W.C................W","WWWWWWWW(WWWWWWWWWWW","W.C.C.C.C..........W","W........X.E.......W","WWWWWWWWWWWWWWWWWWWW"]}
+{
+  "id": "30-endgame",
+  "number": 30,
+  "title": "Endgame",
+  "author": "Joe's Juke",
+  "timeLimit": 400,
+  "chipsRequired": 8,
+  "maxMoves": 0,
+  "password": null,
+  "hint": "",
+  "map": [
+    "9999999999999999999999999999999999999999",
+    "9900J000KB00KR00KG00KY00Bf00By00Bi00Bs99",
+    "9900mb00mg00mf00mu00mc00mt00me0000000099",
+    "99~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~99",
+    "9900CH0000000000000000000000000000000099",
+    "99FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF99",
+    "9900CH0000000000000000000000000000000099",
+    "99IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII99",
+    "9900CH0000000000000000000000000000000099",
+    "99FNFNFNFNFNFNFNFNFNFNFNFNFNFNFNFNFNFN99",
+    "9900CH0000000000000000000000000000000099",
+    "9999999999999999LB9999999999999999999999",
+    "9900CH00CH00CH00CH0000000000000000000099",
+    "990000000000000000SX00EX0000000000000099",
+    "9999999999999999999999999999999999999999"
+  ]
+}
