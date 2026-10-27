@@ -4,39 +4,8 @@
  */
 "use strict";
 
-/** Friendly names for the 30 built-in levels (index-aligned with LEVELS). */
-var LEVEL_NAMES = [
-  "1. Training — Movement & Blocks",
-  "2. Training — Keys & Socket",
-  "3. Training — Boots",
-  "4. Training — Monsters",
-  "5. Training — Special Tiles",
-  "6. Nested Maze",
-  "7. Block Bridge",
-  "8. Key Chain",
-  "9. Ice Maze",
-  "10. Force Floors",
-  "11. Fire Ring",
-  "12. Ball Lanes",
-  "13. Toggle Walls",
-  "14. Teleporters",
-  "15. Dirt & Gravel",
-  "16. Block Bridge (Fixed)",
-  "17. Trap Release",
-  "18. Mixed Boots",
-  "19. Glider / Fireball",
-  "20. Four-Key Vault",
-  "21. Ice Corners",
-  "22. Thief",
-  "23. Tank",
-  "24. Bomb Clearing",
-  "25. Blue Walls",
-  "26. Teeth Chase",
-  "27. Force + Ice",
-  "28. Monster Gauntlet",
-  "29. Full Toolkit",
-  "30. Final Challenge"
-];
+/* LEVEL_NAMES is filled by js/levels.js from levels/manifest.json */
+if (typeof LEVEL_NAMES === "undefined") var LEVEL_NAMES = [];
 
 /**
  * Convert a LEVELS entry (string[] or {map,overlay?,blocks?}) into editor-ready data.
@@ -62,11 +31,18 @@ function levelToImportData(raw, index) {
   var cols2 = raw.cols || (map[0] && map[0].length) || 20;
   var rows2 = raw.rows || map.length || 15;
   var result = {
-    name: raw.name || name,
+    name: raw.title || raw.name || name,
+    title: raw.title || raw.name || name,
     cols: cols2,
     rows: rows2,
     map: map.map(function (r) { return String(r).padEnd(cols2, ".").slice(0, cols2); }),
-    version: raw.version || 4
+    version: raw.version || 4,
+    timeLimit: typeof raw.timeLimit === "number" ? raw.timeLimit : 0,
+    chipsRequired: raw.chipsRequired != null ? raw.chipsRequired : null,
+    maxMoves: typeof raw.maxMoves === "number" ? raw.maxMoves : 0,
+    password: raw.password || null,
+    hint: raw.hint || "",
+    author: raw.author || ""
   };
   if (raw.overlay && Array.isArray(raw.overlay)) {
     result.overlay = raw.overlay.map(function (r) {
@@ -129,11 +105,18 @@ function parseImportFlexible(text) {
       var cols = obj.cols || obj.map[0].length;
       var rows = obj.rows || obj.map.length;
       var result = {
-        name: obj.name || "Imported",
+        name: obj.name || obj.title || "Imported",
+        title: obj.title || obj.name || "Imported",
         cols: cols,
         rows: rows,
         map: obj.map.map(function (r) { return String(r).padEnd(cols, ".").slice(0, cols); }),
-        version: obj.version || 4
+        version: obj.version || 4,
+        timeLimit: typeof obj.timeLimit === "number" ? obj.timeLimit : 0,
+        chipsRequired: obj.chipsRequired != null ? obj.chipsRequired : null,
+        maxMoves: typeof obj.maxMoves === "number" ? obj.maxMoves : 0,
+        password: obj.password || null,
+        hint: obj.hint || "",
+        author: obj.author || ""
       };
       if (obj.overlay && Array.isArray(obj.overlay)) {
         result.overlay = obj.overlay.map(function (r) {
@@ -233,7 +216,7 @@ function populateJsonLevelSelect(list) {
   for (var i = 0; i < list.length; i++) {
     var opt = document.createElement("option");
     opt.value = String(i);
-    opt.textContent = list[i].name || ("Level " + (i + 1));
+    opt.textContent = list[i].name || list[i].title || ("Level " + (i + 1));
     sel.appendChild(opt);
   }
   wrap.classList.remove("hidden");
