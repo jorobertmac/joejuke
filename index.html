@@ -50,7 +50,10 @@
     </header>
     <div id="hud">
       <span class="hud-level">Lv <strong id="levelNum">1</strong>/<span id="levelTotal">30</span></span>
+      <span class="hud-title" id="levelTitle"></span>
       <span class="hud-chips">Chips <strong id="chipCount">0</strong>/<span id="chipsNeededDisplay">0</span></span>
+      <span class="hud-time">Time <strong id="timeDisplay">—</strong></span>
+      <span class="hud-moves">Moves <strong id="movesDisplay">0</strong></span>
       <span id="invDisplay" class="hud-inv" title="Keys & boots"></span>
       <span id="status">Swipe or use D-pad</span>
       <button type="button" id="pauseBtn" class="hud-pause hidden" title="Pause (Space / Esc)" aria-label="Pause">❚❚</button>
@@ -147,7 +150,6 @@
       </div>
     </div>
 
-    <!-- Editor toolbar: desktop = side panel; mobile = collapsible sections -->
     <div id="editorBar" class="hidden">
       <div class="editor-bar-header">
         <span class="editor-bar-title">Editor</span>
