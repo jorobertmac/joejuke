@@ -114,6 +114,7 @@ function updateHud() {
   invDisplayEl.innerHTML = parts.join("");
 }
 
+
 function recordPlayerMove() {
   moveCount = (moveCount || 0) + 1;
   if (levelMaxMoves > 0 && moveCount > levelMaxMoves) {
