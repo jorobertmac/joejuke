@@ -37,7 +37,7 @@ Every map cell is a **unique 2-character ID** from `a-z`, `A-Z`, `0-9` (3,844 sl
 ### Allocation scheme
 
 | Prefix / pattern | Meaning |
-|------------------|--------|
+|------------------|---------|
 | `00` | Floor (default base) |
 | `99` / `98` / `97` | Wall / hidden wall / invisible wall |
 | Mnemonic pairs (`~~`, `FF`, `II`, `EX`, …) | Terrain & special tiles |
@@ -121,6 +121,7 @@ Legacy single-character maps still import via `LEGACY_CH` → 2-char migration i
 
 Mechanics follow the CC1 tile list and Lynx/MS movement rules documented on the Bit Busters wiki.
 
+
 ## Level pack format
 
 Campaign levels live in `levels/` as individual JSON files listed by `levels/manifest.json`.
@@ -138,7 +139,7 @@ Each level file supports:
   "maxMoves": 0,
   "password": null,
   "hint": "",
-  "map": ["...packed 2-char rows..."],
+  "map": ["WWWW...", "..."],
   "overlay": null,
   "blocks": [{ "x": 4, "y": 3 }]
 }
