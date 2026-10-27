@@ -1,38 +1,105 @@
 /**
- * Joe's Juke - 30 original levels in classic Chip's Challenge style.
- * Distinct puzzles; chips gated by hazards and locks; all rate B/A/S.
+ * Joe's Juke — level pack loader
+ * Loads levels/manifest.json then each levels/*.json file.
+ * Builds global LEVELS (full objects) and LEVEL_NAMES (titles).
  */
 "use strict";
 
-var LEVELS = [
-{"map": ["WWWWWWWWWWWWWWWWWWWW", "W.A.f..............W", "W.p...............pW", "W...B..............W", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "W.....2............W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C............W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"], "blocks": [{"x": 4, "y": 3}]},
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.f............W", "W.p...............pW", "W~~~~~~~~~~~~~~~~~~W", "W.C................W", "WWWWWWWW(WWWWWWWWWWW", "W...4.C............W", "WWWWWWWW)WWWWWWWWWWW", "W.C.C..............W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.f.l.j.q........W", "W.p...............pW", "W~~~~~~~~~~~~~~~~~~W", "W.C................W", "WFFFFFFFFFFFFFFFFFFW", "W.C................W", "WIIIIIIIIIIIIIIIIIIW", "W.C................W", "W^^^^^^^^^^^^^^^^^^W", "W.C................W", "WWWWWWWW(WWWWWWWWWWW", "W.2.C.C............W", "W........X.E.......W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.f............W", "W..................W", "W.p...............pW", "W..................W", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C............W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.f............W", "W.~.F.I.^.D.G......W", "W.[.].r.h..........W", "W.p...............pW", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C.C..........W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.f............W", "W.p...............pW", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "W.WWWWWWWWWWWWWWWW.W", "W.W..............W.W", "W.W.WWWWWWWWWWWW.W.W", "W.W.W..........W.W.W", "W.W.W.WWWW(WWW.W.W.W", "W.W.W.W.C.C..W.W.W.W", "W.W.W.WWWWWWWW.W.W.W", "W.WWWWWWWWWWWWWW.W.W", "W........X.E.......W", "WWWWWWWWWWWWWWWWWWWW"],
-{"map": ["WWWWWWWWWWWWWWWWWWWW", "W.A.2..............W", "W.p...............pW", "W..B.B.B...........W", "W~~~~~~~~~~~~~~~~~~W", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C.C..........W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"], "blocks": [{"x": 3, "y": 3}, {"x": 5, "y": 3}, {"x": 7, "y": 3}]},
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2..............W", "W.p...............pW", "W~~~~~~~~~~~~~~~~~~W", "W.C................W", "WWWWWWWW(WWWWWWWWWWW", "W...4..............W", "WWWWWWWW)WWWWWWWWWWW", "W...6.C............W", "WWWWWWWW{WWWWWWWWWWW", "W...8.C............W", "WWWWWWWW}WWWWWWWWWWW", "W.C.C..............W", "W........X.E.......W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.j.2............W", "W.p...............pW", "WIIIIIIIIIIIIIIIIIIW", "WI....C...........IW", "WI.IIIIIIIIIIIIII.IW", "WI.I............I.IW", "WI.I..C.C.......I.IW", "WI.I............I.IW", "WI.IIIIIIIIIIIIII.IW", "WWWWWWWW(WWWWWWWWWWW", "W.C.C..............W", "W........X.........W", "W........E.........W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.q.2............W", "W.p...............pW", "W>>>>>>>>>>>>>>>>>>W", "W^................vW", "W^..C.C...........vW", "W^................vW", "W<<<<<<<<<<<<<<<<<<W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C............W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.l.2............W", "W.p...............pW", "WFFFFFFFFFFFFFFFFFFW", "WF................FW", "WF.FFFFFFFFFFFFFF.FW", "WF.F..C.C.......F.FW", "WF.FFFFFFFFFFFFFF.FW", "WF................FW", "WFFFFFFFFFFFFFFFFFFW", "WWWWWWWW(WWWWWWWWWWW", "W.C.C..............W", "W........X.........W", "W........E.........W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.f............W", "W..................W", "W.P...............PW", "W..................W", "W.p...............pW", "W..................W", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C.C..........W", "W........X.........W", "W........E.........W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.f.!..........W", "W...|..............W", "W...|..............W", "W~~~~~~~~~~~~~~~~~~W", "W.C................W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C............W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.f..............W", "W.@................W", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "WWWWWWWWWWWWWWWWWWWW", "W.C................W", "WWWWWWWWWWWWWWWWWWWW", "W.................@W", "WWWWWWWW(WWWWWWWWWWW", "W.2.C.C............W", "W........X.........W", "W........E.........W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.f............W", "W.p...............pW", "W~~~~~~~~~~~~~~~~~~W", "W.C................W", "WDDDDDDDDDDDDDDDDDDW", "WD................DW", "WD.GGGGGGGGGGGGGG.DW", "WD.G....C.......G.DW", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C............W", "W........X.........W", "W........E.........W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-{"map": ["WWWWWWWWWWWWWWWWWWWW", "W.A.2..............W", "W.p...............pW", "W.B.B.B.B..........W", "W~~~~~~~~~~~~~~~~~~W", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C.C..........W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"], "blocks": [{"x": 2, "y": 3}, {"x": 4, "y": 3}, {"x": 6, "y": 3}, {"x": 8, "y": 3}]},
-["WWWWWWWWWWWWWWWWWWWW", "W.A.f.&............W", "W.p...............pW", "W~~~~~~~~~~~~~~~~~~W", "W.C................W", "WWWWWWWW=WWWWWWWWWWW", "W...2..............W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C............W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.f.l.j.q.2......W", "W.p...............pW", "W~~~~~~~~~~~~~~~~~~W", "W.C................W", "WFFFFFFFFFFFFFFFFFFW", "W.C................W", "WIIIIIIIIIIIIIIIIIIW", "W.C................W", "W^^^^^^^^^^^^^^^^^^W", "W.C................W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C............W", "W........X.E.......W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.f............W", "W.m...............zW", "W..................W", "W.m...............zW", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C............W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.4.6.8.f......W", "W.p...............pW", "W~~~~~~~~~~~~~~~~~~W", "W.C................W", "WWWWWWWW(WWWWWWWWWWW", "W.C................W", "WWWWWWWW)WWWWWWWWWWW", "W.C................W", "WWWWWWWW{WWWWWWWWWWW", "W.C................W", "WWWWWWWW}WWWWWWWWWWW", "W.C................W", "W........X.E.......W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.j.2............W", "W.p...............pW", "W1IIIIIIIIIIIIIIII3W", "WI....C...........IW", "WI1IIIIIIIIIIIIII3IW", "WI....C.C.........IW", "WI7IIIIIIIIIIIIII9IW", "WI................IW", "W7IIIIIIIIIIIIIIII9W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C..............W", "W........X.........W", "W........E.........W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.f..............W", "W.p...............pW", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "W.$................W", "W.l................W", "WFFFFFFFFFFFFFFFFFFW", "W.C.C..............W", "WWWWWWWW(WWWWWWWWWWW", "W.2.C.C............W", "W........X.........W", "W........E.........W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.f............W", "W.t...............%W", "W..................W", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C............W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-{"map": ["WWWWWWWWWWWWWWWWWWWW", "W.A.2.f............W", "W.*.*.*............W", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C............W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"], "blocks": [{"x": 4, "y": 1}]},
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.f............W", "W.p...............pW", "W~~~~~~~~~~~~~~~~~~W", "W.C................W", "W[[[[[[[[[[[[[[[[[[W", "W]................]W", "W[[[[[[[[[[[[[[[[[[W", "W]................]W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C............W", "W........X.........W", "W........E.........W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.f............W", "W.T................W", "W..................W", "W.T................W", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C............W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.j.q.2..........W", "W.p...............pW", "WIIIIIIIIIIIIIIIIIIW", "W.C................W", "W^^^^^^^^^^^^^^^^^^W", "W.C.C..............W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C............W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.f............W", "W.p.m.z.a.c........W", "W..................W", "W.p.m.z.a.c........W", "W~~~~~~~~~~~~~~~~~~W", "W.C.C..............W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C.C..........W", "WWWWWWWWWWWWWWWWWWWW", "W........X.........W", "W........E.........W", "W..................W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.4.f.l........W", "W.p...............pW", "W~~~~~~~~~~~~~~~~~~W", "W.C................W", "WFFFFFFFFFFFFFFFFFFW", "W.C................W", "WWWWWWWW(WWWWWWWWWWW", "W.C................W", "WWWWWWWW)WWWWWWWWWWW", "W.C.C.C............W", "W........X.........W", "W........E.........W", "W..................W", "WWWWWWWWWWWWWWWWWWWW"],
-["WWWWWWWWWWWWWWWWWWWW", "W.A.2.4.6.8.f.l.j.qW", "W.p.m.z.a.c.t.T....W", "W~~~~~~~~~~~~~~~~~~W", "W.C................W", "WFFFFFFFFFFFFFFFFFFW", "W.C................W", "WIIIIIIIIIIIIIIIIIIW", "W.C................W", "W^^^^^^^^^^^^^^^^^^W", "W.C................W", "WWWWWWWW(WWWWWWWWWWW", "W.C.C.C.C..........W", "W........X.E.......W", "WWWWWWWWWWWWWWWWWWWW"]
-];
+var LEVELS = [];
+var LEVEL_NAMES = [];
+var LEVEL_PACK = null;
+var levelsReady = null;
+
+function levelBasePath() {
+  try {
+    var scripts = document.getElementsByTagName("script");
+    for (var i = 0; i < scripts.length; i++) {
+      var src = scripts[i].src || "";
+      if (src.indexOf("levels.js") !== -1) {
+        return src.replace(/js\/levels\.js(\?.*)?$/, "levels/");
+      }
+    }
+  } catch (e) {}
+  return "levels/";
+}
+
+function fetchJson(url) {
+  return fetch(url, { cache: "no-cache" }).then(function (res) {
+    if (!res.ok) throw new Error("Failed to load " + url + " (" + res.status + ")");
+    return res.json();
+  });
+}
+
+function normalizePackLevel(raw, index) {
+  if (!raw || typeof raw !== "object") {
+    return { map: [], title: "Level " + (index + 1), number: index + 1 };
+  }
+  var map = raw.map || raw.rows || [];
+  if (!Array.isArray(map)) map = [];
+  var out = {
+    id: raw.id || ("level-" + (index + 1)),
+    number: typeof raw.number === "number" ? raw.number : index + 1,
+    title: raw.title || raw.name || ("Level " + (index + 1)),
+    author: raw.author || "",
+    timeLimit: typeof raw.timeLimit === "number" ? raw.timeLimit : 0,
+    chipsRequired: raw.chipsRequired != null ? raw.chipsRequired : null,
+    maxMoves: typeof raw.maxMoves === "number" ? raw.maxMoves : 0,
+    password: raw.password || null,
+    hint: raw.hint || "",
+    map: map,
+  };
+  if (raw.overlay && Array.isArray(raw.overlay)) out.overlay = raw.overlay;
+  if (raw.blocks && Array.isArray(raw.blocks)) out.blocks = raw.blocks;
+  return out;
+}
+
+function applyLevelPack(pack, levelObjs) {
+  LEVEL_PACK = pack || { name: "Campaign", version: 1, levels: [] };
+  LEVELS = levelObjs;
+  LEVEL_NAMES = levelObjs.map(function (lv, i) {
+    return lv.title || ("Level " + (i + 1));
+  });
+  if (typeof fillLevelSelects === "function") fillLevelSelects();
+  if (typeof levelTotalEl !== "undefined" && levelTotalEl) {
+    levelTotalEl.textContent = String(LEVELS.length);
+  }
+}
+
+function loadLevelPack() {
+  var base = levelBasePath();
+  levelsReady = fetchJson(base + "manifest.json")
+    .then(function (pack) {
+      var list = (pack && pack.levels) || [];
+      if (!list.length) throw new Error("Level manifest is empty");
+      return Promise.all(
+        list.map(function (entry, i) {
+          var file = entry.file || entry.id + ".json";
+          return fetchJson(base + file).then(function (raw) {
+            var lv = normalizePackLevel(raw, i);
+            if (entry.title && !raw.title) lv.title = entry.title;
+            if (entry.number != null) lv.number = entry.number;
+            return lv;
+          });
+        })
+      ).then(function (objs) {
+        applyLevelPack(pack, objs);
+        return objs;
+      });
+    })
+    .catch(function (err) {
+      console.error("Level pack load failed:", err);
+      LEVELS = [];
+      LEVEL_NAMES = [];
+      var el = document.getElementById("loadError");
+      if (el) {
+        el.classList.remove("hidden");
+        el.textContent =
+          "Could not load levels from levels/. Serve over HTTP and ensure levels/manifest.json exists. " +
+          (err && err.message ? err.message : "");
+      }
+      throw err;
+    });
+  return levelsReady;
+}
+
+loadLevelPack();
