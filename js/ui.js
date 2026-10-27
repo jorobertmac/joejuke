@@ -1,5 +1,5 @@
 /**
- * Joe's Juke — screens, buttons, pause menu, import/export UI
+ * Joe's Juke - screens, buttons, pause menu, import/export UI
  */
 "use strict";
 
@@ -22,7 +22,6 @@ function setPauseBtnVisible(show) {
   else pauseBtn.classList.add("hidden");
 }
 
-/** Open pause menu during play (or editor). */
 function openPauseMenu() {
   var inEditorMenu = (gameState === "editor");
   if (gameState === "play") {
@@ -33,12 +32,10 @@ function openPauseMenu() {
       player.moving = false;
     }
   } else if (gameState === "editor") {
-    // keep editor state; just show overlay
   } else if (gameState !== "paused") {
     return;
   }
 
-  // Hide other overlays but keep editor bar when editing
   [startScreen, levelComplete, gameOver, winScreen, exportModal, importModal, rateModal]
     .forEach(function (el) { if (el) el.classList.add("hidden"); });
   if (inEditorMenu) {
@@ -74,7 +71,6 @@ function openPauseMenu() {
       exitBtn.classList.remove("hidden");
       exitBtn.textContent = fromEditor ? "Back to Editor" : "Exit to Menu";
     }
-    // Level jump only for campaign play (not editor test / custom-only)
     if (levelWrap) {
       if (fromEditor || customLevel) {
         levelWrap.classList.add("hidden");
@@ -101,7 +97,7 @@ function closePauseMenu() {
     if (statusEl) statusEl.textContent = fromEditor ? "Testing" : "Swipe or D-pad";
   } else if (gameState === "editor") {
     if (editorBar) editorBar.classList.remove("hidden");
-    if (statusEl) statusEl.textContent = "Editor — arrows navigate palette, Enter selects";
+    if (statusEl) statusEl.textContent = "Editor - arrows navigate palette, Enter selects";
   }
 }
 
@@ -128,7 +124,6 @@ function on(id, handler) {
   });
 }
 
-/** Fill a <select> with built-in LEVELS names (0-based values). */
 function populateLevelSelect(sel, selectedIndex) {
   if (!sel || typeof LEVELS === "undefined") return;
   var prev = selectedIndex != null ? String(selectedIndex) : sel.value;
@@ -160,13 +155,28 @@ function initLevelSelects() {
   populateLevelSelect(document.getElementById("pauseLevelSelect"), 0);
 }
 
-// Populate after LEVELS / LEVEL_NAMES are available (defer scripts + load)
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initLevelSelects);
-} else {
-  setTimeout(initLevelSelects, 0);
+function fillLevelSelects() {
+  initLevelSelects();
 }
-window.addEventListener("load", initLevelSelects);
+
+function whenLevelsReady(fn) {
+  if (typeof levelsReady !== "undefined" && levelsReady && typeof levelsReady.then === "function") {
+    levelsReady.then(fn).catch(function () {});
+  } else {
+    fn();
+  }
+}
+
+// Populate after LEVELS / LEVEL_NAMES are available (async pack load)
+whenLevelsReady(function () {
+  initLevelSelects();
+});
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", function () { whenLevelsReady(initLevelSelects); });
+} else {
+  setTimeout(function () { whenLevelsReady(initLevelSelects); }, 0);
+}
+window.addEventListener("load", function () { whenLevelsReady(initLevelSelects); });
 
 on("startBtn", function () {
   loadLevel(getSelectedStartLevel());
@@ -286,7 +296,7 @@ on("rateLevelBtn", function () {
     };
     Object.keys(labels).forEach(function (k) {
       var li = document.createElement("li");
-      var v = report.dimensions && report.dimensions[k] != null ? report.dimensions[k] : "—";
+      var v = report.dimensions && report.dimensions[k] != null ? report.dimensions[k] : "-";
       li.textContent = labels[k] + ": " + v;
       dimsEl.appendChild(li);
     });
@@ -382,7 +392,6 @@ on("closeImportBtn", function () {
   }
 });
 
-/* ---- Pause menu ---- */
 on("pauseBtn", function () { togglePauseMenu(); });
 on("resumeBtn", function () { closePauseMenu(); });
 on("restartPauseBtn", function () {
@@ -391,12 +400,10 @@ on("restartPauseBtn", function () {
   else loadLevel(level);
 });
 on("exitPauseBtn", function () {
-  // Testing from editor → return to editor
   if (fromEditor && customLevel && gameState === "paused") {
     enterEditor();
     return;
   }
-  // Editor menu or normal play → start screen
   var lastLevel = typeof level === "number" ? level : 0;
   gameState = "start";
   customLevel = null;
