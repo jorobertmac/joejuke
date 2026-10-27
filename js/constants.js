@@ -44,3 +44,90 @@ var T = {
 var DIR = { N: 0, E: 1, S: 2, W: 3 };
 var DX = [0, 1, 0, -1];
 var DY = [-1, 0, 1, 0];
+
+var TERRAIN_IDX = {
+  0: 0,
+  1: 2, 2: 3, 3: 4, 4: 5,
+  5: 6, 6: 7, 7: 8, 8: 9,
+  9: 10, 10: 11, 11: 12, 12: 13, 13: 14,
+  14: 15, 15: 16, 16: 17, 17: 18,
+  19: 19, 20: 20, 21: 21, 22: 22, 23: 23, 24: 24,
+  25: 25, 26: 26, 27: 27, 28: 28,
+  29: 29, 30: 30, 31: 31, 32: 32,
+  33: 34, 34: 35, 35: 36,
+};
+
+var ITEM_IDX = {
+  18: 0,
+  40: 1, 41: 2, 42: 3, 43: 4,
+  48: 5, 49: 6, 50: 7, 51: 8,
+  44: 10, 45: 11, 46: 12, 47: 13,
+  36: 14, 37: 15, 38: 16, 39: 17,
+};
+
+var MONSTER_TYPES = ["ball", "glider", "fireball", "bug", "paramecium", "tank", "walker", "teeth", "blob"];
+
+/**
+ * 2-character ID → internal numeric tile id (terrain / items / block).
+ * Empty overlay uses "  " (two spaces).
+ */
+var CH = {
+  // Terrain
+  "00": T.FLOOR,
+  "99": T.WALL,
+  "~~": T.WATER,
+  "FF": T.FIRE,
+  "II": T.ICE,
+  "I1": T.ICE_NW,
+  "I3": T.ICE_NE,
+  "I7": T.ICE_SW,
+  "I9": T.ICE_SE,
+  "FN": T.FORCE_N,
+  "FE": T.FORCE_E,
+  "FS": T.FORCE_S,
+  "FW": T.FORCE_W,
+  "FR": T.FORCE_R,
+  "DD": T.DIRT,
+  "GG": T.GRAVEL,
+  "EX": T.EXIT,
+  "SX": T.SOCKET,
+  "CH": T.CHIP,
+  "??": T.HINT,
+  "97": T.INVIS,
+  "98": T.HIDDEN,
+  "RR": T.RECESSED,
+  "BR": T.BLUE_REAL,
+  "BF": T.BLUE_FAKE,
+  "TN": T.THIN_N,
+  "TE": T.THIN_E,
+  "TS": T.THIN_S,
+  "TW": T.THIN_W,
+  "TP": T.TELEPORT,
+  "BM": T.BOMB,
+  "TH": T.THIEF,
+  "TR": T.TRAP,
+  "VW": T.TOGGLE_WALL,
+  "VF": T.TOGGLE_FLOOR,
+  "CL": T.CLONER,
+  "BG": T.BTN_GREEN,
+  "RD": T.BTN_RED,
+  "BB": T.BTN_BLUE,
+  "BN": T.BTN_BROWN,
+  // Keys
+  "KB": T.KEY_B,
+  "KR": T.KEY_R,
+  "KG": T.KEY_G,
+  "KY": T.KEY_Y,
+  // Locks
+  "LB": T.LOCK_B,
+  "LR": T.LOCK_R,
+  "LG": T.LOCK_G,
+  "LY": T.LOCK_Y,
+  // Boots (second char lowercase to avoid collision with BF blue-fake)
+  "Bf": T.BOOT_FLIP,
+  "Bi": T.BOOT_ICE,
+  "Bs": T.BOOT_SUCTION,
+  "By": T.BOOT_FIRE,
+  // Block
+  "BK": T.BLOCK,
+};
