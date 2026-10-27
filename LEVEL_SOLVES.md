@@ -20,7 +20,7 @@ Each level has a distinct puzzle identity. Shared rule: some chips sit behind a 
 |---|--------|---------|
 | 6 | Nested maze | Water chips, then weave nested wall rings to a lock-guarded core. |
 | 7 | Block bridge | Push three blocks into water to reach chips; lock vault beyond. |
-| 8 | Key chain | Water chip; blue-red-green-yellow locks in forced order. |
+| 8 | Key chain | Water chip; blue→red→green→yellow locks in forced order. |
 | 9 | Ice maze | Ice skates through corridors with interior chips; lock vault. |
 | 10 | Force loop | Suction boots ride the force ring for center chips; lock vault. |
 | 11 | Fire ring | Fire boots into the ring for chips; lock vault outside. |
@@ -34,7 +34,7 @@ Each level has a distinct puzzle identity. Shared rule: some chips sit behind a 
 | 19 | Crossfire | Glider and fireball lanes; water; lock. |
 | 20 | Rainbow vault | Water chip; four colored locks each hide a chip. |
 | 21 | Ice corners | Corner ice redirects; skates; lock vault. |
-| 22 | Pickpocket | Flippers - water chips - thief strips boots - fire boots - fire chips - lock. |
+| 22 | Pickpocket | Flippers → water chips → thief strips boots → fire boots → fire chips → lock. |
 | 23 | Tank trouble | Blue button reverses tank; water; lock. |
 | 24 | Minefield | Block clears bombs; water; lock. |
 | 25 | Illusions | Probe fake blue walls; water; lock. |
