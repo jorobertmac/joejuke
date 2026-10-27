@@ -57,8 +57,6 @@
     return true;
   }
 
-  // Enter/Space on focused palette button already activates click natively.
-  // Also select on Enter if focus is on palette (extra safety).
   function handlePaletteActivate(e) {
     if (e.key !== "Enter" && e.key !== " ") return false;
     var t = e.target;
@@ -71,7 +69,6 @@
   window.addEventListener("keydown", function (e) {
     var state = typeof gameState !== "undefined" ? gameState : "";
     var overlay = getVisibleOverlay();
-    // Arrow-nav any visible overlay menu (pause, start, complete, etc.)
     if (overlay && state !== "play") {
       if (handleMenuKeys(e, overlay)) {
         e.preventDefault();
@@ -93,13 +90,11 @@
     }
   }, true);
 
-  // When palette is (re)built, focus the active tile
   function focusActivePalette() {
     var active = document.querySelector("#palette .palette-btn.active");
     if (active) setTimeout(function () { active.focus(); }, 0);
   }
 
-  // Hook enterEditor if available
   var _enterEditor = null;
   Object.defineProperty(window, "enterEditor", {
     configurable: true,
@@ -117,7 +112,6 @@
     }
   });
 
-  // If enterEditor already defined, wrap it
   if (typeof enterEditor === "function") {
     var orig = enterEditor;
     window.enterEditor = function () {
@@ -130,7 +124,6 @@
     };
   }
 
-  // Palette click → keep focus on selected button
   document.addEventListener("click", function (e) {
     var t = e.target;
     if (!t) return;
@@ -138,7 +131,6 @@
     if (btn) btn.focus();
   });
 
-  // Focus start button on load
   window.addEventListener("load", function () {
     setTimeout(function () {
       if (typeof gameState !== "undefined" && gameState === "start") {
