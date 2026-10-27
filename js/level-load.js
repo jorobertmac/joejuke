@@ -9,7 +9,6 @@ function resizeCanvas() {
   var inEditor = (gameState === "editor") ||
     (document.body && document.body.classList.contains("editor-mode"));
   if (inEditor) {
-    // Fixed footprint: resolution = visible tile viewport (editViewSize²)
     var vs = (typeof editViewSize === "number" && editViewSize > 0) ? editViewSize : 32;
     canvas.width = Math.max(1, vs) * TILE;
     canvas.height = Math.max(1, vs) * TILE;
@@ -35,12 +34,6 @@ function getCamera() {
   return { camX: camX, camY: camY };
 }
 
-/**
- * Normalize level input to { mapRows, overlayRows, extraBlocks }.
- * Accepts:
- *  - string[] (legacy single-layer char maps)
- *  - { map: string[], overlay?: string[], blocks?: [{x,y}] }
- */
 function normalizeLevelInput(raw) {
   if (!raw) return { mapRows: [], overlayRows: null, extraBlocks: null };
   if (Array.isArray(raw)) {
@@ -83,7 +76,6 @@ function parseLevel(raw) {
       const ch = row[x] || ".";
       let t = T.FLOOR, ov = null;
 
-      // Explicit overlay layer takes priority for items when provided
       if (ovRow) {
         const och = ovRow[x] || " ";
         if (och !== " " && och !== "." && CH[och] !== undefined) {
@@ -102,7 +94,6 @@ function parseLevel(raw) {
         if ((id >= T.KEY_B && id <= T.KEY_Y) ||
             (id >= T.BOOT_FLIP && id <= T.BOOT_SUCTION) ||
             id === T.CHIP) {
-          // Item on base string: only use if no explicit overlay already set
           t = T.FLOOR;
           if (ov == null) {
             ov = id;
@@ -132,7 +123,6 @@ function parseLevel(raw) {
     }
   }
 
-  // Extra block positions from structured level (may stack on overlay items)
   if (extraBlocks) {
     for (let i = 0; i < extraBlocks.length; i++) {
       const b = extraBlocks[i];
@@ -174,9 +164,35 @@ function parseLevel(raw) {
   if (chipsNeeded === 0) chipsNeeded = 0;
 }
 
+/** Apply pack metadata (title, time, moves, chips override) from a level object. */
+function applyLevelMeta(raw) {
+  levelTitle = "";
+  levelTimeLimit = 0;
+  levelTimeLeft = 0;
+  levelMaxMoves = 0;
+  moveCount = 0;
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    if (typeof updateHud === "function") updateHud();
+    return;
+  }
+  levelTitle = raw.title || raw.name || "";
+  if (typeof raw.timeLimit === "number" && raw.timeLimit > 0) {
+    levelTimeLimit = raw.timeLimit;
+    levelTimeLeft = raw.timeLimit;
+  }
+  if (typeof raw.maxMoves === "number" && raw.maxMoves > 0) {
+    levelMaxMoves = raw.maxMoves;
+  }
+  if (raw.chipsRequired != null && typeof raw.chipsRequired === "number" && raw.chipsRequired >= 0) {
+    chipsNeeded = raw.chipsRequired;
+  }
+  if (typeof updateHud === "function") updateHud();
+}
+
 function loadLevel(n) {
   customLevel = null; fromEditor = false; level = n;
   parseLevel(LEVELS[n]);
+  applyLevelMeta(LEVELS[n]);
   player.dir = 0; player.frame = 0; player.moving = false;
   player.sliding = false; player.slideQueue = []; player.slideTimer = 0;
   player.fromX = player.x; player.fromY = player.y;
@@ -196,8 +212,8 @@ function loadLevel(n) {
 
 function loadCustomLevel(data, testing) {
   customLevel = data; fromEditor = !!testing;
-  // Pass full object so overlay + blocks layers are applied
   parseLevel(data);
+  applyLevelMeta(data);
   player.dir = 0; player.frame = 0; player.moving = false;
   player.sliding = false; player.slideQueue = []; player.slideTimer = 0;
   player.fromX = player.x; player.fromY = player.y;
