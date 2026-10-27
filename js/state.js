@@ -61,7 +61,7 @@ var customLevel = null, fromEditor = false;
 
 var inv = { keys: {b:0,r:0,g:0,y:0}, boots: {flip:false, fire:false, ice:false, suction:false} };
 
-var editMap = [], editCols = 32, editRows = 32, selectedTile = "W", painting = false;
+var editMap = [], editCols = 32, editRows = 32, selectedTile = "99", painting = false;
 /** Item overlay layer (parallel strings; space = empty). Blocks live in editBlocks. */
 var editOverlay = [];
 /** Block positions in the editor: array of {x,y}. */
