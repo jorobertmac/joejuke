@@ -1,42 +1,50 @@
-# Joe's Juke — Level solve outlines
+# Joe's Juke - Level solve outlines
 
-All 30 built-in levels rate **B, A, or S** under `LEVEL_RATING.md` (static rater).
+All 30 levels rate **B or A** under `LEVEL_RATING.md`. Each has a distinct theme; common rule: some chips sit behind a required hazard, some behind a lock gap.
 
-**Shared pattern:** monsters on the approach path → hazard barrier with chips beyond it → full-width wall with a **lock as the only gap** and more chips beyond → socket → exit.
+## Training
 
-Collect every chip, open the socket (`X`), then exit (`E`).
+| # | Theme | Outline |
+|---|--------|---------|
+| 1 | Block door | Flippers - water chips; push block to open wall gap; key - lock chips - socket. |
+| 2 | Keys | Balls on approach; water chips; blue lock vault. |
+| 3 | Boots tour | Chips after water, fire, ice, force; lock for last chips. |
+| 4 | Balls | Cross ball lanes; water; lock vault. |
+| 5 | Tile gallery | Sample tiles, then water + lock gated chips. |
 
-## Training (1–5)
+## Challenge
 
-| # | Grade focus | Outline |
-|---|-------------|---------|\n| 1 | Water + lock | Flippers across water for first chips; key opens lock gap for remaining chips. |
-| 2 | Water + lock | Same core pattern (training repetition). |
-| 3 | Water + fire + lock | Flippers and fire boots; chips after each hazard; lock for last set. |
-| 4 | Water + lock | Balls on the approach; then water and lock as usual. |
-| 5 | Multi-boot + lock | Chips after water, fire, ice, force; lock for the vault chips. |
-
-## Challenge (6–30)
-
-| # | Notes |
-|---|--------|
-| 6–8 | Water + lock; level 8 adds a second key/lock stage. |
-| 9 | Ice barrier (skates) + lock. |
-| 10 | Force barrier (suction) + lock. |
-| 11 | Fire barrier + lock. |
-| 12–17 | Water + lock with monster / trap / block variants. |
-| 18 | Full boot suite: chips after each of water, fire, ice, force, then lock. |
-| 19 | Gliders on approach; water + lock. |
-| 20 | Four-color key vault after water chips. |
-| 21 | Ice + lock. |
-| 22 | Thief steals boots after water; re-equip fire boots for fire chips. |
-| 23 | Tank + blue button; lock vault. |
-| 24–28 | Water + lock with bombs/blue-walls/teeth/gauntlet pressure. |
-| 29–30 | Multi-hazard + multi-key finales (level 30 rates **A**). |
+| # | Theme | Outline |
+|---|--------|---------|
+| 6 | Nested maze | Water chips, then weave nested rings to a lock-guarded core. |
+| 7 | Block bridge | Push blocks into water; lock vault beyond. |
+| 8 | Key chain | Water chips, then blue-red-green-yellow locks in sequence. |
+| 9 | Ice maze | Skates through ice corridors; lock vault. |
+| 10 | Force loop | Suction on force ring; chips in center + lock vault. |
+| 11 | Fire ring | Fire boots into ring; lock vault outside. |
+| 12 | Ball lanes | Multiple ball rows; water; lock. |
+| 13 | Toggle | Green button optional tension; water + lock required. |
+| 14 | Teleport | Water chips; teleport into sealed room; lock vault. |
+| 15 | Dirt + water | Water chips; dirt/gravel ring; lock vault. |
+| 16 | Blocks | Four blocks bridge water; lock vault. |
+| 17 | Trap | Brown button opens trap gap; water + lock. |
+| 18 | Mixed boots | Chips after each of water/fire/ice/force; lock. |
+| 19 | Glider / fireball | Cross monster lanes; water; lock. |
+| 20 | Four-key vault | Water chips; four colored locks each hide a chip. |
+| 21 | Ice corners | Corner ice redirects; lock vault. |
+| 22 | Thief | Flippers - water chips - thief - fire boots - fire chips - lock. |
+| 23 | Tank | Blue button reverses tank; water; lock. |
+| 24 | Bombs | Block clears bombs; water; lock. |
+| 25 | Blue walls | Probe fake ] walls; water; lock. |
+| 26 | Teeth | Stay ahead of teeth; water; lock. |
+| 27 | Force + ice | Skates then suction (or reverse); lock. |
+| 28 | Gauntlet | Dense monster rows; water; lock. |
+| 29 | Toolkit | Multi-boot + dual locks. |
+| 30 | Finale | All boots, all keys, monster row, chips after every hazard, lock vault. |
 
 ## Engine notes
 
-- Socket is solid until all chips are collected.
-- Locks consume one matching key.
-- Closed traps immobilize until the brown button opens them.
-- Cloner + red button spawns **monsters**, not blocks.
-- Dirt becomes floor when stepped; block-on-water becomes dirt.
+- Socket solid until all chips collected.
+- Lock = only gap in a full-width wall; consumes one key.
+- Cloner + red button spawns monsters (not blocks).
+- Block on water becomes dirt.
