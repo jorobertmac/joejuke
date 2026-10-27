@@ -1,0 +1,28 @@
+{
+  "id": "02-keys",
+  "number": 2,
+  "title": "Keys",
+  "author": "Joe's Juke",
+  "timeLimit": 150,
+  "chipsRequired": 4,
+  "maxMoves": 0,
+  "password": null,
+  "hint": "",
+  "map": [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.2.f............W",
+    "W.p...............pW",
+    "W~~~~~~~~~~~~~~~~~~W",
+    "W.C................W",
+    "WWWWWWWW(WWWWWWWWWWW",
+    "W...4.C............W",
+    "WWWWWWWW)WWWWWWWWWWW",
+    "W.C.C..............W",
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ]
+}

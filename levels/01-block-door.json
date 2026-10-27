@@ -1,0 +1,29 @@
+{
+  "id": "01-block-door",
+  "number": 1,
+  "title": "Block Door",
+  "author": "Joe's Juke",
+  "timeLimit": 150,
+  "chipsRequired": 5,
+  "maxMoves": 0,
+  "password": null,
+  "hint": "",
+  "map": [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.f..............W",
+    "W.p...............pW",
+    "W...B..............W",
+    "W~~~~~~~~~~~~~~~~~~W",
+    "W.C.C..............W",
+    "W.....2............W",
+    "WWWWWWWW(WWWWWWWWWWW",
+    "W.C.C.C............W",
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W........X.........W",
+    "W........E.........W",
+    "W..................W",
+    "W..................W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ],
+  "blocks": [{"x": 4, "y": 3}]
+}

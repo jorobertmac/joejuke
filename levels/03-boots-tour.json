@@ -1,0 +1,28 @@
+{
+  "id": "03-boots-tour",
+  "number": 3,
+  "title": "Boots Tour",
+  "author": "Joe's Juke",
+  "timeLimit": 200,
+  "chipsRequired": 6,
+  "maxMoves": 0,
+  "password": null,
+  "hint": "",
+  "map": [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W.A.f.l.j.q........W",
+    "W.p...............pW",
+    "W~~~~~~~~~~~~~~~~~~W",
+    "W.C................W",
+    "WFFFFFFFFFFFFFFFFFFW",
+    "W.C................W",
+    "WIIIIIIIIIIIIIIIIIIW",
+    "W.C................W",
+    "W^^^^^^^^^^^^^^^^^^W",
+    "W.C................W",
+    "WWWWWWWW(WWWWWWWWWWW",
+    "W.2.C.C............W",
+    "W........X.E.......W",
+    "WWWWWWWWWWWWWWWWWWWW"
+  ]
+}
