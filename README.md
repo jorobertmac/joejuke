@@ -59,7 +59,7 @@ Items on the item layer can hide under blocks. Push the block away in play to re
 | `*` | Bomb | Kills player; block or monster clears it |
 | `$` | Thief | Steals all boots |
 | `=` | Trap | Closed until brown button |
-| `\|` `_` | Toggle wall / floor | Switched by green button |
+| `|` `_` | Toggle wall / floor | Switched by green button |
 | `+` | Cloner | Spawns on red button |
 | `!` `#` `%` `&` | Buttons G/R/B/Brn | Toggle / clone / tanks / traps |
 | `2` `4` `6` `8` | Keys blue/red/green/yellow | Collect |
@@ -85,7 +85,7 @@ Items on the item layer can hide under blocks. Push the block away in play to re
 
 - Single-page Canvas game, no build step  
 - Variable map size, layered JSON import/export (version 4: `map` + optional `overlay` + `blocks`)  
-- Open `index.html` in any modern browser  
+- Serve over HTTP so the level pack can load via `fetch`  
 
 ### Source layout
 
@@ -93,7 +93,8 @@ Items on the item layer can hide under blocks. Push the block away in play to re
 |------|------|
 | `game.js` | Core state, level load, input, main loop |
 | `js/constants.js` | Tile IDs, directions, char maps, sprite indices |
-| `js/levels.js` | Built-in level layouts |
+| `js/levels.js` | Loads `levels/manifest.json` + per-level JSON |
+| `levels/` | One JSON file per level (map, overlay, blocks, timeLimit, chipsRequired, maxMoves) |
 | `js/tiles.js` | Ice / force / slide helpers |
 | `js/movement.js` | Player move, solid checks, monster AI |
 | `js/drawing.js` | Asset load + sprite / procedural rendering |
@@ -101,3 +102,33 @@ Items on the item layer can hide under blocks. Push the block away in play to re
 | `js/level-rating.js` | Static puzzle rating heuristics |
 
 Mechanics follow the CC1 tile list and Lynx/MS movement rules documented on the Bit Busters wiki.
+
+## Level pack format
+
+Campaign levels live in `levels/` as individual JSON files listed by `levels/manifest.json`.
+
+Each level file supports:
+
+```json
+{
+  "id": "01-block-door",
+  "number": 1,
+  "title": "Block Door",
+  "author": "Joe's Juke",
+  "timeLimit": 150,
+  "chipsRequired": 5,
+  "maxMoves": 0,
+  "password": null,
+  "hint": "",
+  "map": ["WWWW...", "..."],
+  "overlay": null,
+  "blocks": [{ "x": 4, "y": 3 }]
+}
+```
+
+- `timeLimit` — seconds; `0` = no limit  
+- `chipsRequired` — socket requirement (defaults to chip count on the map)  
+- `maxMoves` — hard move cap; `0` = unlimited  
+- `map` / `overlay` / `blocks` — layered layout (same as the editor export)
+
+Serve over HTTP so `fetch` can load the pack (required for `file://` restrictions).
