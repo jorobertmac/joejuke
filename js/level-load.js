@@ -9,6 +9,7 @@ function resizeCanvas() {
   var inEditor = (gameState === "editor") ||
     (document.body && document.body.classList.contains("editor-mode"));
   if (inEditor) {
+    // Fixed footprint: resolution = visible tile viewport (editViewSize²)
     var vs = (typeof editViewSize === "number" && editViewSize > 0) ? editViewSize : 32;
     canvas.width = Math.max(1, vs) * TILE;
     canvas.height = Math.max(1, vs) * TILE;
@@ -34,6 +35,12 @@ function getCamera() {
   return { camX: camX, camY: camY };
 }
 
+/**
+ * Normalize level input to { mapRows, overlayRows, extraBlocks }.
+ * Accepts:
+ *  - string[] (legacy single-layer char maps)
+ *  - { map: string[], overlay?: string[], blocks?: [{x,y}] }
+ */
 function normalizeLevelInput(raw) {
   if (!raw) return { mapRows: [], overlayRows: null, extraBlocks: null };
   if (Array.isArray(raw)) {
@@ -57,8 +64,28 @@ function parseLevel(raw) {
   var overlayRows = norm.overlayRows;
   var extraBlocks = norm.extraBlocks;
 
+  // Migrate legacy single-char rows → packed 2-char IDs
+  var migrated = [];
+  for (var mi = 0; mi < mapRows.length; mi++) {
+    migrated.push(typeof migrateLegacyRow === "function" ? migrateLegacyRow(mapRows[mi] || "") : (mapRows[mi] || ""));
+  }
+  mapRows = migrated;
+  if (overlayRows) {
+    var mov = [];
+    for (var oi = 0; oi < overlayRows.length; oi++) {
+      var orow = overlayRows[oi] || "";
+      // Overlay empty is space; migrate if legacy
+      if (orow.length && orow.length % 2 !== 0) {
+        mov.push(typeof migrateLegacyRow === "function" ? migrateLegacyRow(orow) : orow);
+      } else {
+        mov.push(orow);
+      }
+    }
+    overlayRows = mov;
+  }
+
   const rows = mapRows.length;
-  const cols = mapRows[0] ? mapRows[0].length : 0;
+  const cols = mapRows[0] ? rowCols(mapRows[0]) : 0;
   COLS = cols; ROWS = rows;
   resizeCanvas();
   map = []; overlay = [];
@@ -73,12 +100,13 @@ function parseLevel(raw) {
     const row = mapRows[y] || "";
     const ovRow = (overlayRows && overlayRows[y]) ? overlayRows[y] : null;
     for (let x = 0; x < COLS; x++) {
-      const ch = row[x] || ".";
+      const ch = cellId(row, x, FLOOR_ID);
       let t = T.FLOOR, ov = null;
 
+      // Explicit overlay layer takes priority for items when provided
       if (ovRow) {
-        const och = ovRow[x] || " ";
-        if (och !== " " && och !== "." && CH[och] !== undefined) {
+        const och = cellId(ovRow, x, EMPTY_ID);
+        if (och !== EMPTY_ID && och !== FLOOR_ID && CH[och] !== undefined) {
           const oid = CH[och];
           if ((oid >= T.KEY_B && oid <= T.KEY_Y) ||
               (oid >= T.BOOT_FLIP && oid <= T.BOOT_SUCTION) ||
@@ -94,6 +122,7 @@ function parseLevel(raw) {
         if ((id >= T.KEY_B && id <= T.KEY_Y) ||
             (id >= T.BOOT_FLIP && id <= T.BOOT_SUCTION) ||
             id === T.CHIP) {
+          // Item on base string: only use if no explicit overlay already set
           t = T.FLOOR;
           if (ov == null) {
             ov = id;
@@ -114,7 +143,7 @@ function parseLevel(raw) {
         t = T.FLOOR;
         const m = MONSTER_CHARS[ch];
         enemies.push({ x, y, dir: m.dir, type: m.type, timer: 0, step: 0 });
-      } else if (ch === "A") {
+      } else if (ch === PLAYER_ID || ch === "J0") {
         t = T.FLOOR; player.x = x; player.y = y; foundPlayer = true;
       }
 
@@ -123,6 +152,7 @@ function parseLevel(raw) {
     }
   }
 
+  // Extra block positions from structured level (may stack on overlay items)
   if (extraBlocks) {
     for (let i = 0; i < extraBlocks.length; i++) {
       const b = extraBlocks[i];
@@ -163,6 +193,7 @@ function parseLevel(raw) {
   });
   if (chipsNeeded === 0) chipsNeeded = 0;
 }
+
 
 /** Apply pack metadata (title, time, moves, chips override) from a level object. */
 function applyLevelMeta(raw) {
@@ -212,6 +243,7 @@ function loadLevel(n) {
 
 function loadCustomLevel(data, testing) {
   customLevel = data; fromEditor = !!testing;
+  // Pass full object so overlay + blocks layers are applied
   parseLevel(data);
   applyLevelMeta(data);
   player.dir = 0; player.frame = 0; player.moving = false;
