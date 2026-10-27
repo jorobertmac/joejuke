@@ -1,0 +1,12 @@
+{
+  "id": "09-ice-maze",
+  "number": 9,
+  "title": "Ice Maze",
+  "author": "Joe's Juke",
+  "timeLimit": 250,
+  "chipsRequired": 5,
+  "maxMoves": 0,
+  "password": null,
+  "hint": "",
+  "map": ["WWWWWWWWWWWWWWWWWWWW", "W.A.j.2............W", "W.p...............pW", "WIIIIIIIIIIIIIIIIIIW", "WI....C...........IW", "WI.IIIIIIIIIIIIII.IW", "WI.I............I.IW", "WI.I..C.C.......I.IW", "WI.I............I.IW", "WI.IIIIIIIIIIIIII.IW", "WWWWWWWW(WWWWWWWWWWW", "W.C.C..............W", "W........X.........W", "W........E.........W", "WWWWWWWWWWWWWWWWWWWW"]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "08-key-chain",
+  "number": 8,
+  "title": "Key Chain",
+  "author": "Joe's Juke",
+  "timeLimit": 300,
+  "chipsRequired": 5,
+  "maxMoves": 0,
+  "password": null,
+  "hint": "",
+  "map": ["WWWWWWWWWWWWWWWWWWWW", "W.A.2..............W", "W.p...............pW", "W~~~~~~~~~~~~~~~~~~W", "W.C................W", "WWWWWWWW(WWWWWWWWWWW", "W...4..............W", "WWWWWWWW)WWWWWWWWWWW", "W...6.C............W", "WWWWWWWW{WWWWWWWWWWW", "W...8.C............W", "WWWWWWWW}WWWWWWWWWWW", "W.C.C..............W", "W........X.E.......W", "WWWWWWWWWWWWWWWWWWWW"]
+}
