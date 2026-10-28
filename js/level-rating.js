@@ -6,42 +6,42 @@
 
 (function (global) {
   var HAZARD_CHARS = {
-    "~": "water",
-    F: "fire",
-    I: "ice",
-    "1": "ice",
-    "3": "ice",
-    "7": "ice",
-    "9": "ice",
-    "^": "force",
-    ">": "force",
-    v: "force",
-    "<": "force",
-    R: "force",
+    "~~": "water",
+    "FF": "fire",
+    "II": "ice",
+    "I1": "ice",
+    "I3": "ice",
+    "I7": "ice",
+    "I9": "ice",
+    "FN": "force",
+    "FE": "force",
+    "FS": "force",
+    "FW": "force",
+    "FR": "force",
   };
 
   var BOOT_FOR = {
-    water: "f",
-    fire: "l",
-    ice: "j",
-    force: "q",
+    water: "Bf",
+    fire: "By",
+    ice: "Bi",
+    force: "Bs",
   };
 
-  var LOCK_CHARS = { "(": "blue", ")": "red", "{": "green", "}": "yellow" };
-  var KEY_CHARS = { "2": "blue", "4": "red", "6": "green", "8": "yellow" };
-  var MONSTER_SET = { p: 1, P: 1, m: 1, z: 1, a: 1, c: 1, t: 1, k: 1, T: 1, x: 1 };
+  var LOCK_CHARS = { "LB": "blue", "LR": "red", "LG": "green", "LY": "yellow" };
+  var KEY_CHARS = { "KB": "blue", "KR": "red", "KG": "green", "KY": "yellow" };
+  var MONSTER_SET = { "mb": 1, "mB": 1, "mg": 1, "mf": 1, "mu": 1, "mc": 1, "mt": 1, "mw": 1, "me": 1, "mo": 1 };
   /** Permanent solids for path analysis. Socket/Exit are enterable targets. */
   var SOLID_BASE = {
-    W: 1,
-    i: 1,
-    h: 1,
-    "[": 1,
-    N: 1,
-    Y: 1,
-    H: 1,
-    Z: 1,
-    "|": 1,
-    "+": 1,
+    "99": 1,
+    "97": 1,
+    "98": 1,
+    "BR": 1,
+    "TN": 1,
+    "TE": 1,
+    "TS": 1,
+    "TW": 1,
+    "VW": 1,
+    "CL": 1,
   };
 
   function clamp(n, a, b) {
@@ -57,44 +57,47 @@
     return "F";
   }
 
-  /** Flatten editor / level data into per-cell layers. */
+  /** Flatten editor / level data into per-cell layers (2-char IDs). */
   function normalizeLevel(data) {
-    var cols = data.cols || (data.map && data.map[0] && data.map[0].length) || 0;
+    var raw0 = data.map && data.map[0];
+    var cols = data.cols || (raw0 ? (typeof rowCols === "function" ? rowCols(raw0) : Math.floor(String(raw0).length / 2) || String(raw0).length) : 0);
     var rows = data.rows || (data.map && data.map.length) || 0;
     var map = [];
     var overlay = [];
     var blocks = {};
     var y, x, row, orow, ch;
+    var floorId = (typeof FLOOR_ID !== "undefined") ? FLOOR_ID : "00";
+    var emptyId = (typeof EMPTY_ID !== "undefined") ? EMPTY_ID : "  ";
 
     for (y = 0; y < rows; y++) {
-      row = String((data.map && data.map[y]) || "").padEnd(cols, ".").slice(0, cols);
-      orow = data.overlay
-        ? String(data.overlay[y] || "")
-            .padEnd(cols, " ")
-            .slice(0, cols)
-            .replace(/\./g, " ")
-        : new Array(cols + 1).join(" ");
-      var baseChars = [];
-      var overChars = [];
+      row = (data.map && data.map[y]) || "";
+      if (typeof migrateLegacyRow === "function" && String(row).length === cols) {
+        row = migrateLegacyRow(String(row));
+      }
+      orow = (data.overlay && data.overlay[y]) || "";
+      var baseIds = [];
+      var overIds = [];
       for (x = 0; x < cols; x++) {
-        ch = row[x];
-        if (ch === "B") {
-          baseChars.push(".");
-          overChars.push(orow[x] && orow[x] !== " " ? orow[x] : " ");
+        ch = (typeof cellId === "function") ? cellId(row, x, floorId) : (String(row).substr(x * 2, 2) || floorId);
+        var och = (typeof cellId === "function") ? cellId(orow, x, emptyId) : (String(orow).substr(x * 2, 2) || emptyId);
+        if (ch === "BK" || ch === "B") {
+          baseIds.push(floorId);
+          overIds.push(och !== emptyId && och !== floorId ? och : emptyId);
           blocks[x + "," + y] = true;
         } else if (typeof isItemLayerChar === "function" && isItemLayerChar(ch)) {
-          baseChars.push(".");
-          overChars.push(ch);
+          baseIds.push(floorId);
+          overIds.push(ch);
         } else if (typeof ITEM_LAYER_CHARS !== "undefined" && ITEM_LAYER_CHARS[ch]) {
-          baseChars.push(".");
-          overChars.push(ch);
+          baseIds.push(floorId);
+          overIds.push(ch);
         } else {
-          baseChars.push(ch);
-          overChars.push(orow[x] && orow[x] !== " " ? orow[x] : " ");
+          baseIds.push(ch);
+          overIds.push(och !== emptyId && och !== floorId ? och : emptyId);
         }
       }
-      map.push(baseChars.join(""));
-      overlay.push(overChars.join(""));
+      // store as packed strings for compatibility with rest of rater that indexes cells
+      map.push(baseIds.join(""));
+      overlay.push(overIds.join(""));
     }
 
     if (Array.isArray(data.blocks)) {
@@ -108,13 +111,17 @@
   }
 
   function cellBase(L, x, y) {
-    if (y < 0 || y >= L.rows || x < 0 || x >= L.cols) return "W";
-    return L.map[y][x];
+    if (y < 0 || y >= L.rows || x < 0 || x >= L.cols) return "99";
+    var row = L.map[y] || "";
+    if (typeof cellId === "function") return cellId(row, x, "00");
+    return row.substr(x * 2, 2) || "00";
   }
 
   function cellItem(L, x, y) {
-    if (y < 0 || y >= L.rows || x < 0 || x >= L.cols) return " ";
-    return L.overlay[y][x] || " ";
+    if (y < 0 || y >= L.rows || x < 0 || x >= L.cols) return "  ";
+    var row = L.overlay[y] || "";
+    if (typeof cellId === "function") return cellId(row, x, "  ");
+    return row.substr(x * 2, 2) || "  ";
   }
 
   function hasBlock(L, x, y) {
@@ -125,7 +132,7 @@
     opts = opts || {};
     var ch = cellBase(L, x, y);
     if (SOLID_BASE[ch]) return true;
-    if (ch === "=" && !opts.openTraps) return true;
+    if (ch === "TR" && !opts.openTraps) return true;
     if (LOCK_CHARS[ch]) return true;
     if (HAZARD_CHARS[ch] && !opts.ignoreHazards) return true;
     if (hasBlock(L, x, y) && !opts.ignoreBlocks) return true;
@@ -188,10 +195,10 @@
 
   function analyzeStructure(L) {
     var issues = [];
-    var players = findChars(L, function (b) { return b === "A"; });
-    var exits = findChars(L, function (b) { return b === "E"; });
-    var sockets = findChars(L, function (b) { return b === "X"; });
-    var chips = findChars(L, function (b, it) { return it === "C" || b === "C"; });
+    var players = findChars(L, function (b) { return b === "J0" || b === "A"; });
+    var exits = findChars(L, function (b) { return b === "EX" || b === "E"; });
+    var sockets = findChars(L, function (b) { return b === "SX" || b === "X"; });
+    var chips = findChars(L, function (b, it) { return it === "CH" || b === "CH" || it === "C" || b === "C"; });
     var score = 8;
     if (players.length !== 1) {
       issues.push({ severity: "error", code: "PLAYER_COUNT", msg: "Expected 1 player (A), found " + players.length });
@@ -329,7 +336,7 @@
   function analyzeChips(L, start, chips) {
     var issues = [];
     if (chips.length === 0) {
-      issues.push({ severity: "info", code: "NO_CHIPS", msg: "No chips - zero-chip level or missing C" });
+      issues.push({ severity: "info", code: "NO_CHIPS", msg: "No chips - zero-chip level or missing CH" });
       return { score: 3, challenged: 0, total: 0, issues: issues };
     }
     var reachOpen = flood(L, start, function (x, y) {
@@ -338,7 +345,7 @@
       if (LOCK_CHARS[ch]) return false;
       if (HAZARD_CHARS[ch]) return false;
       if (hasBlock(L, x, y)) return false;
-      if (ch === "=") return false;
+      if (ch === "TR") return false;
       return true;
     });
     var challenged = 0;
@@ -358,19 +365,19 @@
     var flags = { keys: false, boots: false, blocks: false, ice: false, force: false, monsters: false, buttons: false, traps: false, cloners: false, blueWalls: false, thief: false, teleports: false, specialWalls: false, bombs: false };
     findChars(L, function (b, it, x, y) {
       if (KEY_CHARS[it] || KEY_CHARS[b] || LOCK_CHARS[b]) flags.keys = true;
-      if (it === "f" || it === "l" || it === "j" || it === "q" || b === "f" || b === "l" || b === "j" || b === "q") flags.boots = true;
-      if (hasBlock(L, x, y) || b === "B") flags.blocks = true;
-      if (b === "I" || b === "1" || b === "3" || b === "7" || b === "9") flags.ice = true;
-      if (b === "^" || b === ">" || b === "v" || b === "<" || b === "R") flags.force = true;
+      if (it === "Bf" || it === "By" || it === "Bi" || it === "Bs" || b === "Bf" || b === "By" || b === "Bi" || b === "Bs") flags.boots = true;
+      if (hasBlock(L, x, y) || b === "BK") flags.blocks = true;
+      if (b === "II" || b === "I1" || b === "I3" || b === "I7" || b === "I9") flags.ice = true;
+      if (b === "FN" || b === "FE" || b === "FS" || b === "FW" || b === "FR") flags.force = true;
       if (MONSTER_SET[b]) flags.monsters = true;
-      if (b === "!" || b === "#" || b === "%" || b === "&") flags.buttons = true;
-      if (b === "=") flags.traps = true;
-      if (b === "+") flags.cloners = true;
-      if (b === "[" || b === "]") flags.blueWalls = true;
-      if (b === "$") flags.thief = true;
-      if (b === "@") flags.teleports = true;
-      if (b === "r" || b === "h" || b === "i" || b === "N" || b === "Y" || b === "H" || b === "Z") flags.specialWalls = true;
-      if (b === "*") flags.bombs = true;
+      if (b === "BG" || b === "RD" || b === "BB" || b === "BN") flags.buttons = true;
+      if (b === "TR") flags.traps = true;
+      if (b === "CL") flags.cloners = true;
+      if (b === "BR" || b === "BF") flags.blueWalls = true;
+      if (b === "TH") flags.thief = true;
+      if (b === "TP") flags.teleports = true;
+      if (b === "RR" || b === "98" || b === "97" || b === "TN" || b === "TE" || b === "TS" || b === "TW") flags.specialWalls = true;
+      if (b === "BM") flags.bombs = true;
       return false;
     });
     var n = 0;

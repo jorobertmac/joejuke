@@ -1,5 +1,5 @@
 /**
- * Joe's Juke - screens, buttons, pause menu, import/export UI
+ * Joe's Juke — screens, buttons, pause menu, import/export UI
  */
 "use strict";
 
@@ -22,6 +22,7 @@ function setPauseBtnVisible(show) {
   else pauseBtn.classList.add("hidden");
 }
 
+/** Open pause menu during play (or editor). */
 function openPauseMenu() {
   var inEditorMenu = (gameState === "editor");
   if (gameState === "play") {
@@ -32,10 +33,12 @@ function openPauseMenu() {
       player.moving = false;
     }
   } else if (gameState === "editor") {
+    // keep editor state; just show overlay
   } else if (gameState !== "paused") {
     return;
   }
 
+  // Hide other overlays but keep editor bar when editing
   [startScreen, levelComplete, gameOver, winScreen, exportModal, importModal, rateModal]
     .forEach(function (el) { if (el) el.classList.add("hidden"); });
   if (inEditorMenu) {
@@ -71,6 +74,7 @@ function openPauseMenu() {
       exitBtn.classList.remove("hidden");
       exitBtn.textContent = fromEditor ? "Back to Editor" : "Exit to Menu";
     }
+    // Level jump only for campaign play (not editor test / custom-only)
     if (levelWrap) {
       if (fromEditor || customLevel) {
         levelWrap.classList.add("hidden");
@@ -97,7 +101,7 @@ function closePauseMenu() {
     if (statusEl) statusEl.textContent = fromEditor ? "Testing" : "Swipe or D-pad";
   } else if (gameState === "editor") {
     if (editorBar) editorBar.classList.remove("hidden");
-    if (statusEl) statusEl.textContent = "Editor - arrows navigate palette, Enter selects";
+    if (statusEl) statusEl.textContent = "Editor — arrows navigate palette, Enter selects";
   }
 }
 
@@ -124,6 +128,7 @@ function on(id, handler) {
   });
 }
 
+/** Fill a <select> with built-in LEVELS names (0-based values). */
 function populateLevelSelect(sel, selectedIndex) {
   if (!sel || typeof LEVELS === "undefined") return;
   var prev = selectedIndex != null ? String(selectedIndex) : sel.value;
@@ -155,9 +160,7 @@ function initLevelSelects() {
   populateLevelSelect(document.getElementById("pauseLevelSelect"), 0);
 }
 
-function fillLevelSelects() {
-  initLevelSelects();
-}
+// Populate after LEVELS / LEVEL_NAMES are available (defer scripts + load)
 
 function whenLevelsReady(fn) {
   if (typeof levelsReady !== "undefined" && levelsReady && typeof levelsReady.then === "function") {
@@ -166,17 +169,16 @@ function whenLevelsReady(fn) {
     fn();
   }
 }
-
-// Populate after LEVELS / LEVEL_NAMES are available (async pack load)
 whenLevelsReady(function () {
-  initLevelSelects();
+  if (typeof fillLevelSelects === "function") fillLevelSelects();
 });
+
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", function () { whenLevelsReady(initLevelSelects); });
+  document.addEventListener("DOMContentLoaded", initLevelSelects);
 } else {
-  setTimeout(function () { whenLevelsReady(initLevelSelects); }, 0);
+  setTimeout(initLevelSelects, 0);
 }
-window.addEventListener("load", function () { whenLevelsReady(initLevelSelects); });
+window.addEventListener("load", initLevelSelects);
 
 on("startBtn", function () {
   loadLevel(getSelectedStartLevel());
@@ -233,11 +235,19 @@ on("resizeBtn", function () {
     var row = "";
     var oRow = "";
     for (var x = 0; x < c; x++) {
-      if (y < oldR && x < oldC && old[y]) row += old[y][x] || ".";
-      else if (y === 0 || y === r - 1 || x === 0 || x === c - 1) row += "W";
-      else row += ".";
-      if (y < oldR && x < oldC && oldOv[y] && oldOv[y][x] && oldOv[y][x] !== " ") oRow += oldOv[y][x];
-      else oRow += " ";
+      if (y < oldR && x < oldC && old[y]) {
+        row += (typeof cellId === "function") ? cellId(old[y], x, FLOOR_ID) : FLOOR_ID;
+      } else if (y === 0 || y === r - 1 || x === 0 || x === c - 1) {
+        row += "99";
+      } else {
+        row += FLOOR_ID;
+      }
+      if (y < oldR && x < oldC && oldOv[y]) {
+        var och = (typeof cellId === "function") ? cellId(oldOv[y], x, EMPTY_ID) : EMPTY_ID;
+        oRow += (och && och !== EMPTY_ID) ? och : EMPTY_ID;
+      } else {
+        oRow += EMPTY_ID;
+      }
     }
     editMap.push(row);
     editOverlay.push(oRow);
@@ -251,9 +261,9 @@ on("clearMapBtn", function () {
     var row = "";
     var oRow = "";
     for (var x = 0; x < editCols; x++) {
-      if (y === 0 || y === editRows - 1 || x === 0 || x === editCols - 1) row += "W";
-      else row += ".";
-      oRow += " ";
+      if (y === 0 || y === editRows - 1 || x === 0 || x === editCols - 1) row += "99";
+      else row += FLOOR_ID;
+      oRow += EMPTY_ID;
     }
     editMap.push(row);
     editOverlay.push(oRow);
@@ -296,7 +306,7 @@ on("rateLevelBtn", function () {
     };
     Object.keys(labels).forEach(function (k) {
       var li = document.createElement("li");
-      var v = report.dimensions && report.dimensions[k] != null ? report.dimensions[k] : "-";
+      var v = report.dimensions && report.dimensions[k] != null ? report.dimensions[k] : "—";
       li.textContent = labels[k] + ": " + v;
       dimsEl.appendChild(li);
     });
@@ -392,6 +402,7 @@ on("closeImportBtn", function () {
   }
 });
 
+/* ---- Pause menu ---- */
 on("pauseBtn", function () { togglePauseMenu(); });
 on("resumeBtn", function () { closePauseMenu(); });
 on("restartPauseBtn", function () {
@@ -400,10 +411,12 @@ on("restartPauseBtn", function () {
   else loadLevel(level);
 });
 on("exitPauseBtn", function () {
+  // Testing from editor → return to editor
   if (fromEditor && customLevel && gameState === "paused") {
     enterEditor();
     return;
   }
+  // Editor menu or normal play → start screen
   var lastLevel = typeof level === "number" ? level : 0;
   gameState = "start";
   customLevel = null;

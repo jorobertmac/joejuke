@@ -3,100 +3,106 @@
  */
 "use strict";
 
-/** Map palette chars to icon image paths (32×32 tiles / monster frames). */
+/** Map palette 2-char IDs to icon image paths (32×32 tiles / monster frames). */
 var PALETTE_ICONS = {
-  ".": "resources/tiles/terrain_floor.png",
-  "W": "resources/tiles/terrain_wall.png",
-  "~": "resources/tiles/terrain_water.png",
-  "F": "resources/tiles/terrain_fire.png",
-  "I": "resources/tiles/terrain_ice.png",
-  "1": "resources/tiles/terrain_ice_nw.png",
-  "3": "resources/tiles/terrain_ice_ne.png",
-  "7": "resources/tiles/terrain_ice_sw.png",
-  "9": "resources/tiles/terrain_ice_se.png",
-  "^": "resources/tiles/terrain_force_n.png",
-  ">": "resources/tiles/terrain_force_e.png",
-  "v": "resources/tiles/terrain_force_s.png",
-  "<": "resources/tiles/terrain_force_w.png",
-  "R": "resources/tiles/terrain_force_r.png",
-  "D": "resources/tiles/terrain_dirt.png",
-  "G": "resources/tiles/terrain_gravel.png",
-  "E": "resources/tiles/terrain_exit.png",
-  "X": "resources/tiles/terrain_socket.png",
-  "C": "resources/tiles/item_chip.png",
-  "?": "resources/tiles/terrain_hint.png",
-  "i": "resources/tiles/terrain_invis.png",
-  "h": "resources/tiles/terrain_hidden.png",
-  "r": "resources/tiles/terrain_recessed.png",
-  "[": "resources/tiles/terrain_blue_real.png",
-  "]": "resources/tiles/terrain_blue_fake.png",
-  "N": "resources/tiles/terrain_thin_n.png",
-  "Y": "resources/tiles/terrain_thin_e.png",
-  "H": "resources/tiles/terrain_thin_s.png",
-  "Z": "resources/tiles/terrain_thin_w.png",
-  "@": "resources/tiles/terrain_teleport.png",
-  "*": "resources/tiles/terrain_bomb.png",
-  "$": "resources/tiles/terrain_thief.png",
-  "=": "resources/tiles/terrain_trap_closed.png",
-  "|": "resources/tiles/terrain_toggle_wall.png",
-  "_": "resources/tiles/terrain_toggle_floor.png",
-  "+": "resources/tiles/terrain_cloner.png",
-  "!": "resources/tiles/item_btn_green.png",
-  "#": "resources/tiles/item_btn_red.png",
-  "%": "resources/tiles/item_btn_blue.png",
-  "&": "resources/tiles/item_btn_brown.png",
-  "2": "resources/tiles/item_key_blue.png",
-  "4": "resources/tiles/item_key_red.png",
-  "6": "resources/tiles/item_key_green.png",
-  "8": "resources/tiles/item_key_yellow.png",
-  "(": "resources/tiles/item_lock_blue.png",
-  ")": "resources/tiles/item_lock_red.png",
-  "{": "resources/tiles/item_lock_green.png",
-  "}": "resources/tiles/item_lock_yellow.png",
-  "f": "resources/tiles/item_boot_flip.png",
-  "j": "resources/tiles/item_boot_ice.png",
-  "q": "resources/tiles/item_boot_suction.png",
-  "l": "resources/tiles/item_boot_fire.png",
-  "B": "resources/tiles/item_block.png",
-  "p": "resources/monsters/ball_e_0.png",
-  "P": "resources/monsters/ball_s_0.png",
-  "m": "resources/monsters/glider_e_0.png",
-  "z": "resources/monsters/fireball_e_0.png",
-  "a": "resources/monsters/bug_n_0.png",
-  "c": "resources/monsters/paramecium_n_0.png",
-  "t": "resources/monsters/tank_e_0.png",
-  "k": "resources/monsters/walker_e_0.png",
-  "T": "resources/monsters/teeth_s_0.png",
-  "x": "resources/monsters/blob_e_0.png",
-  "A": "resources/sprites/joe_s_idle.png",
+  "00": "resources/tiles/terrain_floor.png",
+  "99": "resources/tiles/terrain_wall.png",
+  "~~": "resources/tiles/terrain_water.png",
+  "FF": "resources/tiles/terrain_fire.png",
+  "II": "resources/tiles/terrain_ice.png",
+  "I1": "resources/tiles/terrain_ice_nw.png",
+  "I3": "resources/tiles/terrain_ice_ne.png",
+  "I7": "resources/tiles/terrain_ice_sw.png",
+  "I9": "resources/tiles/terrain_ice_se.png",
+  "FN": "resources/tiles/terrain_force_n.png",
+  "FE": "resources/tiles/terrain_force_e.png",
+  "FS": "resources/tiles/terrain_force_s.png",
+  "FW": "resources/tiles/terrain_force_w.png",
+  "FR": "resources/tiles/terrain_force_r.png",
+  "DD": "resources/tiles/terrain_dirt.png",
+  "GG": "resources/tiles/terrain_gravel.png",
+  "EX": "resources/tiles/terrain_exit.png",
+  "SX": "resources/tiles/terrain_socket.png",
+  "CH": "resources/tiles/item_chip.png",
+  "??": "resources/tiles/terrain_hint.png",
+  "97": "resources/tiles/terrain_invis.png",
+  "98": "resources/tiles/terrain_hidden.png",
+  "RR": "resources/tiles/terrain_recessed.png",
+  "BR": "resources/tiles/terrain_blue_real.png",
+  "BF": "resources/tiles/terrain_blue_fake.png",
+  "TN": "resources/tiles/terrain_thin_n.png",
+  "TE": "resources/tiles/terrain_thin_e.png",
+  "TS": "resources/tiles/terrain_thin_s.png",
+  "TW": "resources/tiles/terrain_thin_w.png",
+  "TP": "resources/tiles/terrain_teleport.png",
+  "BM": "resources/tiles/terrain_bomb.png",
+  "TH": "resources/tiles/terrain_thief.png",
+  "TR": "resources/tiles/terrain_trap_closed.png",
+  "VW": "resources/tiles/terrain_toggle_wall.png",
+  "VF": "resources/tiles/terrain_toggle_floor.png",
+  "CL": "resources/tiles/terrain_cloner.png",
+  "BG": "resources/tiles/item_btn_green.png",
+  "RD": "resources/tiles/item_btn_red.png",
+  "BB": "resources/tiles/item_btn_blue.png",
+  "BN": "resources/tiles/item_btn_brown.png",
+  "KB": "resources/tiles/item_key_blue.png",
+  "KR": "resources/tiles/item_key_red.png",
+  "KG": "resources/tiles/item_key_green.png",
+  "KY": "resources/tiles/item_key_yellow.png",
+  "LB": "resources/tiles/item_lock_blue.png",
+  "LR": "resources/tiles/item_lock_red.png",
+  "LG": "resources/tiles/item_lock_green.png",
+  "LY": "resources/tiles/item_lock_yellow.png",
+  "Bf": "resources/tiles/item_boot_flip.png",
+  "Bi": "resources/tiles/item_boot_ice.png",
+  "Bs": "resources/tiles/item_boot_suction.png",
+  "By": "resources/tiles/item_boot_fire.png",
+  "BK": "resources/tiles/item_block.png",
+  "mb": "resources/monsters/ball_e_0.png",
+  "mB": "resources/monsters/ball_s_0.png",
+  "mg": "resources/monsters/glider_e_0.png",
+  "mf": "resources/monsters/fireball_e_0.png",
+  "mu": "resources/monsters/bug_n_0.png",
+  "mc": "resources/monsters/paramecium_n_0.png",
+  "mt": "resources/monsters/tank_e_0.png",
+  "mw": "resources/monsters/walker_e_0.png",
+  "me": "resources/monsters/teeth_s_0.png",
+  "mo": "resources/monsters/blob_e_0.png",
+  "J0": "resources/sprites/joe_s_idle.png",
 };
 
-/** Ensure editOverlay has same dimensions as editMap (spaces = empty). */
+/** Ensure editOverlay has same dimensions as editMap (EMPTY_ID = empty). */
 function ensureEditOverlay() {
   if (!editOverlay) editOverlay = [];
+  var emptyRow = "";
+  for (var i = 0; i < editCols; i++) emptyRow += EMPTY_ID;
   while (editOverlay.length < editRows) {
-    editOverlay.push(new Array(editCols + 1).join(" "));
+    editOverlay.push(emptyRow);
   }
   for (var y = 0; y < editRows; y++) {
     var row = editOverlay[y] || "";
-    if (row.length < editCols) row = row + new Array(editCols - row.length + 1).join(" ");
-    else if (row.length > editCols) row = row.slice(0, editCols);
+    // migrate legacy single-char overlay if needed
+    if (row.length === editCols && editCols > 0 && row.length % 2 !== 0) {
+      row = (typeof migrateLegacyRow === "function") ? migrateLegacyRow(row) : row;
+    }
+    var need = editCols * 2;
+    while (row.length < need) row += EMPTY_ID;
+    if (row.length > need) row = row.slice(0, need);
     editOverlay[y] = row;
   }
   editOverlay.length = editRows;
 }
 
-function setOverlayChar(x, y, ch) {
+function setOverlayChar(x, y, id) {
   ensureEditOverlay();
   if (y < 0 || y >= editRows || x < 0 || x >= editCols) return;
-  var c = (ch && ch !== ".") ? ch : " ";
-  editOverlay[y] = editOverlay[y].substring(0, x) + c + editOverlay[y].substring(x + 1);
+  var c = (id && id !== FLOOR_ID && id.length === 2) ? id : EMPTY_ID;
+  editOverlay[y] = setCellId(editOverlay[y], x, c, editCols, EMPTY_ID);
 }
 
 function getOverlayChar(x, y) {
-  if (!editOverlay || y < 0 || y >= editRows || x < 0 || x >= editCols) return " ";
-  var row = editOverlay[y] || "";
-  return row[x] || " ";
+  if (!editOverlay || y < 0 || y >= editRows || x < 0 || x >= editCols) return EMPTY_ID;
+  return cellId(editOverlay[y], x, EMPTY_ID);
 }
 
 function hasEditBlock(x, y) {
@@ -109,9 +115,14 @@ function setEditBlock(x, y, on) {
   if (on) editBlocks.push({ x: x, y: y });
 }
 
+function getEditChar(x, y) {
+  if (y < 0 || y >= editRows || x < 0 || x >= editCols) return FLOOR_ID;
+  return cellId(editMap[y], x, FLOOR_ID);
+}
+
 /**
- * Split a legacy single-char map into base + overlay + blocks so the editor
- * can show and edit layers independently.
+ * Split a map (legacy 1-char or packed 2-char) into base + overlay + blocks
+ * so the editor can show and edit layers independently.
  */
 function splitMapIntoLayers(srcMap, cols, rows) {
   var base = [];
@@ -119,20 +130,24 @@ function splitMapIntoLayers(srcMap, cols, rows) {
   var blks = [];
   for (var y = 0; y < rows; y++) {
     var src = (srcMap && srcMap[y]) ? srcMap[y] : "";
+    // migrate legacy if needed
+    if (typeof migrateLegacyRow === "function" && src.length === cols) {
+      src = migrateLegacyRow(src);
+    }
     var bRow = "";
     var oRow = "";
     for (var x = 0; x < cols; x++) {
-      var ch = src[x] || ".";
+      var ch = cellId(src, x, FLOOR_ID);
       if (typeof isItemLayerChar === "function" && isItemLayerChar(ch)) {
-        bRow += ".";
+        bRow += FLOOR_ID;
         oRow += ch;
-      } else if (ch === "B") {
-        bRow += ".";
-        oRow += " ";
+      } else if (ch === "BK" || isBlockChar(ch)) {
+        bRow += FLOOR_ID;
+        oRow += EMPTY_ID;
         blks.push({ x: x, y: y });
       } else {
         bRow += ch;
-        oRow += " ";
+        oRow += EMPTY_ID;
       }
     }
     base.push(bRow);
@@ -151,16 +166,16 @@ function initEmptyMap(cols, rows) {
     var row = "";
     var oRow = "";
     for (var x = 0; x < cols; x++) {
-      row += (y === 0 || y === rows - 1 || x === 0 || x === cols - 1) ? "W" : ".";
-      oRow += " ";
+      row += (y === 0 || y === rows - 1 || x === 0 || x === cols - 1) ? "99" : FLOOR_ID;
+      oRow += EMPTY_ID;
     }
     editMap.push(row);
     editOverlay.push(oRow);
   }
   var prev = editLayer;
   editLayer = "base";
-  setEditChar(1, 1, "A");
-  setEditChar(cols - 2, rows - 2, "E");
+  setEditChar(1, 1, PLAYER_ID);
+  setEditChar(cols - 2, rows - 2, "EX");
   editLayer = prev || "base";
   if (typeof updateLayerUI === "function") updateLayerUI();
 }
@@ -168,43 +183,48 @@ function initEmptyMap(cols, rows) {
 function setEditChar(x, y, ch) {
   if (y < 0 || y >= editRows || x < 0 || x >= editCols) return;
   ensureEditOverlay();
+  // normalize legacy single-char paint if someone still passes one
+  if (ch && ch.length === 1 && typeof LEGACY_CH !== "undefined" && LEGACY_CH[ch]) {
+    ch = LEGACY_CH[ch];
+  }
   var layer = editLayer || "base";
   if (layer === "item") {
     if (typeof isItemLayerChar === "function" && isItemLayerChar(ch)) {
       setOverlayChar(x, y, ch);
     } else {
-      setOverlayChar(x, y, " ");
+      setOverlayChar(x, y, EMPTY_ID);
     }
     return;
   }
   if (layer === "block") {
-    setEditBlock(x, y, ch === "B");
+    setEditBlock(x, y, ch === "BK" || isBlockChar(ch));
     return;
   }
   if (typeof isItemLayerChar === "function" && isItemLayerChar(ch)) {
-    if (editMap[y][x] === "A" || editMap[y][x] === "E") {
-    } else {
-      editMap[y] = editMap[y].substring(0, x) + "." + editMap[y].substring(x + 1);
+    var cur = getEditChar(x, y);
+    if (cur !== PLAYER_ID && cur !== "EX") {
+      editMap[y] = setCellId(editMap[y], x, FLOOR_ID, editCols, FLOOR_ID);
     }
     setOverlayChar(x, y, ch);
     return;
   }
-  if (ch === "B") {
-    if (editMap[y][x] !== "A" && editMap[y][x] !== "E") {
-      editMap[y] = editMap[y].substring(0, x) + "." + editMap[y].substring(x + 1);
+  if (ch === "BK" || isBlockChar(ch)) {
+    var cur2 = getEditChar(x, y);
+    if (cur2 !== PLAYER_ID && cur2 !== "EX") {
+      editMap[y] = setCellId(editMap[y], x, FLOOR_ID, editCols, FLOOR_ID);
     }
     setEditBlock(x, y, true);
     return;
   }
-  if (ch === "A" || ch === "E") {
-    for (let yy = 0; yy < editRows; yy++)
-      for (let xx = 0; xx < editCols; xx++)
-        if (editMap[yy][xx] === ch)
-          editMap[yy] = editMap[yy].substring(0, xx) + "." + editMap[yy].substring(xx + 1);
+  if (ch === PLAYER_ID || ch === "EX") {
+    for (var yy = 0; yy < editRows; yy++)
+      for (var xx = 0; xx < editCols; xx++)
+        if (getEditChar(xx, yy) === ch)
+          editMap[yy] = setCellId(editMap[yy], xx, FLOOR_ID, editCols, FLOOR_ID);
   }
-  editMap[y] = editMap[y].substring(0, x) + ch + editMap[y].substring(x + 1);
-  if (ch === "W" || ch === "~" || ch === "F") {
-    setOverlayChar(x, y, " ");
+  editMap[y] = setCellId(editMap[y], x, ch, editCols, FLOOR_ID);
+  if (ch === "99" || ch === "~~" || ch === "FF") {
+    setOverlayChar(x, y, EMPTY_ID);
     setEditBlock(x, y, false);
   }
 }
@@ -225,25 +245,24 @@ function updateLayerUI() {
   });
 }
 
-function paletteKeyLabel(ch) {
-  if (ch === " ") return "Sp";
-  if (ch >= "0" && ch <= "9") return "";
-  return ch;
+function paletteKeyLabel(id) {
+  if (!id || id === EMPTY_ID) return "Sp";
+  return id;
 }
 
 var PALETTE_CATS = {
-  terrain: ".W~FI1379^>v<RDGXihr[]NYHZ",
-  items: "C2468fjlq",
-  doors: "X(){}",
-  monsters: "pPmzac tkTx".replace(/\s/g, ""),
-  special: "E?*@$=|_+!#%&AB"
+  terrain: ["00","99","~~","FF","II","I1","I3","I7","I9","FN","FE","FS","FW","FR","DD","GG","97","98","RR","BR","BF","TN","TE","TS","TW"],
+  items: ["CH","KB","KR","KG","KY","Bf","Bi","Bs","By"],
+  doors: ["SX","LB","LR","LG","LY"],
+  monsters: ["mb","mB","mg","mf","mu","mc","mt","mw","me","mo"],
+  special: ["EX","??","TP","BM","TH","TR","VW","VF","CL","BG","RD","BB","BN","BK","J0"]
 };
 
-function paletteCategoryOf(ch) {
-  if (PALETTE_CATS.terrain.indexOf(ch) >= 0) return "terrain";
-  if (PALETTE_CATS.items.indexOf(ch) >= 0) return "items";
-  if (PALETTE_CATS.doors.indexOf(ch) >= 0) return "doors";
-  if (PALETTE_CATS.monsters.indexOf(ch) >= 0) return "monsters";
+function paletteCategoryOf(id) {
+  if (PALETTE_CATS.terrain.indexOf(id) >= 0) return "terrain";
+  if (PALETTE_CATS.items.indexOf(id) >= 0) return "items";
+  if (PALETTE_CATS.doors.indexOf(id) >= 0) return "doors";
+  if (PALETTE_CATS.monsters.indexOf(id) >= 0) return "monsters";
   return "special";
 }
 
@@ -304,7 +323,7 @@ function buildPalette() {
         if (!btn.querySelector(".palette-fallback")) {
           const fb = document.createElement("span");
           fb.className = "palette-fallback";
-          fb.textContent = ch === "." ? "·" : ch;
+          fb.textContent = (ch === "00") ? "·" : ch;
           btn.insertBefore(fb, btn.firstChild);
         }
       };
@@ -312,7 +331,7 @@ function buildPalette() {
     } else {
       const fb = document.createElement("span");
       fb.className = "palette-fallback";
-      fb.textContent = ch === "." ? "·" : ch;
+      fb.textContent = (ch === "00") ? "·" : ch;
       btn.appendChild(fb);
     }
     const key = document.createElement("span");
@@ -433,7 +452,8 @@ function getLevelData() {
   for (var y = 0; y < editRows; y++) {
     var row = editOverlay[y] || "";
     for (var x = 0; x < editCols; x++) {
-      if (row[x] && row[x] !== " ") { hasOverlay = true; break; }
+      var och = (typeof cellId === "function") ? cellId(row, x, EMPTY_ID) : EMPTY_ID;
+      if (och && och !== EMPTY_ID && och !== "  ") { hasOverlay = true; break; }
     }
     if (hasOverlay) break;
   }
@@ -453,19 +473,37 @@ function getLevelData() {
 
 function loadIntoEditor(data) {
   if (!data) return;
-  var cols = data.cols || (data.map && data.map[0] && data.map[0].length) || 20;
+  var raw0 = data.map && data.map[0];
+  var cols = data.cols || (raw0 ? (typeof rowCols === "function" ? rowCols(raw0) : Math.floor(String(raw0).length / 2) || String(raw0).length) : 20);
   var rows = data.rows || (data.map && data.map.length) || 15;
   editCols = cols;
   editRows = rows;
   if (data.overlay || data.blocks) {
-    editMap = (data.map || []).map(function (r) { return String(r).padEnd(cols, ".").slice(0, cols); });
-    while (editMap.length < rows) editMap.push(new Array(cols + 1).join("."));
+    editMap = (data.map || []).map(function (r) {
+      var s = (typeof migrateLegacyRow === "function") ? migrateLegacyRow(String(r)) : String(r);
+      var need = cols * 2;
+      while (s.length < need) s += FLOOR_ID;
+      return s.slice(0, need);
+    });
+    while (editMap.length < rows) {
+      var er = "";
+      for (var i = 0; i < cols; i++) er += FLOOR_ID;
+      editMap.push(er);
+    }
     editMap.length = rows;
     if (data.overlay) {
       editOverlay = data.overlay.map(function (r) {
-        return String(r).padEnd(cols, " ").slice(0, cols).replace(/\./g, " ");
+        var s = String(r);
+        if (typeof migrateLegacyRow === "function" && s.length === cols) s = migrateLegacyRow(s);
+        var need = cols * 2;
+        while (s.length < need) s += EMPTY_ID;
+        return s.slice(0, need);
       });
-      while (editOverlay.length < rows) editOverlay.push(new Array(cols + 1).join(" "));
+      while (editOverlay.length < rows) {
+        var eo = "";
+        for (var j = 0; j < cols; j++) eo += EMPTY_ID;
+        editOverlay.push(eo);
+      }
       editOverlay.length = rows;
     } else {
       editOverlay = [];

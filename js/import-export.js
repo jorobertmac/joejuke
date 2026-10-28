@@ -18,24 +18,36 @@ function levelToImportData(raw, index) {
     return { name: name, cols: 20, rows: 15, map: [], version: 1 };
   }
   if (Array.isArray(raw)) {
-    var cols = raw[0] ? raw[0].length : 20;
+    var mapped = raw.map(function (r) {
+      return (typeof migrateLegacyRow === "function") ? migrateLegacyRow(String(r)) : String(r);
+    });
+    var cols = mapped[0] ? rowCols(mapped[0]) : 20;
     return {
       name: name,
       cols: cols,
-      rows: raw.length,
-      map: raw.map(function (r) { return String(r); }),
+      rows: mapped.length,
+      map: mapped,
       version: 1
     };
   }
   var map = raw.map || [];
-  var cols2 = raw.cols || (map[0] && map[0].length) || 20;
-  var rows2 = raw.rows || map.length || 15;
+  var mapped2 = map.map(function (r) {
+    return (typeof migrateLegacyRow === "function") ? migrateLegacyRow(String(r)) : String(r);
+  });
+  var cols2 = raw.cols || (mapped2[0] ? rowCols(mapped2[0]) : 20);
+  var rows2 = raw.rows || mapped2.length || 15;
+  // pad packed rows to cols2 * 2
+  mapped2 = mapped2.map(function (r) {
+    var need = cols2 * 2;
+    while (r.length < need) r += FLOOR_ID;
+    return r.slice(0, need);
+  });
   var result = {
     name: raw.title || raw.name || name,
     title: raw.title || raw.name || name,
     cols: cols2,
     rows: rows2,
-    map: map.map(function (r) { return String(r).padEnd(cols2, ".").slice(0, cols2); }),
+    map: mapped2,
     version: raw.version || 4,
     timeLimit: typeof raw.timeLimit === "number" ? raw.timeLimit : 0,
     chipsRequired: raw.chipsRequired != null ? raw.chipsRequired : null,
@@ -46,7 +58,11 @@ function levelToImportData(raw, index) {
   };
   if (raw.overlay && Array.isArray(raw.overlay)) {
     result.overlay = raw.overlay.map(function (r) {
-      return String(r).padEnd(cols2, " ").slice(0, cols2).replace(/\./g, " ");
+      var s = (typeof migrateLegacyRow === "function" && String(r).length === cols2)
+        ? migrateLegacyRow(String(r)) : String(r);
+      var need = cols2 * 2;
+      while (s.length < need) s += EMPTY_ID;
+      return s.slice(0, need);
     });
   }
   if (raw.blocks && Array.isArray(raw.blocks)) {
@@ -68,15 +84,23 @@ function parseImportFlexible(text) {
   try {
     var obj = JSON.parse(text);
 
-    // Top-level array of map strings (legacy single level)
+    // Top-level array of map strings (legacy single level or packed 2-char)
     if (Array.isArray(obj) && obj.length && typeof obj[0] === "string") {
-      var colsA = obj[0].length;
+      var mappedA = obj.map(function (r) {
+        return (typeof migrateLegacyRow === "function") ? migrateLegacyRow(String(r)) : String(r);
+      });
+      var colsA = mappedA[0] ? (typeof rowCols === "function" ? rowCols(mappedA[0]) : Math.floor(mappedA[0].length / 2)) : 20;
+      mappedA = mappedA.map(function (r) {
+        var need = colsA * 2;
+        while (r.length < need) r += (typeof FLOOR_ID !== "undefined" ? FLOOR_ID : "00");
+        return r.slice(0, need);
+      });
       return {
         single: {
           name: "Imported",
           cols: colsA,
-          rows: obj.length,
-          map: obj.map(function (r) { return String(r).padEnd(colsA, ".").slice(0, colsA); }),
+          rows: mappedA.length,
+          map: mappedA,
           version: 1
         }
       };
@@ -102,27 +126,37 @@ function parseImportFlexible(text) {
 
     // Single level object with map
     if (obj && obj.map && Array.isArray(obj.map)) {
-      var cols = obj.cols || obj.map[0].length;
-      var rows = obj.rows || obj.map.length;
+      var mappedS = obj.map.map(function (r) {
+        return (typeof migrateLegacyRow === "function") ? migrateLegacyRow(String(r)) : String(r);
+      });
+      var cols = obj.cols || (mappedS[0] ? (typeof rowCols === "function" ? rowCols(mappedS[0]) : Math.floor(mappedS[0].length / 2)) : 20);
+      var rows = obj.rows || mappedS.length;
+      mappedS = mappedS.map(function (r) {
+        var need = cols * 2;
+        while (r.length < need) r += (typeof FLOOR_ID !== "undefined" ? FLOOR_ID : "00");
+        return r.slice(0, need);
+      });
       var result = {
-        name: obj.name || obj.title || "Imported",
-        title: obj.title || obj.name || "Imported",
+        name: obj.title || obj.name || "Imported",
         cols: cols,
         rows: rows,
-        map: obj.map.map(function (r) { return String(r).padEnd(cols, ".").slice(0, cols); }),
-        version: obj.version || 4,
-        timeLimit: typeof obj.timeLimit === "number" ? obj.timeLimit : 0,
-        chipsRequired: obj.chipsRequired != null ? obj.chipsRequired : null,
-        maxMoves: typeof obj.maxMoves === "number" ? obj.maxMoves : 0,
-        password: obj.password || null,
-        hint: obj.hint || "",
-        author: obj.author || ""
+        map: mappedS,
+        version: obj.version || 4
       };
       if (obj.overlay && Array.isArray(obj.overlay)) {
         result.overlay = obj.overlay.map(function (r) {
-          return String(r).padEnd(cols, " ").slice(0, cols).replace(/\./g, " ");
+          var s = String(r);
+          if (typeof migrateLegacyRow === "function" && s.length === cols) s = migrateLegacyRow(s);
+          var need = cols * 2;
+          var empty = (typeof EMPTY_ID !== "undefined" ? EMPTY_ID : "  ");
+          while (s.length < need) s += empty;
+          return s.slice(0, need);
         });
-        while (result.overlay.length < rows) result.overlay.push(new Array(cols + 1).join(" "));
+        while (result.overlay.length < rows) {
+          var eo = "";
+          for (var ei = 0; ei < cols; ei++) eo += (typeof EMPTY_ID !== "undefined" ? EMPTY_ID : "  ");
+          result.overlay.push(eo);
+        }
         result.overlay.length = rows;
       }
       if (obj.blocks && Array.isArray(obj.blocks)) {
@@ -139,13 +173,23 @@ function parseImportFlexible(text) {
 
   var lines = text.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean);
   if (lines.length < 3) throw new Error("Bad format");
-  var cols3 = Math.max.apply(null, lines.map(function (l) { return l.length; }));
+  var mapped3 = lines.map(function (r) {
+    return (typeof migrateLegacyRow === "function") ? migrateLegacyRow(r) : r;
+  });
+  var cols3 = Math.max.apply(null, mapped3.map(function (l) {
+    return typeof rowCols === "function" ? rowCols(l) : Math.floor(l.length / 2);
+  }));
+  mapped3 = mapped3.map(function (r) {
+    var need = cols3 * 2;
+    while (r.length < need) r += (typeof FLOOR_ID !== "undefined" ? FLOOR_ID : "00");
+    return r.slice(0, need);
+  });
   return {
     single: {
       name: "Imported",
       cols: cols3,
-      rows: lines.length,
-      map: lines.map(function (r) { return r.padEnd(cols3, ".").slice(0, cols3); }),
+      rows: mapped3.length,
+      map: mapped3,
       version: 1
     }
   };
@@ -216,7 +260,7 @@ function populateJsonLevelSelect(list) {
   for (var i = 0; i < list.length; i++) {
     var opt = document.createElement("option");
     opt.value = String(i);
-    opt.textContent = list[i].name || list[i].title || ("Level " + (i + 1));
+    opt.textContent = list[i].name || ("Level " + (i + 1));
     sel.appendChild(opt);
   }
   wrap.classList.remove("hidden");
