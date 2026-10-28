@@ -693,3 +693,17 @@ body.editor-mode footer { display: none; }
 .hud-time, .hud-moves {
   font-variant-numeric: tabular-nums;
 }
+
+
+/* Level pack metadata in HUD */
+.hud-title {
+  max-width: 7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.9;
+  font-size: 0.42rem;
+}
+.hud-time, .hud-moves {
+  font-variant-numeric: tabular-nums;
+}
