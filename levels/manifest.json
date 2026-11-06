@@ -1,1 +1,36 @@
-PLACEHOLDER
+{
+  "name": "Joe's Juke Campaign",
+  "version": 2,
+  "levels": [
+    {"id": "01-first-bridge", "file": "01-first-bridge.json", "title": "First Bridge", "number": 1},
+    {"id": "02-locked-vault", "file": "02-locked-vault.json", "title": "Locked Vault", "number": 2},
+    {"id": "03-boot-ladder", "file": "03-boot-ladder.json", "title": "Boot Ladder", "number": 3},
+    {"id": "04-ball-crossing", "file": "04-ball-crossing.json", "title": "Ball Crossing", "number": 4},
+    {"id": "05-tool-sampler", "file": "05-tool-sampler.json", "title": "Tool Sampler", "number": 5},
+    {"id": "06-triple-bridge", "file": "06-triple-bridge.json", "title": "Triple Bridge", "number": 6},
+    {"id": "07-key-cascade", "file": "07-key-cascade.json", "title": "Key Cascade", "number": 7},
+    {"id": "08-ice-corridors", "file": "08-ice-corridors.json", "title": "Ice Corridors", "number": 8},
+    {"id": "09-force-ring", "file": "09-force-ring.json", "title": "Force Ring", "number": 9},
+    {"id": "10-fire-sanctum", "file": "10-fire-sanctum.json", "title": "Fire Sanctum", "number": 10},
+    {"id": "11-toggle-gates", "file": "11-toggle-gates.json", "title": "Toggle Gates", "number": 11},
+    {"id": "12-teleport-swap", "file": "12-teleport-swap.json", "title": "Teleport Swap", "number": 12},
+    {"id": "13-dirt-dig", "file": "13-dirt-dig.json", "title": "Dirt Dig", "number": 13},
+    {"id": "14-trap-release", "file": "14-trap-release.json", "title": "Trap Release", "number": 14},
+    {"id": "15-thiefs-toll", "file": "15-thiefs-toll.json", "title": "Thief's Toll", "number": 15},
+    {"id": "16-tank-turn", "file": "16-tank-turn.json", "title": "Tank Turn", "number": 16},
+    {"id": "17-blue-walls", "file": "17-blue-walls.json", "title": "Blue Walls", "number": 17},
+    {"id": "18-teeth-chase", "file": "18-teeth-chase.json", "title": "Teeth Chase", "number": 18},
+    {"id": "19-mixed-signals", "file": "19-mixed-signals.json", "title": "Mixed Signals", "number": 19},
+    {"id": "20-rainbow-locks", "file": "20-rainbow-locks.json", "title": "Rainbow Locks", "number": 20},
+    {"id": "21-block-bomb", "file": "21-block-bomb.json", "title": "Block Bomb", "number": 21},
+    {"id": "22-glider-alley", "file": "22-glider-alley.json", "title": "Glider Alley", "number": 22},
+    {"id": "23-cloner-pressure", "file": "23-cloner-pressure.json", "title": "Cloner Pressure", "number": 23},
+    {"id": "24-nested-keys", "file": "24-nested-keys.json", "title": "Nested Keys", "number": 24},
+    {"id": "25-force-maze", "file": "25-force-maze.json", "title": "Force Maze", "number": 25},
+    {"id": "26-monster-gauntlet", "file": "26-monster-gauntlet.json", "title": "Monster Gauntlet", "number": 26},
+    {"id": "27-full-kit", "file": "27-full-kit.json", "title": "Full Kit", "number": 27},
+    {"id": "28-sokoban-core", "file": "28-sokoban-core.json", "title": "Sokoban Core", "number": 28},
+    {"id": "29-master-lock", "file": "29-master-lock.json", "title": "Master Lock", "number": 29},
+    {"id": "30-endgame", "file": "30-endgame.json", "title": "Endgame", "number": 30}
+  ]
+}
